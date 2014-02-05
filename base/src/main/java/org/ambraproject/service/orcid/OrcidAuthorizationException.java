@@ -1,6 +1,6 @@
-/* 
- * Copyright (c) 2006-2014 by Public Library of Science
-
+/*
+ * Copyright (c) 2007-2014 by Public Library of Science
+ *
  * http://plos.org
  * http://ambraproject.org
  *
@@ -16,24 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ambraproject.service.user;
+package org.ambraproject.service.orcid;
 
 /**
- * Thrown when a user's email validation token is bad
+ * Thrown when the orcid credentials have been specified incorrectly
  */
-public class VerificationTokenException extends Exception {
-  public VerificationTokenException() {
-  }
-
-  public VerificationTokenException(String message) {
+public class OrcidAuthorizationException extends Exception {
+  public OrcidAuthorizationException(String message) {
     super(message);
-  }
-
-  public VerificationTokenException(String message, Throwable cause) {
-    super(message, cause);
-  }
-
-  public VerificationTokenException(Throwable cause) {
-    super(cause);
   }
 }
