@@ -130,27 +130,6 @@ var FigViewerInit = function(doi, ref, state, external_page) {
     }
   });
 
-  if ($.support.touchEvents) {
-    $FV.slides_el.swipe({
-      swipeLeft:function(event, direction, distance, duration, fingerCount) {
-        if ($FV.thumbs.active.next().length) {
-          t = $FV.thumbs.active.next()
-          FVChangeSlide(t);
-        }
-      },
-      swipeRight:function(event, direction, distance, duration, fingerCount) {
-        if ($FV.thumbs.active.prev().length) {
-          t = $FV.thumbs.active.prev()
-          FVChangeSlide(t);
-        }
-      },
-      tap:function(event, target) {
-        target.click();
-      },
-      threshold:25
-    });
-  }
-
   loadJSON();
 
 };
@@ -324,6 +303,27 @@ var FVBuildFigs = function(data) {
   $FV.figs_pane.append($FV.staging_el);
 
   $FV.cont.append($FV.figs_pane);
+
+  if ($.support.touchEvents) {
+    $FV.slides_el.swipe({
+      swipeLeft:function(event, direction, distance, duration, fingerCount) {
+        if ($FV.thumbs.active.next().length) {
+          t = $FV.thumbs.active.next()
+          FVChangeSlide(t);
+        }
+      },
+      swipeRight:function(event, direction, distance, duration, fingerCount) {
+        if ($FV.thumbs.active.prev().length) {
+          t = $FV.thumbs.active.prev()
+          FVChangeSlide(t);
+        }
+      },
+      tap:function(event, target) {
+        target.click();
+      },
+      threshold:25
+    });
+  }
 
 }
 
