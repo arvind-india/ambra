@@ -662,7 +662,8 @@ $(document).on("click", "#related_collections li a", function(){
           this_a = $(this);
           title = this_a.attr('title');
           target = this_a.attr('toc');
-          new_li = $('<li><a href="#' + target + '" class="scroll">' + title + '</a></li>').appendTo($new_ul);
+          itemClass = this_a.attr('id');
+          new_li = $('<li><a href="#' + target + '" class="scroll">' + title + '</a></li>').addClass(itemClass).appendTo($new_ul);
         });
         $new_ul.find('li').eq(0).addClass('active');
 
@@ -1208,7 +1209,15 @@ var imageURI = getParameterByName("imageURI");
 if (imageURI) {
   var index = imageURI.lastIndexOf(".");
   if (index > 0) {
-    var doi = imageURI.substr(0, index);
+    // for corrections figure doi end in ".xnnn.cn" instead of ".xnnn"
+    var doi = null;
+    if (imageURI.substr(index) == ".cn") {
+      var index2 = imageURI.substr(0, index).lastIndexOf(".");
+      doi = imageURI.substr(0, index2);
+    }
+    else {
+      doi = imageURI.substr(0, index);
+    }
     if (typeof FigViewerInit != "undefined") {
       // check to make sure figviewer.js is included, when called in main
       FigViewerInit(doi, imageURI, 'figs');
@@ -1216,7 +1225,6 @@ if (imageURI) {
   }
 }
 delete imageURI;
-
 
 //Browse / issue page functions
 // on window load

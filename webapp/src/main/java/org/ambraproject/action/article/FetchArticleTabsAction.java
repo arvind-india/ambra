@@ -21,6 +21,9 @@ package org.ambraproject.action.article;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.ambraproject.ApplicationException;
 import org.ambraproject.action.BaseSessionAwareActionSupport;
+import org.ambraproject.models.Article;
+import org.ambraproject.service.article.NoSuchObjectIdException;
+import org.ambraproject.views.CitationView;
 import org.ambraproject.service.captcha.CaptchaService;
 import org.ambraproject.web.Cookies;
 import org.ambraproject.freemarker.AmbraFreemarkerConfig;
@@ -52,6 +55,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.w3c.dom.Document;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -85,24 +89,25 @@ public class FetchArticleTabsAction extends BaseSessionAwareActionSupport implem
    * Returned by fetchArticle() when the given DOI is not in the repository.
    */
   public static final String ARTICLE_NOT_FOUND = "articleNotFound";
-  public static final String OBJECT_OF_CONCERN_RELATION = "object-of-concern";
+  public static final String EXPRESSION_OF_CONCERN_RELATION = "expressed-concern";
+  public static final String CORRECTION_RELATION = "correction-forward";
+  public static final String RETRACTION_RELATION = "retraction";
 
   private String articleURI;
   private String transformedArticle;
   private String annotationId = "";
+  private String retraction = "";
   private String expressionOfConcern = "";
+  private CitationView retractionCitation;
+  private CitationView  eocCitation;
+  private List<CitationView> articleCorrection = new ArrayList<CitationView>();
 
   private List<String> correspondingAuthor;
   private List<String> authorContributions;
   private List<String> competingInterest;
 
   private int pageCount = 0;
-  private int numCorrections = 0;
   private int numComments = 0;
-
-  private List<AnnotationView> formalCorrections = new ArrayList<AnnotationView>();
-  private List<AnnotationView> minorCorrections = new ArrayList<AnnotationView>();
-  private List<AnnotationView> retractions = new ArrayList<AnnotationView>();
 
   //commentary holds the comments that are being listed
   private AnnotationView[] commentary = new AnnotationView[0];
@@ -130,6 +135,7 @@ public class FetchArticleTabsAction extends BaseSessionAwareActionSupport implem
   private CaptchaService captchaService;
   private UserProfile user;
   private String reCaptchaPublicKey;
+  private boolean hasPDF;
 
 
   /**
@@ -141,8 +147,7 @@ public class FetchArticleTabsAction extends BaseSessionAwareActionSupport implem
     try {
       setCommonData();
       articleAssetWrapper = articleAssetService.listFiguresTables(articleInfoX.getDoi(), getAuthId());
-      populateFromAnnotations();
-      fetchExpressionOfConcern();
+      fetchAmendment();
       transformedArticle = fetchArticleService.getArticleAsHTML(articleInfoX);
     } catch (NoSuchArticleIdException e) {
       messages.add("No article found for id: " + articleURI);
@@ -155,33 +160,76 @@ public class FetchArticleTabsAction extends BaseSessionAwareActionSupport implem
   }
 
   /**
-   * check if the article has Expression of concern, if so fetch the value
+   * check if the article has any amendments; if the article has eoc or retraction, fetch the body and citation.
+   * If the article has only corrections fetch the citations.
+   *
    * @return String
    */
-  private String fetchExpressionOfConcern() {
+  private String fetchAmendment() {
+    try {
+      if (articleInfoX.getRelatedArticles() != null
+              && !articleService.isCorrectionArticle(articleInfoX)
+              && !articleService.isRetractionArticle(articleInfoX)
+              && !articleService.isEocArticle(articleInfoX)) {
 
-    if(articleInfoX.getRelatedArticles() != null) {
-
-      for (RelatedArticleInfo relatedArticleInfo : articleInfoX.getRelatedArticles()) {
-
-        try {
-          if((relatedArticleInfo.getArticleTypes() != null) &&
-              OBJECT_OF_CONCERN_RELATION.equalsIgnoreCase(relatedArticleInfo.getRelationType()) &&
-              articleService.isEocArticle(relatedArticleInfo)) {
-
+        for (RelatedArticleInfo relatedArticleInfo : articleInfoX.getRelatedArticles()) {
+          if ((relatedArticleInfo.getArticleTypes() != null)) {
+            // currently, we don't have many related articles; therefore, these lines
+            // shouldn't cause performance overhead.
+            Article article = articleService.getArticle(relatedArticleInfo.getDoi(), getAuthId());
             ArticleInfo articleInfo = articleService.getArticleInfo(relatedArticleInfo.getDoi(), getAuthId());
             Document document = this.fetchArticleService.getArticleDocument(articleInfo);
-            expressionOfConcern = this.fetchArticleService.getEocBody(document);
 
+            if (RETRACTION_RELATION.equalsIgnoreCase(relatedArticleInfo.getRelationType()) &&
+                    articleService.isRetractionArticle(relatedArticleInfo)) {
+
+              retraction = this.fetchArticleService.getAmendmentBody(document);
+              retractionCitation = buildCitationFromArticle(article);
+
+              break;
+            }
+
+            if (EXPRESSION_OF_CONCERN_RELATION.equalsIgnoreCase(relatedArticleInfo.getRelationType()) &&
+                    articleService.isEocArticle(relatedArticleInfo)) {
+
+              expressionOfConcern = this.fetchArticleService.getAmendmentBody(document);
+              eocCitation = buildCitationFromArticle(article);
+              break;
+            }
+
+            if (CORRECTION_RELATION.equalsIgnoreCase(relatedArticleInfo.getRelationType()) &&
+                    articleService.isCorrectionArticle(relatedArticleInfo)) {
+
+              CitationView citation = buildCitationFromArticle(article);
+              articleCorrection.add(citation);
+
+            }
           }
-        } catch (Exception e) {
-          populateErrorMessages(e);
-          return ERROR;
         }
       }
+    } catch (Exception e) {
+      populateErrorMessages(e);
+      return ERROR;
     }
+    return SUCCESS;
+  }
 
-    return expressionOfConcern;
+  private CitationView buildCitationFromArticle(Article article)  {
+    CitationView citation =  CitationView.builder()
+            .setDoi(article.getDoi())
+            .seteLocationId(article.geteLocationId())
+            .setUrl(article.getUrl())
+            .setTitle(article.getTitle())
+            .setJournal(article.getJournal())
+            .setVolume(article.getVolume())
+            .setIssue(article.getIssue())
+            .setSummary(article.getDescription())
+            .setPublisherName(article.getPublisherName())
+            .setPublishedDate(article.getDate())
+            .setAuthorList(article.getAuthors())
+            .setCollaborativeAuthors(article.getCollaborativeAuthors())
+            .build();
+    return citation;
   }
 
   /**
@@ -192,9 +240,6 @@ public class FetchArticleTabsAction extends BaseSessionAwareActionSupport implem
   public String fetchArticleComments() {
     try {
       setCommonData();
-
-      numCorrections = annotationService.countAnnotations(articleInfoX.getId(),
-        EnumSet.of(AnnotationType.FORMAL_CORRECTION, AnnotationType.MINOR_CORRECTION));
 
       numComments = annotationService.countAnnotations(articleInfoX.getId(),
           EnumSet.of(AnnotationType.COMMENT));
@@ -285,9 +330,15 @@ public class FetchArticleTabsAction extends BaseSessionAwareActionSupport implem
    * @throws ApplicationException     when there is an error talking to the OTM
    * @throws NoSuchArticleIdException when the article can not be found
    */
-  private void setCommonData() throws ApplicationException, NoSuchArticleIdException {
+  private void setCommonData() throws ApplicationException, NoSuchArticleIdException, NoSuchObjectIdException {
     validateArticleURI();
     articleInfoX = articleService.getArticleInfo(articleURI, getAuthId());
+    hasPDF = true;
+    if (articleAssetService.getArticleAsset(articleURI, "PDF", getAuthId()) == null) {
+      hasPDF = false;
+    }
+    // sort the related articles by date
+    Collections.sort(articleInfoX.getRelatedArticles());
     journalList = articleInfoX.getJournals();
     isResearchArticle = articleService.isResearchArticle(articleInfoX);
     articleIssues = articleService.getArticleIssues(articleURI);
@@ -358,8 +409,7 @@ public class FetchArticleTabsAction extends BaseSessionAwareActionSupport implem
           articleInfoX.getId(),
           EnumSet.of(AnnotationType.COMMENT),
           AnnotationOrder.MOST_RECENT_REPLY);
-      populateFromAnnotations();
-      fetchExpressionOfConcern();
+      fetchAmendment();
       transformedArticle = fetchArticleService.getArticleAsHTML(articleInfoX);
     } catch (Exception e) {
       populateErrorMessages(e);
@@ -383,9 +433,9 @@ public class FetchArticleTabsAction extends BaseSessionAwareActionSupport implem
       validateArticleURI();
       articleInfoX = articleService.getArticleInfo(articleURI, getAuthId());
       commentary = annotationService.listAnnotations(
-          articleInfoX.getId(),
-          EnumSet.of(AnnotationType.COMMENT),
-          AnnotationOrder.MOST_RECENT_REPLY);
+              articleInfoX.getId(),
+              EnumSet.of(AnnotationType.COMMENT),
+              AnnotationOrder.MOST_RECENT_REPLY);
     } catch (Exception e) {
       populateErrorMessages(e);
       return ERROR;
@@ -430,7 +480,7 @@ public class FetchArticleTabsAction extends BaseSessionAwareActionSupport implem
       validateArticleURI();
       articleInfoX = articleService.getArticleInfo(articleURI, getAuthId());
       numComments = annotationService.countAnnotations(articleInfoX.getId(),
-          EnumSet.of(AnnotationType.COMMENT));
+              EnumSet.of(AnnotationType.COMMENT));
       trackbackCount = trackbackService.countTrackbacksForArticle(articleURI);
     } catch (Exception e) {
       populateErrorMessages(e);
@@ -459,40 +509,6 @@ public class FetchArticleTabsAction extends BaseSessionAwareActionSupport implem
       return ERROR;
     }
     return SUCCESS;
-  }
-
-  /**
-   * populate the annotations
-   */
-  private void populateFromAnnotations() {
-    //get the corrections without replies loaded up, and ordered oldest to newest. We do need to show a count of replies on the main article page
-    AnnotationView[] annotationViews = annotationService.listAnnotations(
-        articleInfoX.getId(),
-        EnumSet.of(AnnotationType.FORMAL_CORRECTION, AnnotationType.MINOR_CORRECTION, AnnotationType.RETRACTION),
-        AnnotationOrder.NEWEST_TO_OLDEST
-    );
-    for (AnnotationView annotationView : annotationViews) {
-      AnnotationType annotationType = annotationView.getType();
-      switch (annotationType) {
-        case FORMAL_CORRECTION:
-          formalCorrections.add(annotationView);
-          break;
-        case MINOR_CORRECTION:
-          minorCorrections.add(annotationView);
-          break;
-        case RETRACTION:
-          retractions.add(annotationView);
-          break;
-        case COMMENT:
-          //this is already handled in setCommonData()
-          break;
-        case REPLY:
-          break;
-        default:
-          throw new RuntimeException("Unhandled enum value: " + annotationType);
-      }
-    }    
-    numCorrections = formalCorrections.size() + minorCorrections.size() + retractions.size();
   }
 
   /**
@@ -751,15 +767,24 @@ public class FetchArticleTabsAction extends BaseSessionAwareActionSupport implem
   }
 
   /**
-   * @return an array of formal corrections
+   *
+   * @return body test of the article's retraction
    */
-  public List<AnnotationView> getFormalCorrections() {
-    return this.formalCorrections;
+  public String getRetraction() {
+    return this.retraction;
   }
 
   /**
    *
-   * @return Expression Of Concern data
+   * @return the citation for the article's retraction
+   */
+  public CitationView getRetractionCitation() {
+    return retractionCitation;
+  }
+
+  /**
+   *
+   * @return the body text of Expression Of Concern
    */
   public String getExpressionOfConcern() {
     return expressionOfConcern;
@@ -770,23 +795,28 @@ public class FetchArticleTabsAction extends BaseSessionAwareActionSupport implem
   }
 
   /**
-   * @return an array of retractions
+   *
+   * @return the citation of the article's expression of concern
    */
-
-  public List<AnnotationView> getRetractions() {
-    return this.retractions;
+  public CitationView getEocCitation() {
+    return eocCitation;
   }
 
-  public List<AnnotationView> getMinorCorrections() {
-    return minorCorrections;
+  /**
+   *
+   * @return article corrections
+   */
+  public List<CitationView> getArticleCorrection() {
+    return articleCorrection;
   }
+
+  public void setArticleCorrection(List<CitationView> articleCorrection) {
+    this.articleCorrection = articleCorrection;
+  }
+
 
   public int getNumComments() {
     return numComments;
-  }
-
-  public int getNumCorrections() {
-    return numCorrections;
   }
 
   public AnnotationView[] getCommentary() {
@@ -906,5 +936,9 @@ public class FetchArticleTabsAction extends BaseSessionAwareActionSupport implem
   @Required
   public void setCaptchaService(CaptchaService captchaService) {
     this.captchaService = captchaService;
+  }
+
+  public boolean isHasPDF() {
+    return hasPDF;
   }
 }
