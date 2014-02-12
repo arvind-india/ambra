@@ -521,7 +521,10 @@ public class CASFilter implements Filter {
 
     // now, construct our best guess at the string
     StringBuffer sb = new StringBuffer();
-    if (request.isSecure())
+    //Here is where I made a change deviating from the supplied implementation
+    //I added " || (request.getScheme() != null && request.getScheme().equals("https"))" to fix:
+    //AMEC-2249
+    if (request.isSecure() || (request.getScheme() != null && request.getScheme().equals("https")))
       sb.append("https://");
     else
       sb.append("http://");
