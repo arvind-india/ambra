@@ -235,10 +235,9 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
    */
   @Override
   @Transactional
-  public void resetPassword(final String email, final String verificationToken, final String newPassword) {
+  public void resetPassword(final String email, final String newPassword) {
     for (Map.Entry<String, String> argument : new HashMap<String, String>() {{
       put("email", email);
-      put("verificationToken", verificationToken);
       put("new password", newPassword);
     }}.entrySet()) {
       if (StringUtils.isEmpty(argument.getValue())) {
@@ -249,18 +248,15 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
     UserProfile profile = (UserProfile) DataAccessUtils.uniqueResult(
         hibernateTemplate.findByCriteria(
             DetachedCriteria.forClass(UserProfile.class)
-                .add(Restrictions.eq("email", email))
-                .add(Restrictions.eq("verificationToken", verificationToken))
-        )
+                .add(Restrictions.eq("email", email)))
     );
     if (profile == null) {
-      throw new IllegalArgumentException("Incorrect email/verfication token: "
-          + email + " / " + verificationToken);
+      throw new IllegalArgumentException("Incorrect email: " + email);
     }
+
     log.debug("Setting new password for {}", email);
     profile.setPassword(passwordDigestService.generateDigest(newPassword));
     hibernateTemplate.update(profile);
-
   }
 
   /**

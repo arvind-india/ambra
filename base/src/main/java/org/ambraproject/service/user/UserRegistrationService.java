@@ -90,13 +90,12 @@ public interface UserRegistrationService {
   public void removeVerificationToken(String email);
 
   /**
-   * Reset a user's password. Will not reset the password if the verification token does not match the user
+   * Reset a user's password.
    *
    * @param email             the user's email
-   * @param verificationToken the verification token sent to the user's email
    * @param newPassword       the user's new newPassword
    */
-  public void resetPassword(String email, String verificationToken, String newPassword);
+  public void resetPassword(String email, String newPassword);
 
   /**
    * Send a message to the user with a link to verify their new email address
