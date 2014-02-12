@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import edu.yale.its.tp.cas.client.CASAuthenticationException;
 import edu.yale.its.tp.cas.client.CASReceipt;
 import edu.yale.its.tp.cas.client.ProxyTicketValidator;
-import edu.yale.its.tp.cas.client.Util;
 import edu.yale.its.tp.cas.client.filter.CASFilterRequestWrapper;
 
 /**
@@ -485,7 +484,7 @@ public class CASFilter implements Filter {
     } else {
       // otherwise, return our best guess at the service
       // Originally: serviceString = Util.getService(request, casServerName);
-      serviceString = Util.getService(request, getRequestHost(request));
+      serviceString = getService(request, getRequestHost(request));
     }
 
     if (log.isTraceEnabled()) {
@@ -493,6 +492,68 @@ public class CASFilter implements Filter {
     }
 
     return serviceString;
+  }
+
+  /**
+   * This method stolen from:
+   *
+   * http://code.google.com/p/legacy-java-cas-client/source/browse/tags/2-2-0-M1/src/edu/yale/its/tp/cas/client/Util.java
+   *
+   * @param request
+   * @param server
+   *
+   * @return
+   *
+   * @throws ServletException
+   */
+  private static String getService(HttpServletRequest request, String server)
+    throws ServletException {
+    if (log.isTraceEnabled()){
+      log.trace("entering getService(" + request + ", " + server + ")");
+    }
+
+    // ensure we have a server name
+    if (server == null) {
+      log.error("getService() argument \"server\" was illegally null.");
+      throw new IllegalArgumentException("name of server is required");
+    }
+
+
+    // now, construct our best guess at the string
+    StringBuffer sb = new StringBuffer();
+    if (request.isSecure())
+      sb.append("https://");
+    else
+      sb.append("http://");
+    sb.append(server);
+    sb.append(request.getRequestURI());
+
+    if (request.getQueryString() != null) {
+      // first, see whether we've got a 'ticket' at all
+      int ticketLoc = request.getQueryString().indexOf("ticket=");
+
+      // if ticketLoc == 0, then it's the only parameter and we ignore
+      // the whole query string
+
+      // if no ticket is present, we use the query string wholesale
+      if (ticketLoc == -1)
+        sb.append("?" + request.getQueryString());
+      else if (ticketLoc > 0) {
+        ticketLoc = request.getQueryString().indexOf("&ticket=");
+        if (ticketLoc == -1) {
+          // there was a 'ticket=' unrelated to a parameter named 'ticket'
+          sb.append("?" + request.getQueryString());
+        } else if (ticketLoc > 0) {
+          // otherwise, we use the query string up to "&ticket="
+          sb.append("?" + request.getQueryString().substring(0, ticketLoc));
+        }
+      }
+    }
+    String encodedService = URLEncoder.encode(sb.toString());
+    if (log.isTraceEnabled()){
+      log.trace("returning from getService() with encoded service [" + encodedService + "]");
+    }
+    return encodedService;
   }
 
   /**
