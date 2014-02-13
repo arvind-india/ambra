@@ -5032,7 +5032,7 @@ legend.conjunction span {
   cursor: pointer;
 }
 
-#toc-block .cover {
+#toc-block .col-2 .cover {
   background: #363636;
   color: #fff;
   border-radius: 5px;
@@ -5074,7 +5074,7 @@ legend.conjunction span {
   line-height: 1.286;
 }
 
-#toc-block .cover a {
+#toc-block .col-2 .cover a {
   color: #fff;
 }
 
