@@ -35,6 +35,19 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.7</h2>
+  <p>Released February 18, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.7</h3>
+  <ul>
+      <li>Migration of corrections and retraction annotation types to article types</li>
+      <li>Migration of minor correction annotation type to comment</li>
+      <li>Search index inclusion of retractions, expression of concerns and corrections</li>
+      <li>UI improvments for above mentioned article types</li> 
+      <li>Preparation work to support CrossMark for article pages</li>
+      <li>Fix for figure lightbox use on tablets</li>
+      <li>Fix for an edge case lightbox display bug</li>
+  </ul>
+
   <h2>Ambra 2.9.6</h2>
   <p>Released February 11, 2014</p>
   <h3>Features Implemented in Ambra 2.9.6</h3>
