@@ -656,4 +656,5 @@ li.subjectAreaSelector div.selectSubjectAreas {
 .ui-dialog .ui-dialog-buttonset .ui-button.primary{
     background: #3c63af !important;
     color: #fff !important;
+    margin-right: 10px;
 }
