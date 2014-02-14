@@ -626,7 +626,7 @@ $(document).on("click", "#related_collections li a", function(){
       }
 
       var marginFix = function () {
-        var lastSection = options.sections.last();
+        var lastSection = $('div.article div').last();
         if (lastSection.length > 0) {
           var offset = lastSection.offset().top;
           var docHeight = $(document).height();
