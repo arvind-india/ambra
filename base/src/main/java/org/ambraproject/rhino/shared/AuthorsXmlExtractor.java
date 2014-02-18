@@ -64,7 +64,7 @@ public final class AuthorsXmlExtractor {
       Pattern.compile("<list\\s+list-type=\"(.*)\">"),
       Pattern.compile("<list(?:.*)*>"),
       Pattern.compile("<title(?:.*)*>"),
-      Pattern.compile("<body(?:.*)*>"),
+      Pattern.compile("<body[^>]*>"),
       Pattern.compile("</body>")
   };
 

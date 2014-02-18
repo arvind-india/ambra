@@ -20,12 +20,14 @@ package org.ambraproject.service.article;
 
 import org.ambraproject.ApplicationException;
 import org.ambraproject.models.Article;
+import org.ambraproject.models.ArticleRelationship;
 import org.ambraproject.models.Category;
 import org.ambraproject.models.CitedArticle;
 import org.ambraproject.views.CitedArticleView;
 import org.ambraproject.views.SearchHit;
 import org.ambraproject.views.article.ArticleInfo;
 import org.ambraproject.views.article.BaseArticleInfo;
+import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 import java.net.URI;
 import java.text.ParseException;
@@ -60,6 +62,16 @@ public interface ArticleService {
   public boolean isResearchArticle(final ArticleInfo articleInfo)
       throws NoSuchArticleIdException, ApplicationException;
 
+  /**
+   * Determines if the article is of type retraction
+   *
+   * @param articleInfo The ArticleInfo object
+   * @return True if the article is a retraction article
+   * @throws NoSuchArticleIdException
+   * @throws ApplicationException
+   */
+  public boolean isRetractionArticle(final BaseArticleInfo articleInfo)
+          throws NoSuchArticleIdException, ApplicationException;
 
   /**
    * Determines if the articleURI is of type expression of concern
@@ -71,6 +83,18 @@ public interface ArticleService {
    */
   public boolean isEocArticle(final BaseArticleInfo articleInfo)
       throws NoSuchArticleIdException, ApplicationException;
+
+
+  /**
+   * Determines if the article is of type Correction
+   *
+   * @param articleInfo The ArticleInfo object
+   * @return True if the article is a correction article
+   * @throws ApplicationException
+   * @throws NoSuchArticleIdException When the article does not exist
+   */
+  public boolean isCorrectionArticle(final BaseArticleInfo articleInfo)
+          throws NoSuchArticleIdException, ApplicationException;
 
 
   /**
@@ -256,4 +280,14 @@ public interface ArticleService {
    * @throws NoSuchArticleIdException
    */
   public void checkArticleState(final String articleDoi, final String authId) throws NoSuchArticleIdException;
+
+  /**
+   * Returns an article's amendments of type Retraction or Expression of Concern
+   * Used in displaying the search results
+   *
+   * @param articleDoi the article doi
+   * @return
+   * @throws Exception
+   */
+  public List<ArticleRelationship> getArticleAmendments(String articleDoi) throws DataAccessException;
 }

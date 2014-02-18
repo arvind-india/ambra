@@ -18,19 +18,12 @@ package org.ambraproject.models;
  */
 public enum AnnotationType {
   COMMENT("Comment"), //comment on an article
-  REPLY("Reply"),
-  MINOR_CORRECTION("MinorCorrection"),
-  FORMAL_CORRECTION("FormalCorrection"),
-  RETRACTION("Retraction");
+  REPLY("Reply");
 
   private String string;
 
   private AnnotationType(String string) {
     this.string = string;
-  }
-
-  public boolean isCorrection() {
-    return MINOR_CORRECTION == this || FORMAL_CORRECTION == this || RETRACTION == this;
   }
 
   @Override
@@ -43,12 +36,9 @@ public enum AnnotationType {
       return COMMENT;
     } else if (REPLY.string.equals(string)) {
       return REPLY;
-    } else if (MINOR_CORRECTION.string.equals(string)) {
-      return MINOR_CORRECTION;
-    } else if (FORMAL_CORRECTION.string.equals(string)) {
-      return FORMAL_CORRECTION;
-    } else if (RETRACTION.string.equals(string)) {
-      return RETRACTION;
+      // TODO: Remove after deleting Formal Corrections/Retractions from db
+    } else if (string.equalsIgnoreCase("FormalCorrection") || string.equalsIgnoreCase("Retraction")){
+      return null;
     } else {
       throw new IllegalArgumentException("Unknown annotation type: " + string);
     }

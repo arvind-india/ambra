@@ -57,6 +57,7 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateAccessor;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
@@ -143,6 +144,30 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   }
 
   /**
+   *
+   * @param articleInfo The ArticleInfo object
+   * @return
+   * @throws ApplicationException
+   * @throws NoSuchArticleIdException
+   */
+  public boolean isRetractionArticle(final BaseArticleInfo articleInfo)
+          throws ApplicationException, NoSuchArticleIdException {
+    ArticleType articleType = ArticleType.getDefaultArticleType();
+
+    for (String artTypeUri : articleInfo.getTypes()) {
+      if (ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri)) != null) {
+        articleType = ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri));
+        break;
+      }
+    }
+    if (articleType == null) {
+      throw new ApplicationException("Unable to resolve article type for: " + articleInfo.getDoi());
+    }
+
+    return ArticleType.isRetractionArticle(articleType);
+  }
+
+  /**
    * Determines if the articleURI is of type Expression of Concern
    *
    * @param articleInfo The articleInfo Object
@@ -165,6 +190,23 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     }
 
     return ArticleType.isEocArticle(articleType);
+  }
+
+  public boolean isCorrectionArticle(final BaseArticleInfo articleInfo)
+          throws ApplicationException, NoSuchArticleIdException {
+    ArticleType articleType = ArticleType.getDefaultArticleType();
+
+    for (String artTypeUri : articleInfo.getTypes()) {
+      if (ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri)) != null) {
+        articleType = ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri));
+        break;
+      }
+    }
+    if (articleType == null) {
+      throw new ApplicationException("Unable to resolve article type for: " + articleInfo.getDoi());
+    }
+
+    return ArticleType.isCorrectionArticle(articleType);
   }
 
   /**
@@ -765,39 +807,37 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     for (ArticleRelationship relationship : article.getRelatedArticles()) {
       if (relationship.getOtherArticleDoi() != null) {
         try {
+          // related articles of the article itself
           Article otherArticle = getArticle(relationship.getOtherArticleDoi(), authId);
-          RelatedArticleInfo relatedArticleInfo = new RelatedArticleInfo();
-          relatedArticleInfo.setUri(URI.create(otherArticle.getDoi()));
-          relatedArticleInfo.setTitle(otherArticle.getTitle());
-          relatedArticleInfo.setDoi(otherArticle.getDoi());
-          relatedArticleInfo.setDate(otherArticle.getDate());
-          relatedArticleInfo.seteIssn(otherArticle.geteIssn());
-          relatedArticleInfo.setRelationType(relationship.getType());
-          relatedArticleInfo.setTypes(otherArticle.getTypes());
-
-          journals = otherArticle.getJournals();
-          journalViews = new HashSet<JournalView>(journals.size());
-          for(org.ambraproject.models.Journal journal : journals) {
-            journalViews.add(new JournalView(journal));
-          }
-          relatedArticleInfo.setJournals(journalViews);
-
-          List<String> relatedArticleAuthors = new ArrayList<String>(otherArticle.getAuthors().size());
-          for (ArticleAuthor ac : otherArticle.getAuthors()) {
-            relatedArticleAuthors.add(ac.getFullName());
-          }
-          relatedArticleInfo.setAuthors(relatedArticleAuthors);
-
-          //set article type
-          if (otherArticle.getTypes() != null) {
-            relatedArticleInfo.setAt(otherArticle.getTypes());
-          }
+          RelatedArticleInfo relatedArticleInfo = getRelatedArticleInfo(relationship, otherArticle);
 
           if (!articleInfo.getRelatedArticles().contains(relatedArticleInfo)) {
             articleInfo.getRelatedArticles().add(relatedArticleInfo);
           }
+           /* Logic for the amendments Related Article Sidebar to include the link to its original article's other amendments */
+          if (isRetractionArticle(articleInfo) || isEocArticle(articleInfo) || isCorrectionArticle(articleInfo)) {
+            // make sure that the related article is the amendment's original article
+            if (relationship.isOriginalArticleOfAmendment(relationship.getType())) {
+
+              for (ArticleRelationship otherArticleRelationship :otherArticle.getRelatedArticles()) {
+                // exclude the current amendment article, non-amendment articles, and other articles th
+                if (!articleInfo.getDoi().equals( otherArticleRelationship.getOtherArticleDoi())
+                        && otherArticleRelationship.isAmendmentRelationship(otherArticleRelationship.getType())) {
+
+                  Article otherArticleRelatedArticle = getArticle(otherArticleRelationship.getOtherArticleDoi(), authId);
+                  RelatedArticleInfo otherArticleRelatedArticleInfo = getRelatedArticleInfo(otherArticleRelationship, otherArticleRelatedArticle);
+
+                  if (!articleInfo.getRelatedArticles().contains(otherArticleRelatedArticleInfo)) {
+                    articleInfo.getRelatedArticles().add(otherArticleRelatedArticleInfo);
+                  }
+                }
+              }
+            }
+          }
         } catch (NoSuchArticleIdException e) {
           //exclude this article
+        } catch (ApplicationException e) {
+
         }
       }
     }
@@ -1236,5 +1276,53 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
    orderedCategories.addAll(categoryViews);
    Collections.sort(orderedCategories);
    return orderedCategories;
+  }
+
+  /**
+   * This method returns an instance of the RelatedArticleInfo based on the article's related article and
+   * their relationship.
+   *
+   * @param relationship the relationship between the parent article and its related article
+   * @param otherArticle the article's related article
+   * @return an instance of the RelatedArticleInfo
+   */
+  private RelatedArticleInfo getRelatedArticleInfo(ArticleRelationship relationship, Article otherArticle) {
+    RelatedArticleInfo relatedArticleInfo = new RelatedArticleInfo();
+    relatedArticleInfo.setUri(URI.create(otherArticle.getDoi()));
+    relatedArticleInfo.setTitle(otherArticle.getTitle());
+    relatedArticleInfo.setDoi(otherArticle.getDoi());
+    relatedArticleInfo.setDate(otherArticle.getDate());
+    relatedArticleInfo.seteIssn(otherArticle.geteIssn());
+    relatedArticleInfo.setRelationType(relationship.getType());
+    relatedArticleInfo.setTypes(otherArticle.getTypes());
+
+    Set<org.ambraproject.models.Journal> journals = otherArticle.getJournals();
+    Set<JournalView> journalViews = new HashSet<JournalView>(journals.size());
+    for(org.ambraproject.models.Journal journal : journals) {
+      journalViews.add(new JournalView(journal));
+    }
+    relatedArticleInfo.setJournals(journalViews);
+
+    List<String> relatedArticleAuthors = new ArrayList<String>(otherArticle.getAuthors().size());
+    for (ArticleAuthor ac : otherArticle.getAuthors()) {
+      relatedArticleAuthors.add(ac.getFullName());
+    }
+    relatedArticleInfo.setAuthors(relatedArticleAuthors);
+
+    //set article type
+    if (otherArticle.getTypes() != null) {
+      relatedArticleInfo.setAt(otherArticle.getTypes());
+    }
+    return relatedArticleInfo;
+  }
+
+  public List<ArticleRelationship> getArticleAmendments(final String articleDoi) {
+    if (articleDoi == null)
+      throw new IllegalArgumentException("articleDoi = null");
+    // TODO: order the amendments by date
+    List<ArticleRelationship> result = hibernateTemplate.find("select distinct relatedArticles from Article as art " +
+            "inner join art.relatedArticles as relatedArticles where art.doi = ? " +
+            "and relatedArticles.type in ('expressed-concern' , 'retraction', 'correction-forward')" , articleDoi);
+    return result;
   }
 }
