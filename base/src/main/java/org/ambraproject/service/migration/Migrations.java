@@ -49,7 +49,8 @@ class Migrations {
       //          // Do stuff
       //        }
       //      },
-      new ScriptMigration(1001, "migrate_ambra_1001.sql")
+      new ScriptMigration(1001, "migrate_ambra_1001.sql"),
+      new ScriptMigration(1002, "migrate_ambra_1002.sql")
   });
 
   /**

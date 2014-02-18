@@ -1,14 +1,11 @@
-create table userOrcid (
-  userProfileID bigint not null,
-  orcid varchar(25) character set utf8 collate utf8_bin not null,
-  accessToken varchar(50) character set utf8 collate utf8_bin not null,
-  refreshToken varchar(50) character set utf8 collate utf8_bin not null,
-  tokenScope varchar(100) character set utf8 collate utf8_bin not null,
-  tokenExpires datetime not null,
-  lastModified datetime not null,
-  created datetime not null,
-  primary key (userProfileID),
-  constraint foreign key (userProfileID) references userProfile (userProfileID),
-  unique (orcid)
-);
+alter table article
+  modify column doi varchar(150) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  modify column eLocationID varchar(150) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL;
 
+alter table articleAsset
+  modify column doi varchar(150) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
+
+update annotation set title = replace(title, 'RE: Minor Correction: ', 'RE: Publisher''s Note: ' );
+update annotation set title = replace(title, 'Minor Correction: ', '' ) where type = 'MinorCorrection';
+update annotation set title = replace(title, 'Minor correction: ', '' ) where type = 'MinorCorrection';
+update annotation set type = 'Comment', title = concat('Publisher''s Note: ', title) where type = 'MinorCorrection';

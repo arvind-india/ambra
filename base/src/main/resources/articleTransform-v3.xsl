@@ -61,9 +61,11 @@
       <xsl:call-template name="newline1"/>
       <xsl:call-template name="make-front"/>
       <xsl:call-template name="newline1"/>
+      <xsl:if test="not((@article-type='correction') or (@article-type='retraction') or (@article-type='expression-of-concern'))">
       <div class="articleinfo">
         <xsl:call-template name="make-article-meta"/>
       </div>
+      </xsl:if>
       <xsl:call-template name="make-editors-summary"/>
       <xsl:call-template name="newline2"/>
       <xsl:call-template name="newline1"/>
@@ -72,6 +74,12 @@
       <xsl:call-template name="newline1"/>
       <xsl:call-template name="make-back"/>
       <xsl:call-template name="newline1"/>
+      <xsl:if test="(@article-type='correction') or (@article-type='retraction') or (@article-type='expression-of-concern')">
+        <div class="articleinfo">
+          <xsl:call-template name="make-article-meta"/>
+        </div>
+        <xsl:call-template name="newline1"/>
+      </xsl:if>
     </xsl:template>
 
     <!-- 1/4/12: suppress, we don't use (we replace with make-front) -->
@@ -1036,7 +1044,15 @@
         </xsl:variable>
 
         <xsl:variable name="targetURI">
-          <xsl:value-of select="substring($imageURI, 1, (string-length($imageURI)-5))"/>
+          <!-- for corrections figure doi ending in ".xnnn.cn" instead of ".xnnn" -->
+          <xsl:choose>
+            <xsl:when test="ends-with($imageURI,'.cn')">
+              <xsl:value-of select="substring($imageURI, 1, (string-length($imageURI)-8))"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="substring($imageURI, 1, (string-length($imageURI)-5))"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:variable>
 
         <div class="figure">
@@ -1433,6 +1449,9 @@
     <!-- 1/4/12: plos-specific template -->
     <xsl:template match="mixed-citation">
       <xsl:apply-templates/>
+      <xsl:if test="extraCitationInfo/@doi and not(ext-link) and not(comment/ext-link)">
+        doi: <xsl:value-of select="extraCitationInfo/@doi"/>
+      </xsl:if>
     </xsl:template>
 
     <!-- 1/4/12: plos-specific template (formats mixed-citation names, most mixed-citation formatting is in the xml) -->
