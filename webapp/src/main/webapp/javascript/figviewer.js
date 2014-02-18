@@ -25,8 +25,15 @@
  */
 
 var $FV = {};
+var $FVPending = false;
 
 var FigViewerInit = function(doi, ref, state, external_page) {
+  // allow only one instance of FigViewerInit to be pending.
+  if ($FVPending) {
+    return;
+  }
+  $FVPending = true;
+
   $FV = $('<div id="fig-viewer" />');
   $FV.cont = $('<div id="fig-viewer-content" />');
   $FV.append($FV.cont);
@@ -58,6 +65,7 @@ var FigViewerInit = function(doi, ref, state, external_page) {
       dataType:'json',
       error: function (jqXHR, textStatus, errorThrown) {
         console.log(errorThrown);
+        $FVPending = false;
       },
       success:function (data) {
 
@@ -69,6 +77,7 @@ var FigViewerInit = function(doi, ref, state, external_page) {
         // from article tab where references,abstract and metadata exists, no need to fetch
         // them again from the server.
         if (typeof selected_tab != "undefined" && selected_tab == "article") {
+          $FVPending = false;
           FVBuildAbs(doi, $(".article .abstract"), $(".article .articleinfo"));
           FVBuildRefs($(".article .references"));
           displayModal();
@@ -78,11 +87,14 @@ var FigViewerInit = function(doi, ref, state, external_page) {
           var articleUrl = "/article/" + doi;
           console.log("fetch full article: " + articleUrl);
           $.ajax({url: articleUrl, success: function(fullArticleHtml) {
+            $FVPending = false;
             var article = $(fullArticleHtml);
             FVBuildAbs(doi, article.find(".article .abstract"), article.find(".article .articleinfo"));
             FVBuildRefs(article.find(".article .references"));
             displayModal();
             rerunMathjax();
+          }, error: function() {
+            $FVPending = false;
           }});
         }
       }
@@ -129,27 +141,6 @@ var FigViewerInit = function(doi, ref, state, external_page) {
       return false;
     }
   });
-
-  if ($.support.touchEvents) {
-    $FV.slides_el.swipe({
-      swipeLeft:function(event, direction, distance, duration, fingerCount) {
-        if ($FV.thumbs.active.next().length) {
-          t = $FV.thumbs.active.next()
-          FVChangeSlide(t);
-        }
-      },
-      swipeRight:function(event, direction, distance, duration, fingerCount) {
-        if ($FV.thumbs.active.prev().length) {
-          t = $FV.thumbs.active.prev()
-          FVChangeSlide(t);
-        }
-      },
-      tap:function(event, target) {
-        target.click();
-      },
-      threshold:25
-    });
-  }
 
   loadJSON();
 
@@ -324,6 +315,27 @@ var FVBuildFigs = function(data) {
   $FV.figs_pane.append($FV.staging_el);
 
   $FV.cont.append($FV.figs_pane);
+
+  if ($.support.touchEvents) {
+    $FV.slides_el.swipe({
+      swipeLeft:function(event, direction, distance, duration, fingerCount) {
+        if ($FV.thumbs.active.next().length) {
+          t = $FV.thumbs.active.next()
+          FVChangeSlide(t);
+        }
+      },
+      swipeRight:function(event, direction, distance, duration, fingerCount) {
+        if ($FV.thumbs.active.prev().length) {
+          t = $FV.thumbs.active.prev()
+          FVChangeSlide(t);
+        }
+      },
+      tap:function(event, target) {
+        target.click();
+      },
+      threshold:25
+    });
+  }
 
 }
 
@@ -834,6 +846,8 @@ var FVClose = function() {
   if(typeof event !== 'undefined') {
     close_time = event.timeStamp;
   }
+
+  $FVPending = false;
 };
 
 

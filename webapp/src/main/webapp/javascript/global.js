@@ -1209,7 +1209,6 @@ var imageURI = getParameterByName("imageURI");
 if (imageURI) {
   var index = imageURI.lastIndexOf(".");
   if (index > 0) {
-
     // for corrections figure doi end in ".xnnn.cn" instead of ".xnnn"
     var doi = null;
     if (imageURI.substr(index) == ".cn") {
@@ -1223,11 +1222,9 @@ if (imageURI) {
       // check to make sure figviewer.js is included, when called in main
       FigViewerInit(doi, imageURI, 'figs');
     }
-
   }
 }
 delete imageURI;
-
 
 //Browse / issue page functions
 // on window load
