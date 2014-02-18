@@ -21,7 +21,6 @@
 package org.ambraproject.service.annotation;
 
 import org.ambraproject.action.BaseTest;
-import org.ambraproject.service.cache.Cache;
 import org.ambraproject.models.Annotation;
 import org.ambraproject.models.AnnotationCitation;
 import org.ambraproject.models.AnnotationType;
@@ -33,7 +32,6 @@ import org.ambraproject.models.UserProfile;
 import org.ambraproject.views.AnnotationView;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -52,10 +50,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertEqualsNoOrder;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Test for methods of {@link AnnotationService}.  The test just references methods of the interface so that different
@@ -95,39 +92,6 @@ public class AnnotationServiceTest extends BaseTest {
 
     Map<Long, List<Annotation>> replyMap = new HashMap<Long, List<Annotation>>(2);
 
-    /**********ANNOTATIONS ON THE FIRST ARTICLE***********/
-    /******************RETURN ORDER SHOULD BE mCorrection, fCorrection****************************/
-    //fCorrection created is last month, mCorrection created is last year, but the replies to mCorrection were created now
-    Annotation fCorrection = new Annotation(creator, AnnotationType.FORMAL_CORRECTION, article.getID());
-    fCorrection.setAnnotationUri("formal-correction-annotationsTopLevel-fc1");
-    fCorrection.setTitle("formal-correction-annotationsTopLevel-fc1");
-    fCorrection.setBody("formal-correction-annotationsTopLevel-body-fc1");
-    fCorrection.setAnnotationCitation(new AnnotationCitation(article));
-    fCorrection.setCreated(lastMonth.getTime());
-    dummyDataStore.store(fCorrection);
-
-    Annotation mCorrection = new Annotation(creator, AnnotationType.MINOR_CORRECTION, article.getID());
-    mCorrection.setAnnotationUri("minor-correction-annotationsTopLevel-mc1");
-    mCorrection.setTitle("minor-correction-annotationsTopLevel-mc1");
-    mCorrection.setBody("minor-correction-annotationsTopLevel-body-mc1");
-    mCorrection.setAnnotationCitation(new AnnotationCitation(article));
-    mCorrection.setCreated(lastYear.getTime());
-    dummyDataStore.store(mCorrection);
-
-    Annotation mCorrectionReply1 = new Annotation(creator, AnnotationType.REPLY, mCorrection.getArticleID());
-    mCorrectionReply1.setParentID(mCorrection.getID());
-    mCorrectionReply1.setAnnotationUri("reply1-to-minor-correction-uri");
-    mCorrectionReply1.setTitle("reply1-to-minor-correction-title");
-    mCorrectionReply1.setBody("reply1-to-minor-correction-body");
-    dummyDataStore.store(mCorrectionReply1);
-
-    Annotation mCorrectionReply2 = new Annotation(creator, AnnotationType.REPLY, mCorrection.getArticleID());
-    mCorrectionReply2.setParentID(mCorrection.getID());
-    mCorrectionReply2.setAnnotationUri("reply2-to-minor-correction-uri");
-    mCorrectionReply2.setTitle("reply2-to-minor-correction-title");
-    mCorrectionReply2.setBody("reply2-to-minor-correction-body");
-    dummyDataStore.store(mCorrectionReply2);
-    replyMap.put(mCorrection.getID(), Arrays.asList(mCorrectionReply1, mCorrectionReply2));
 
     Article article1 = new Article("id:doi-for-annotationsTopLevel-test-1");
     article1.setJournal("test journal");
@@ -138,54 +102,6 @@ public class AnnotationServiceTest extends BaseTest {
     article1.setDate(Calendar.getInstance().getTime());
     article1.setCollaborativeAuthors(Arrays.asList("Collab Author 1", "Collab Author 2", "Collab Author 3"));
     dummyDataStore.store(article1);
-
-    /**********ANNOTATIONS ON THE SECOND ARTICLE***********/
-    /**********RETURN ORDER SHOULD BE fCorrection1, fCorrection2**/
-    //fCorrection1 and it's reply have created date last year, but the reply to reply date is now
-    //fCorrection2 and it's reply have created date last month
-    Annotation fCorrection1 = new Annotation(creator, AnnotationType.FORMAL_CORRECTION, article1.getID());
-    fCorrection1.setAnnotationUri("formal-correction-1-annotationsTopLevel-fc2");
-    fCorrection1.setTitle("formal-correction-1-annotationsTopLevel-fc2");
-    fCorrection1.setBody("formal-correction-1-annotationsTopLevel-body-fc2");
-    fCorrection1.setAnnotationCitation(new AnnotationCitation(article1));
-    fCorrection1.setCreated(lastMonth.getTime());
-    dummyDataStore.store(fCorrection1);
-
-    Annotation fCorrection1Reply1 = new Annotation(creator, AnnotationType.REPLY, fCorrection1.getArticleID());
-    fCorrection1Reply1.setParentID(fCorrection1.getID());
-    fCorrection1Reply1.setAnnotationUri("reply1-to-formal-correction1-uri");
-    fCorrection1Reply1.setTitle("reply1-to-formal-correction1-title");
-    fCorrection1Reply1.setBody("reply1-to-formal-correction1-body");
-    fCorrection1Reply1.setCreated(lastMonth.getTime());
-    dummyDataStore.store(fCorrection1Reply1);
-
-    Annotation fCorrection1ReplyToReply = new Annotation(creator, AnnotationType.REPLY, fCorrection1.getArticleID());
-    fCorrection1ReplyToReply.setParentID(fCorrection1Reply1.getID());
-    fCorrection1ReplyToReply.setAnnotationUri("reply-to-reply-to-formal-correction1-uri");
-    fCorrection1ReplyToReply.setTitle("reply-to-reply-to-formal-correction1-title");
-    fCorrection1ReplyToReply.setBody("reply-to-reply-to-formal-correction1-body");
-    dummyDataStore.store(fCorrection1ReplyToReply);
-
-    replyMap.put(fCorrection1.getID(), Arrays.asList(fCorrection1Reply1));
-    replyMap.put(fCorrection1Reply1.getID(), Arrays.asList(fCorrection1ReplyToReply));
-
-    Annotation fCorrection2 = new Annotation(creator, AnnotationType.FORMAL_CORRECTION, article1.getID());
-    fCorrection2.setAnnotationUri("formal-correction-1-annotationsTopLevel-fc3");
-    fCorrection2.setTitle("formal-correction-1-annotationsTopLevel-fc3");
-    fCorrection2.setBody("formal-correction-1-annotationsTopLevel-body-fc3");
-    fCorrection2.setAnnotationCitation(new AnnotationCitation(article1));
-    fCorrection2.setCreated(lastYear.getTime());
-    dummyDataStore.store(fCorrection2);
-
-    Annotation fCorrection2Reply1 = new Annotation(creator, AnnotationType.REPLY, fCorrection1.getArticleID());
-    fCorrection2Reply1.setParentID(fCorrection2.getID());
-    fCorrection2Reply1.setAnnotationUri("reply1-to-formal-correction2-uri");
-    fCorrection2Reply1.setTitle("reply1-to-formal-correction2-title");
-    fCorrection2Reply1.setBody("reply1-to-formal-correction2-body");
-    fCorrection2Reply1.setCreated(lastMonth.getTime());
-    dummyDataStore.store(fCorrection2Reply1);
-
-    replyMap.put(fCorrection2.getID(), Arrays.asList(fCorrection2Reply1));
 
 
     Article article2 = new Article("id:doi-for-annotationsTopLevel-test-2");
@@ -204,15 +120,8 @@ public class AnnotationServiceTest extends BaseTest {
         "pass");
     dummyDataStore.store(creator2);
 
-    /**********ANNOTATIONS ON THE THIRD ARTICLE***********/
     /**********RETURN ORDER SHOULD BE comment, retraction*******/
-    Annotation retraction = new Annotation(creator2, AnnotationType.RETRACTION, article2.getID());
-    retraction.setAnnotationUri("retraction-1-annotationsTopLevel-r1");
-    retraction.setTitle("retraction-1-annotationsTopLevel-r1");
-    retraction.setBody("retraction-1-annotationsTopLevel-body-r1");
-    retraction.setAnnotationCitation(new AnnotationCitation(article2));
-    retraction.setCreated(lastYear.getTime());
-    dummyDataStore.store(retraction);
+
 
     Annotation comment = new Annotation(creator2, AnnotationType.COMMENT, article2.getID());
     comment.setAnnotationUri("comment-annotationsTopLevel-r1");
@@ -221,107 +130,30 @@ public class AnnotationServiceTest extends BaseTest {
     comment.setCreated(lastMonth.getTime());
     dummyDataStore.store(comment);
 
-    AnnotationView fCorrectionView = new AnnotationView(fCorrection, article.getDoi(), article.getTitle(), replyMap);
-    AnnotationView mCorrectionView = new AnnotationView(mCorrection, article.getDoi(), article.getTitle(), replyMap);
-    AnnotationView fCorrection1View = new AnnotationView(fCorrection1, article1.getDoi(), article1.getTitle(), replyMap);
-    AnnotationView fCorrection2View = new AnnotationView(fCorrection2, article1.getDoi(), article1.getTitle(), replyMap);
-    AnnotationView retractionView = new AnnotationView(retraction, article2.getDoi(), article2.getTitle(), replyMap);
     AnnotationView commentView = new AnnotationView(comment, article2.getDoi(), article2.getTitle(), replyMap);
     //Pass in query parameters and expected results for each set of articles / citations
     return new Object[][]{
-        {
-            article,
-            EnumSet.of(AnnotationType.FORMAL_CORRECTION, AnnotationType.MINOR_CORRECTION),
-            AnnotationService.AnnotationOrder.MOST_RECENT_REPLY,
-            new AnnotationView[]{
-                mCorrectionView, //mCorrection has a more recent reply
-                fCorrectionView
-            },
-            replyMap
-        },
-        {
-            article,
-            EnumSet.of(AnnotationType.FORMAL_CORRECTION, AnnotationType.MINOR_CORRECTION),
-            AnnotationService.AnnotationOrder.OLDEST_TO_NEWEST,
-            new AnnotationView[]{
-                mCorrectionView, //mCorrection has created date last year, fCorrection last month
-                fCorrectionView
-            },
-            replyMap
-        },
-        {
-            article1,
-            EnumSet.of(AnnotationType.FORMAL_CORRECTION),
-            AnnotationService.AnnotationOrder.MOST_RECENT_REPLY,
-            new AnnotationView[]{
-                fCorrection1View, //fCorrection1 has a more recent reply to reply
-                fCorrection2View
-            },
-            replyMap
-        },
-        {
-            article1,
-            EnumSet.of(AnnotationType.FORMAL_CORRECTION),
-            AnnotationService.AnnotationOrder.OLDEST_TO_NEWEST,
-            new AnnotationView[]{
-                fCorrection2View, //fCorrection2 has created date last year
-                fCorrection1View
-            },
-            replyMap
-        },
-        {
-            article1,
-            EnumSet.of(AnnotationType.FORMAL_CORRECTION, AnnotationType.MINOR_CORRECTION),
-            AnnotationService.AnnotationOrder.MOST_RECENT_REPLY,
-            new AnnotationView[]{
-                fCorrection1View, //fCorrection1 has a more recent reply to reply
-                fCorrection2View
-            },
-            replyMap
-        },
-        {
-            article,
-            EnumSet.of(AnnotationType.RETRACTION),
-            AnnotationService.AnnotationOrder.MOST_RECENT_REPLY,
-            new AnnotationView[]{},
-            replyMap
-        },
+
         {
             article2,
-            EnumSet.of(AnnotationType.RETRACTION),
-            AnnotationService.AnnotationOrder.MOST_RECENT_REPLY,
-            new AnnotationView[]{
-                retractionView
-            },
-            replyMap
-        },
-        {
-            article2,
-            EnumSet.of(AnnotationType.RETRACTION, AnnotationType.COMMENT),
+            EnumSet.of(AnnotationType.COMMENT),
             AnnotationService.AnnotationOrder.MOST_RECENT_REPLY,
             new AnnotationView[]{
                 commentView,  //comment has more recent created date
-                retractionView
             },
             replyMap
         },
         {
             article2,
-            EnumSet.of(AnnotationType.RETRACTION, AnnotationType.COMMENT),
+            EnumSet.of(AnnotationType.COMMENT),
             AnnotationService.AnnotationOrder.OLDEST_TO_NEWEST,
             new AnnotationView[]{
-                retractionView,
+
                 commentView  //comment has more recent created date
             },
             replyMap
         },
-        {
-            article2,
-            EnumSet.of(AnnotationType.FORMAL_CORRECTION, AnnotationType.MINOR_CORRECTION),
-            AnnotationService.AnnotationOrder.MOST_RECENT_REPLY,
-            new AnnotationView[]{},
-            replyMap
-        }
+
     };
   }
 
@@ -385,7 +217,7 @@ public class AnnotationServiceTest extends BaseTest {
     String body = "Test body";
     String title = "test title";
     String ciStatement = "ciStatement";
-    Long id = annotationService.createComment(user, article.getDoi(), title, body, ciStatement, false);
+    Long id = annotationService.createComment(user, article.getDoi(), title, body, ciStatement);
     assertNotNull(id, "Returned null annotation id");
 
     Annotation storedAnnotation = dummyDataStore.get(Annotation.class, id);
@@ -466,7 +298,7 @@ public class AnnotationServiceTest extends BaseTest {
     String title = "test title";
     String ciStatement = "ciStatement";
     String expectedXpath = article.getDoi() + "#xpointer(string-range%28%2Farticle%5B1%5D%2Fbody%5B1%5D%2Fsec%5B1%5D%2Fp%5B3%5D%2C+%27%27%2C+107%2C+533%29%5B1%5D)";
-    Long id = annotationService.createComment(user, article.getDoi(), title, body, ciStatement, false);
+    Long id = annotationService.createComment(user, article.getDoi(), title, body, ciStatement);
     assertNotNull(id, "Returned null annotation id");
 
     Annotation storedAnnotation = dummyDataStore.get(Annotation.class, id);
@@ -490,7 +322,7 @@ public class AnnotationServiceTest extends BaseTest {
     dummyDataStore.store(article);
     dummyDataStore.store(user);
 
-    annotationService.createComment(user, article.getDoi(), "foo", null, "foo", false);
+    annotationService.createComment(user, article.getDoi(), "foo", null, "foo");
   }
 
   @Test(expectedExceptions = {IllegalArgumentException.class})
@@ -498,7 +330,7 @@ public class AnnotationServiceTest extends BaseTest {
     Article article = new Article("id:doiForCreateWithNullUser");
     dummyDataStore.store(article);
 
-    annotationService.createComment(null, article.getDoi(), "foo", "foo", "foo", false);
+    annotationService.createComment(null, article.getDoi(), "foo", "foo", "foo");
   }
 
   @Test(expectedExceptions = {IllegalArgumentException.class})
@@ -509,47 +341,7 @@ public class AnnotationServiceTest extends BaseTest {
         "displayNAmeForCreateWithBadDoi", "pass");
     dummyDataStore.store(user);
 
-    annotationService.createComment(user, article.getDoi(), "foo", "foo", "foo", false);
-  }
-
-  @Test
-  public void testCreateAndFlagAsCorrection() {
-    Article article = new Article("id:doiForCreateAndFlagByService");
-    UserProfile user = new UserProfile(
-        "email@CreateAndFlagByService.org",
-        "displayNAmeForCreateAndFlagByService", "pass");
-    dummyDataStore.store(article);
-    dummyDataStore.store(user);
-
-    String body = "Test body";
-    String title = "test title";
-    String ciStatement = "ciStatement";
-
-    String expectedXpath = article.getDoi() + "#xpointer(string-range%28%2Farticle%5B1%5D%2Fbody%5B1%5D%2Fsec%5B1%5D%2Fp%5B3%5D%2C+%27%27%2C+107%2C+533%29%5B1%5D)";
-
-    Long id = annotationService.createComment(user, article.getDoi(), title, body, ciStatement, true);
-    assertNotNull(id, "Returned null annotation id");
-
-    Annotation storedAnnotation = dummyDataStore.get(Annotation.class, id);
-    assertNotNull(storedAnnotation, "didn't store annotation to the db");
-
-    assertEquals(storedAnnotation.getArticleID(), article.getID(), "stored annotation had incorrect article id");
-    assertEquals(storedAnnotation.getBody(), body, "stored annotation had incorrect body");
-    assertEquals(storedAnnotation.getTitle(), title, "stored annotation had incorrect title");
-    assertEquals(storedAnnotation.getCompetingInterestBody(), ciStatement, "stored annotation had incorrect ci statement");
-    assertEquals(storedAnnotation.getType(), AnnotationType.COMMENT, "Stored annotation had incorrect type");
-    assertNotNull(storedAnnotation.getAnnotationUri(), "Service didn't generate an annotation uri");
-
-    List<Flag> allFlags = dummyDataStore.getAll(Flag.class);
-    assertTrue(allFlags.size() > 0, "didn't create a flag for comment");
-    boolean foundFlag = false;
-    for (Flag flag : allFlags) {
-      if (flag.getFlaggedAnnotation().getID().equals(id)) {
-        foundFlag = true;
-        assertEquals(flag.getReason(), FlagReasonCode.CORRECTION, "Flag had incorrect reason code");
-      }
-    }
-    assertTrue(foundFlag, "Didn't create a flag for annotation");
+    annotationService.createComment(user, article.getDoi(), "foo", "foo", "foo");
   }
 
   @DataProvider(name = "storedAnnotation")
@@ -732,45 +524,6 @@ public class AnnotationServiceTest extends BaseTest {
     assertEquals(result.getBody(), expectedBody, "AnnotationView didn't escape html in body");
   }
 
-  @Test
-  public void testAnnotationViewCorrectionTitles() {
-    UserProfile creator = new UserProfile(
-        "email@CorrectionTitles.org",
-        "displayNameForAnnotationViewCorrectionTitles",
-        "pass");
-    dummyDataStore.store(creator);
-
-    Article article = new Article();
-    article.setDoi("id:doi-for-annotationViewCorrectionsTitles");
-    article.setTitle("test article");
-    Long articleID = Long.valueOf(dummyDataStore.store(article));
-
-    String title = "Dummy Title";
-    Annotation formalCorrection = new Annotation(creator, AnnotationType.FORMAL_CORRECTION, articleID);
-    formalCorrection.setTitle(title);
-    dummyDataStore.store(formalCorrection);
-
-    Annotation minorCorrection = new Annotation(creator, AnnotationType.MINOR_CORRECTION, articleID);
-    minorCorrection.setTitle(title);
-    dummyDataStore.store(minorCorrection);
-
-    Annotation retraction = new Annotation(creator, AnnotationType.RETRACTION, articleID);
-    retraction.setTitle(title);
-    dummyDataStore.store(retraction);
-
-    AnnotationView formalCorrectionView = annotationService.getFullAnnotationView(formalCorrection.getID());
-    assertNotNull(formalCorrectionView, "returned null annotation view");
-    assertEquals(formalCorrectionView.getTitle(), "Formal Correction: " + title, "Formal Correction didn't have correct title");
-
-    AnnotationView minorCorrectionView = annotationService.getFullAnnotationView(minorCorrection.getID());
-    assertNotNull(minorCorrectionView, "returned null annotation view");
-    assertEquals(minorCorrectionView.getTitle(), "Minor Correction: " + title, "Minor Correction didn't have correct title");
-
-    AnnotationView retractionView = annotationService.getFullAnnotationView(retraction.getID());
-    assertNotNull(retractionView, "returned null annotation view");
-    assertEquals(retractionView.getTitle(), "Retraction: " + title, "Retraction didn't have correct title");
-  }
-
   @Test(dataProvider = "storedAnnotation")
   public void testGetBasicAnnotationViewById(Annotation annotation, Map<Long, List<Annotation>> fullReplyMap) {
     AnnotationView result = annotationService.getBasicAnnotationView(annotation.getID());
@@ -850,9 +603,6 @@ public class AnnotationServiceTest extends BaseTest {
     dummyDataStore.store(article);
 
     Long commentId = Long.valueOf(dummyDataStore.store(new Annotation(user, AnnotationType.COMMENT, article.getID())));
-    dummyDataStore.store(new Annotation(user, AnnotationType.FORMAL_CORRECTION, article.getID()));
-    dummyDataStore.store(new Annotation(user, AnnotationType.MINOR_CORRECTION, article.getID()));
-    dummyDataStore.store(new Annotation(user, AnnotationType.RETRACTION, article.getID()));
 
     Annotation reply = new Annotation(user, AnnotationType.REPLY, article.getID());
     reply.setParentID(commentId);
@@ -861,10 +611,7 @@ public class AnnotationServiceTest extends BaseTest {
     assertEquals(annotationService.countAnnotations(article.getID(),
         EnumSet.of(AnnotationType.COMMENT)),
         1, "annotation service returned incorrect count of comments and notes");
-    assertEquals(annotationService.countAnnotations(article.getID(),
-        EnumSet.of(AnnotationType.FORMAL_CORRECTION, AnnotationType.MINOR_CORRECTION, AnnotationType.RETRACTION)),
-        3, "annotation service returned incorrect count of corrections");
     assertEquals(annotationService.countAnnotations(article.getID(), EnumSet.allOf(AnnotationType.class)),
-        5, "annotation service returned incorrect count of comments and notes");
+        2, "annotation service returned incorrect count of comments and notes");
   }
 }
