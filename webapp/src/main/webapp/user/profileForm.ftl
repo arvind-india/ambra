@@ -34,7 +34,7 @@ title="User Information Form" class="ambra-form" enctype="multipart/form-data">
     <#if error??>
       <div class="message error">
         <p><span class="icon error"></span><strong>There was a problem with your ORCiD</strong></br>
-        ${error_description}.  If this continues to occur, please contact our support.</p>
+        ${error_description}.  If this continues to occur, please contact our support at <a href="mailto:help@plos.org">help@plos.org</a>.</p>
       </div>
     </#if>
   </#if>
