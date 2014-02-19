@@ -3,7 +3,8 @@
         <a href="http://orcid.org/about/what-is-orcid" target="_blank" class="image-text orcid">ORCID</a>
 
         <p>
-            <a href="${orcidAuth}?scope=${scope?url}&redirect_uri=${redirectURL?url}&response_type=code&client_id=${clientID}&access_type=offline"><strong>Link
+            <a href="${orcidAuth}?scope=${scope?url}&redirect_uri=${redirectURL?url}&response_type=code&client_id=${clientID}&access_type=offline"
+              title="Link your ORCID account"><strong>Link
                 or create</strong></a> your ORCID account now.</p>
     </div>
     <div class="right ">

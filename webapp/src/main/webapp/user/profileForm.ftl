@@ -17,8 +17,7 @@
 -->
 
 
-<form name="userForm" id="userForm" action="/user/secure/profile/save" method="post"
-title="User Information Form" class="ambra-form" enctype="multipart/form-data">
+<form name="userForm" id="userForm" action="/user/secure/profile/save" method="post" class="ambra-form" enctype="multipart/form-data">
   <#if (fieldErrors.size() != 0 && tabID == "profile")>
     <p class="required">Please correct the errors below. </p>
   </#if>

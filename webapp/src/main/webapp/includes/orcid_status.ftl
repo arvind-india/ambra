@@ -9,12 +9,12 @@
     <div class="right ">
     <#-- Change orcURL to be production -->
         <p>Your ORCID account: <strong>
-            <a href="http://orcid.org/${orcid}" target="_blank"
+            <a href="http://orcid.org/${orcid}" target="_blank" title="Your linked ORCID account"
                alt="Your ORCID Profile">${orcid}</a>
         </strong><br/>
             is linked to your PLOS account. <strong>
                 <a href="${orcIDRemoveURL}"
-                   data-js="orcid-delink"
+                   data-js="orcid-delink" title="Remove the link to your ORCID account"
                    alt="Find out more about ORCID on their website">De-link</a>
             </strong>
         </p>
