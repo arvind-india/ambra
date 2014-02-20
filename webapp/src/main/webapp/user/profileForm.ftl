@@ -17,8 +17,7 @@
 -->
 
 
-<form name="userForm" id="userForm" action="/user/secure/profile/save" method="post"
-title="User Information Form" class="ambra-form" enctype="multipart/form-data">
+<form name="userForm" id="userForm" action="/user/secure/profile/save" method="post" class="ambra-form" enctype="multipart/form-data">
   <#if (fieldErrors.size() != 0 && tabID == "profile")>
     <p class="required">Please correct the errors below. </p>
   </#if>
@@ -27,14 +26,14 @@ title="User Information Form" class="ambra-form" enctype="multipart/form-data">
     <#-- New ORCiD confirmed (or error state) handeled here -->
     <#if orcid?? && !error??>
       <div class="message success">
-        <p><span class="icon check"></span><strong>Congratulations, your ORCiD is now linked!</strong></p>
+        <p><span class="icon check"></span><strong>Congratulations, your ORCID is now linked!</strong></p>
       </div>
     </#if>
 
     <#if error??>
       <div class="message error">
-        <p><span class="icon error"></span><strong>There was a problem with your ORCiD</strong></br>
-        ${error_description}.  If this continues to occur, please contact our support.</p>
+        <p><span class="icon error"></span><strong>There was a problem with your ORCID</strong></br>
+        ${error_description}.  If this continues to occur, please contact our support at <a href="mailto:help@plos.org">help@plos.org</a>.</p>
       </div>
     </#if>
   </#if>
