@@ -213,13 +213,6 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     return ArticleType.isCorrectionArticle(articleType);
   }
 
-  /**
-   * Check the type of the article for taxonomy classification using the article object
-   * @param article the article
-   * @return true if the article is an amendment (correction, eoc or retraction)
-   * @throws ApplicationException
-   * @throws NoSuchArticleIdException
-   */
   public boolean isAmendment(Article article) throws ApplicationException, NoSuchArticleIdException {
     ArticleType articleType = ArticleType.getDefaultArticleType();
 
