@@ -39,7 +39,7 @@
   <p>Released February 25, 2014</p>
   <h3>Features Implemented in Ambra 2.9.8</h3>
   <ul>
-     <li>Support for ORCID user authentication on PLOS journal sites</li>
+     <li>Support for ORCID linking with PLOS user accounts</li>
      <li>Fix for white space display bug on some corrections articles</li>
      <li>Syndication queue of citation and abstract data to PubMed</li>
      <li>Exclusion of amendments from taxonomy backfill</li>
