@@ -17,13 +17,10 @@ import com.opensymphony.xwork2.Action;
 import org.ambraproject.action.AmbraWebTest;
 import org.ambraproject.action.BaseActionSupport;
 import org.ambraproject.models.Annotation;
-import org.ambraproject.models.AnnotationCitation;
 import org.ambraproject.models.AnnotationType;
 import org.ambraproject.models.Article;
 import org.ambraproject.models.ArticleAuthor;
-import org.ambraproject.models.CorrectedAuthor;
 import org.ambraproject.models.UserProfile;
-import org.ambraproject.views.AnnotationCitationView;
 import org.ambraproject.views.AnnotationView;
 import org.ambraproject.views.AuthorView;
 import org.apache.commons.lang.StringUtils;
@@ -85,7 +82,6 @@ public class ListReplyActionTest extends AmbraWebTest {
     assertNotNull(baseAnnotation, "action had null base annotation");
     assertEquals(baseAnnotation.getTitle(), annotation.getTitle(), "Base annotation had incorrect title");
     assertEquals(baseAnnotation.getBody(), "<p>" + annotation.getBody() + "</p>", "base annotation had incorrect body");
-    assertNull(baseAnnotation.getCitation(), "base annotation had a citation when none was expected");
 
     assertNotNull(baseAnnotation.getReplies(), "Action had null list of replies");
     assertEquals(baseAnnotation.getReplies().length, 1, "Action had incorrect number of replies");

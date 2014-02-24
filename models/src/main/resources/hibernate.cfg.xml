@@ -60,8 +60,6 @@
     <mapping resource="org/ambraproject/models/Volume.hbm.xml"/>
     <mapping resource="org/ambraproject/models/Journal.hbm.xml"/>
     <mapping resource="org/ambraproject/models/Annotation.hbm.xml" />
-    <mapping resource="org/ambraproject/models/AnnotationCitation.hbm.xml" />
-    <mapping resource="org/ambraproject/models/CorrectedAuthor.hbm.xml" />
     <mapping resource="org/ambraproject/models/Flag.hbm.xml" />
     <mapping resource="org/ambraproject/models/Trackback.hbm.xml" />
     <mapping resource="org/ambraproject/models/Pingback.hbm.xml"/>
