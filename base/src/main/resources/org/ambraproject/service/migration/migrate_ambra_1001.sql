@@ -9,4 +9,3 @@ update annotation set title = replace(title, 'RE: Minor Correction: ', 'RE: Publ
 update annotation set title = replace(title, 'Minor Correction: ', '' ) where type = 'MinorCorrection';
 update annotation set title = replace(title, 'Minor correction: ', '' ) where type = 'MinorCorrection';
 update annotation set type = 'Comment', title = concat('Publisher''s Note: ', title) where type = 'MinorCorrection';
-

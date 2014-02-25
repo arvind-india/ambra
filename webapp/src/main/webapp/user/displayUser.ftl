@@ -90,11 +90,14 @@
 
 
 <div id="pagebdy-wrap">
-  <div id="pagebdy" class="profile">
+
+
+
+    <div id="pagebdy" class="profile">
 
     <img src="${freemarker_config.context}/images/avatar.png"/>
 
-    <h1>${displayName!}</h1>
+    <h1>${displayName!} </h1>
 
     <ol>
       <li><span class="heading">Title</span><span class="text">${title}</span></li>

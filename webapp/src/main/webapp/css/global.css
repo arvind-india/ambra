@@ -305,6 +305,8 @@ th {
   float: right;
 }
 
+.no-display{display: none;}
+
 .btn,
 a.btn,
   /* active an inactive buttons in search results */
@@ -324,7 +326,8 @@ a.btn,
   cursor: pointer;
 }
 
-.btn.primary {
+.btn.primary,
+btn.main{
   background: #F8AF2D;
   color: #333;
 }
@@ -5708,10 +5711,11 @@ The CSS for dialog widget,
 
 .ui-dialog .ui-dialog-buttonpane {
     text-align: left;
-    border-width: 1px 0 0 0;
+    border-width:0 0 0 0;
     background-image: none;
     margin: .5em 0 0 0;
     padding: .3em 1em .5em .4em;
+
 }
 
 .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
@@ -5719,7 +5723,7 @@ The CSS for dialog widget,
 }
 
 .ui-dialog .ui-dialog-buttonpane button {
-    margin: .5em .4em .5em 0;
+    margin: .5em 5px .5em 0;
     cursor: pointer;
 }
 
@@ -5739,7 +5743,8 @@ The CSS for dialog widget,
 /* Customized css for the FigShare dialog */
 
 /* jqueryUI overrides*/
-.ui-dialog.tooltip-like .ui-dialog-titlebar-close.ui-state-hover {
+.ui-dialog.tooltip-like .ui-dialog-titlebar-close.ui-state-hover,
+.ui-dialog.default-modal .ui-dialog-titlebar-close.ui-state-hover{
     border: none /*{borderColorHover}*/;
     background: none;
     font-weight: normal /*{fwDefault}*/;
@@ -5775,7 +5780,7 @@ The CSS for dialog widget,
 
 /* css for the close button on the dialog */
 
-.ui-dialog.tooltip-like .ui-dialog-titlebar-close {
+.ui-dialog.tooltip-like .ui-dialog-titlebar-close{
     position: absolute;
     right: 2px;
     top: 12px;
@@ -5787,19 +5792,23 @@ The CSS for dialog widget,
     display: block;
 }
 
-.ui-dialog.tooltip-like .ui-dialog-titlebar-close span {
+.ui-dialog.tooltip-like .ui-dialog-titlebar-close span{
     background-image: url('../images/btn.sprite.close.small.png');
     background-position: 2px 1px;
     width: 17px;
     height: 17px;
 }
 
-.ui-dialog.tooltip-like .ui-dialog-titlebar-close:hover {
+.ui-dialog.tooltip-like .ui-dialog-titlebar-close:hover{
     background-color: #3C63AF;
 }
 
-.ui-dialog.tooltip-like .ui-dialog-titlebar-close:hover span {
+.ui-dialog.tooltip-like .ui-dialog-titlebar-close:hover span{
     background-position: 2px -13px;
+}
+
+.default-modal .ui-dialog-titlebar-close {
+    display: none;
 }
 
 
@@ -6396,7 +6405,8 @@ form.standard label {
 
 form.standard input[type="button"],
 form.standard input[type="submit"],
-form.standard .button{
+form.standard .button,
+.ui-dialog .ui-dialog-buttonset .ui-button{
     background: #333;
     color: #fff;
     margin-right: 2px;
@@ -6411,14 +6421,16 @@ form.standard .button{
 
 form.standard input[type="button"]:hover,
 form.standard input[type="submit"]:hover,
-form.standard .button:hover{
+form.standard .button:hover,
+.ui-dialog .ui-dialog-buttonset .ui-button:hover{
     background: #3c63af !important;
     color: #fff !important;
 }
 
 form.standard input[type="button"].primary,
 form.standard input[type="submit"].primary,
-form.standard .button.primary{
+form.standard .button.primary,
+.ui-dialog .ui-dialog-buttonset .primary.ui-button{
     background: #f8af2d;
     color: #333;
 }
@@ -6429,6 +6441,95 @@ form.standard .note{
 
 a#media-coverage-form-link {
   cursor: pointer;
+}
+
+.panel {
+    border: 1px solid #ccc;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 35px;
+}
+
+.panel.orcid-info .left {
+    width: 35%;
+    margin-right: 10px;
+    float: left;
+    font-size: 16px;
+}
+
+.panel.orcid-info .left.border {
+    border-right: 1px solid #ccc;
+}
+
+.panel.orcid-info .left p{
+    margin-bottom: 0.25em;
+}
+
+.panel.orcid-info .right {
+    width: 65%;
+    float: left;
+}
+
+.panel.orcid-info .right {
+    width: 60%;
+    float: left;
+}
+
+.panel.orcid-info.short{
+     width: 50%;
+}
+
+.panel.orcid-info.short .left{
+    margin-right: 5px;
+}
+
+.panel.orcid-info.short .right{
+    margin-right: 5px;
+    padding-top: .5em;
+}
+.icon {
+    display: inline-block;
+    margin-right: 3px;
+}
+
+.icon.check {
+    background: url('/images/icon-check.png') no-repeat 0 0;
+    height: 16px;
+    width: 16px;
+    vertical-align: middle;
+}
+
+.icon.error {
+    background: url('/images/icon-error.png') no-repeat 0 0;
+    height: 16px;
+    width: 16px;
+    vertical-align: text-top;
+}
+
+.image-text {
+    display: block;
+    text-indent: -2000px;
+}
+
+.image-text.orcid {
+    background: url('/images/logo-orcid.png') no-repeat 0 0;
+    width: 140px;
+    height: 43px;
+    margin-bottom: 10px;
+    line-height: 20px;
+}
+
+.message {
+    font-size: 16px;
+    line-height: 20px;
+}
+.success {
+    color: #16A127;
+}
+
+.error {
+    color: #E53350;
 }
 
 #media_coverage_addition {
