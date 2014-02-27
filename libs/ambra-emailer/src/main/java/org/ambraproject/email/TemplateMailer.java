@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006-2013 by Public Library of Science
+ * Copyright (c) 2006-2014 by Public Library of Science
+ *
  * http://plos.org
  * http://ambraproject.org
  *
@@ -7,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,9 +16,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ambraproject.email;
 
+import freemarker.template.Template;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import java.io.IOException;
@@ -41,6 +42,19 @@ public interface TemplateMailer {
    * @throws MessagingException
    */
   public Multipart createContent(String textTemplateFilename, String htmlTemplateFilename,
+                                 final Map<String, Object> context) throws IOException, MessagingException;
+
+  /**
+   * Helper method for creating Multiparts from a freemarker template for emailing
+   *
+   * @param textTemplate the text freemarker template
+   * @param htmlTemplate the html freemarker template
+   * @param context a {@link java.util.Map} of objects to expose to the template engine
+   * @return the multipart content for a new email
+   * @throws IOException
+   * @throws MessagingException
+   */
+  public Multipart createContent(Template textTemplate, Template htmlTemplate,
                                  final Map<String, Object> context) throws IOException, MessagingException;
 
   /**
