@@ -35,6 +35,16 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.8</h2>
+  <p>Released February 25, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.8</h3>
+  <ul>
+     <li>Support for ORCID linking with PLOS user accounts</li>
+     <li>Fix for white space display bug on some corrections articles</li>
+     <li>Syndication queue of citation and abstract data to PubMed</li>
+     <li>Exclusion of amendments from taxonomy backfill</li>
+  </ul>
+
   <h2>Ambra 2.9.7</h2>
   <p>Released February 18, 2014</p>
   <h3>Features Implemented in Ambra 2.9.7</h3>
