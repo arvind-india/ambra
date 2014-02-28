@@ -81,21 +81,10 @@ public class AIArticleClassifier implements ArticleClassifier {
 
   @Override
   public List<String> classifyArticle(Document articleXml) throws Exception {
-    String toCategorize = getCategorizationContent(articleXml);
-    String aiMessage = String.format(MESSAGE_BEGIN, thesaurus) + toCategorize + MESSAGE_END;
-    PostMethod post = new PostMethod(serviceUrl);
-    post.setRequestEntity(new StringRequestEntity(aiMessage, "application/xml", "UTF-8"));
-    httpClient.executeMethod(post);
-
-    Document response = DocumentBuilderFactoryCreator.createFactory()
-        .newDocumentBuilder().parse(post.getResponseBodyAsStream());
-
-    //parse result
-    NodeList vectorElements = response.getElementsByTagName("VectorElement");
-    List<String> results = new ArrayList<String>(vectorElements.getLength());
-    //The first and last elements of the vector response are just MAITERMS
-    for (int i = 1; i < vectorElements.getLength() - 1; i++) {
-      String term = parseVectorElement(vectorElements.item(i).getTextContent());
+    List<String> rawTerms = getRawTerms(articleXml);
+    List<String> results = new ArrayList<String>(rawTerms.size());
+    for (String raw : rawTerms) {
+      String term = parseVectorElement(raw);
 
       // When the new taxonomy launched, we had a problem where lots of PLOS ONE
       // papers were being tagged with subcategories of
@@ -107,6 +96,34 @@ public class AIArticleClassifier implements ArticleClassifier {
       if (term != null && !term.startsWith("/Earth sciences/Geography/Locations/")) {
         results.add(term);
       }
+    }
+    return results;
+  }
+
+  /**
+   * Queries the MAI server for taxonomic terms for a given article, and returns a list
+   * of the raw results.
+   *
+   * @param articleXml DOM of the article to categorize
+   * @return List of results from the server.  This will consist of raw XML fragments, and
+   *     include things like counts that we don't currently store in mysql.
+   * @throws Exception
+   */
+  private List<String> getRawTerms(Document articleXml) throws Exception {
+    String toCategorize = getCategorizationContent(articleXml);
+    String aiMessage = String.format(MESSAGE_BEGIN, thesaurus) + toCategorize + MESSAGE_END;
+    PostMethod post = new PostMethod(serviceUrl);
+    post.setRequestEntity(new StringRequestEntity(aiMessage, "application/xml", "UTF-8"));
+    httpClient.executeMethod(post);
+    Document response = DocumentBuilderFactoryCreator.createFactory()
+        .newDocumentBuilder().parse(post.getResponseBodyAsStream());
+
+    //parse result
+    NodeList vectorElements = response.getElementsByTagName("VectorElement");
+    List<String> results = new ArrayList<String>(vectorElements.getLength());
+    //The first and last elements of the vector response are just MAITERMS
+    for (int i = 1; i < vectorElements.getLength() - 1; i++) {
+      results.add(vectorElements.item(i).getTextContent());
     }
     return results;
   }
@@ -256,10 +273,19 @@ public class AIArticleClassifier implements ArticleClassifier {
       classifier.setServiceUrl("http://tax.plos.org:9080/servlet/dh");
       classifier.setThesaurus(args[0].trim());
       classifier.setHttpClient(new HttpClient(new MultiThreadedHttpConnectionManager()));
-      List<String> terms = classifier.classifyArticle(dom);
+      List<String> rawOutput = classifier.getRawTerms(dom);
       System.out.println("\n\nTerms returned by taxonomy server:");
-      for (String term : terms) {
-        System.out.println(term);
+      for (String s : rawOutput) {
+
+        // Strip out XML wrapping
+        s = s.replace("<TERM>", "");
+        s = s.replace("</TERM>", "");
+
+        // Replicate the hack in classifyArticle() above, so that this main method only shows what
+        // we would actually store in mysql.
+        if (!s.startsWith("/Earth sciences/Geography/Locations/")) {
+          System.out.println(s);
+        }
       }
       System.out.println("\n\n");
     } else {
