@@ -12,44 +12,7 @@
         body longtext,
         highlightedText longtext,
         competingInterestBody longtext,
-        annotationCitationID bigint unique,
         primary key (annotationID)
-    );
-
-    create table annotationCitation (
-        annotationCitationID bigint not null auto_increment,
-        lastModified datetime not null,
-        created datetime not null,
-        title longtext,
-        volume varchar(255),
-        issue varchar(255),
-        journal varchar(255),
-        publisherName varchar(255),
-        year varchar(255),
-        eLocationId varchar(255),
-        url varchar(255),
-        note longtext,
-        summary longtext,
-        primary key (annotationCitationID)
-    );
-
-    create table annotationCitationAuthor (
-        annotationCitationAuthorID bigint not null auto_increment,
-        lastModified datetime not null,
-        created datetime not null,
-        givenNames varchar(255),
-        surnames varchar(255),
-        suffix varchar(255),
-        annotationCitationID bigint,
-        sortOrder integer,
-        primary key (annotationCitationAuthorID)
-    );
-
-    create table annotationCitationCollabAuthor (
-        annotationCitationID bigint not null,
-        name varchar(255),
-        sortOrder integer not null,
-        primary key (annotationCitationID, sortOrder)
     );
 
     create table annotationFlag (
@@ -450,24 +413,6 @@
         add constraint FKA34FEB2F78B0DAE3 
         foreign key (userProfileID) 
         references userProfile (userProfileID);
-
-    alter table annotation 
-        add index FKA34FEB2FF84E69FB (annotationCitationID), 
-        add constraint FKA34FEB2FF84E69FB 
-        foreign key (annotationCitationID) 
-        references annotationCitation (annotationCitationID);
-
-    alter table annotationCitationAuthor 
-        add index FKAB4C0861F84E69FB (annotationCitationID), 
-        add constraint FKAB4C0861F84E69FB 
-        foreign key (annotationCitationID) 
-        references annotationCitation (annotationCitationID);
-
-    alter table annotationCitationCollabAuthor 
-        add index FKF90DAE4EF84E69FB (annotationCitationID), 
-        add constraint FKF90DAE4EF84E69FB 
-        foreign key (annotationCitationID) 
-        references annotationCitation (annotationCitationID);
 
     alter table annotationFlag 
         add index FK561A2F3BB123DFCD (annotationID), 

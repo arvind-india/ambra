@@ -32,7 +32,6 @@ import org.ambraproject.models.Category;
 import org.ambraproject.models.CitedArticle;
 import org.ambraproject.models.CitedArticleAuthor;
 import org.ambraproject.models.CitedArticleEditor;
-import org.ambraproject.models.CorrectedAuthor;
 import org.ambraproject.models.Journal;
 import org.ambraproject.models.UserProfile;
 import org.ambraproject.models.UserRole;
@@ -389,53 +388,6 @@ public abstract class BaseTest extends AbstractTestNGSpringContextTests {
     assertEquals(result.getAnnotationUri(), expected.getAnnotationUri(), "Annotation view had incorrect annotation uri");
     assertEquals(result.getCreatorID(), expected.getCreator().getID(), "Annotation view had incorrect creator id");
     assertEquals(result.getCreatorDisplayName(), expected.getCreator().getDisplayName(), "Annotation view had incorrect creator name");
-
-    if (expected.getAnnotationCitation() == null) {
-      assertNull(result.getCitation(), "returned non-null citation when null was expected");
-    } else {
-      assertNotNull(result.getCitation(), "returned null citation when non-null was expected");
-      assertEquals(result.getCitation().getTitle(), expected.getAnnotationCitation().getTitle(),
-          "Returned citation with incorrect title");
-      assertEquals(result.getCitation().geteLocationId(), expected.getAnnotationCitation().getELocationId(),
-          "Returned citation with incorrect eLocationId");
-      assertEquals(result.getCitation().getJournal(), expected.getAnnotationCitation().getJournal(),
-          "Returned citation with incorrect journal");
-      assertEquals(result.getCitation().getYear(), expected.getAnnotationCitation().getYear(),
-          "Returned citation with incorrect year");
-
-      assertEquals(result.getCitation().getVolume(), expected.getAnnotationCitation().getVolume(),
-          "Returned citation with incorrect volume");
-      assertEquals(result.getCitation().getIssue(), expected.getAnnotationCitation().getIssue(),
-          "Returned citation with incorrect issue");
-      assertEquals(result.getCitation().getSummary(), expected.getAnnotationCitation().getSummary(),
-          "Returned citation with incorrect summary");
-      assertEquals(result.getCitation().getNote(), expected.getAnnotationCitation().getNote(),
-          "Returned citation with incorrect note");
-
-      if (expected.getAnnotationCitation().getCollaborativeAuthors() != null) {
-        assertEqualsNoOrder(result.getCitation().getCollabAuthors(), expected.getAnnotationCitation().getCollaborativeAuthors().toArray(),
-            "Returned citation with incorrect collab authors");
-      } else {
-        assertTrue(ArrayUtils.isEmpty(result.getCitation().getCollabAuthors()),
-            "Returned non-empty collab authors when empty was expected");
-      }
-      if (expected.getAnnotationCitation().getAuthors() != null) {
-        assertNotNull(result.getCitation().getAuthors(), "Returned null authors when authors were expected");
-        assertEquals(result.getCitation().getAuthors().length, expected.getAnnotationCitation().getAuthors().size(),
-            "Returned incorrect number of authors");
-        for (int i = 0; i < result.getCitation().getAuthors().length; i++) {
-          AuthorView actualAuthor = result.getCitation().getAuthors()[i];
-          CorrectedAuthor expectedAuthor = expected.getAnnotationCitation().getAuthors().get(i);
-          assertEquals(actualAuthor.getGivenNames(), expectedAuthor.getGivenNames(),
-              "Author " + (i + 1) + " had incorrect given names");
-          assertEquals(actualAuthor.getSurnames(), expectedAuthor.getSurName(),
-              "Author " + (i + 1) + " had incorrect surnames");
-          assertEquals(actualAuthor.getSuffix(), expectedAuthor.getSuffix(),
-              "Author " + (i + 1) + " had incorrect suffix");
-        }
-      }
-
-    }
   }
 
   protected void setUpArticleForImageFromFilestore() {

@@ -1,28 +1,27 @@
 /* $HeadURL$
- * $Id$
- *
- * Copyright (c) 2006-2010 by Public Library of Science
- * http://plos.org
- * http://ambraproject.org
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* $Id$
+*
+* Copyright (c) 2006-2010 by Public Library of Science
+* http://plos.org
+* http://ambraproject.org
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 package org.ambraproject.service.annotation;
 
 import org.ambraproject.action.BaseTest;
 import org.ambraproject.models.Annotation;
-import org.ambraproject.models.AnnotationCitation;
 import org.ambraproject.models.AnnotationType;
 import org.ambraproject.models.Article;
 import org.ambraproject.models.ArticleAuthor;
@@ -55,12 +54,12 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 /**
- * Test for methods of {@link AnnotationService}.  The test just references methods of the interface so that different
- * implementations can be autowired in.  The test creates it's own dummy data and so shouldn't be dependent on external
- * databases
- *
- * @author Alex Kudlick
- */
+* Test for methods of {@link AnnotationService}.  The test just references methods of the interface so that different
+* implementations can be autowired in.  The test creates it's own dummy data and so shouldn't be dependent on external
+* databases
+*
+* @author Alex Kudlick
+*/
 public class AnnotationServiceTest extends BaseTest {
 
   @Autowired
@@ -92,6 +91,12 @@ public class AnnotationServiceTest extends BaseTest {
 
     Map<Long, List<Annotation>> replyMap = new HashMap<Long, List<Annotation>>(2);
 
+    Annotation comment = new Annotation(creator, AnnotationType.COMMENT, article.getID());
+    comment.setAnnotationUri("comment-annotationsTopLevel-uri");
+    comment.setTitle("comment-annotationsTopLevel-title");
+    comment.setBody("comment-annotationsTopLevel-body");
+    comment.setCreated(lastMonth.getTime());
+    dummyDataStore.store(comment);
 
     Article article1 = new Article("id:doi-for-annotationsTopLevel-test-1");
     article1.setJournal("test journal");
@@ -103,6 +108,30 @@ public class AnnotationServiceTest extends BaseTest {
     article1.setCollaborativeAuthors(Arrays.asList("Collab Author 1", "Collab Author 2", "Collab Author 3"));
     dummyDataStore.store(article1);
 
+    Annotation comment1 = new Annotation(creator, AnnotationType.COMMENT, article1.getID());
+    comment1.setAnnotationUri("comment-1-annotationsTopLevel-uri");
+    comment1.setTitle("formal-correction-1-annotationsTopLevel-title");
+    comment1.setBody("formal-correction-1-annotationsTopLevel-body");
+    comment1.setCreated(lastMonth.getTime());
+    dummyDataStore.store(comment1);
+
+    Annotation commentReply1 = new Annotation(creator, AnnotationType.REPLY, comment1.getArticleID());
+    commentReply1.setParentID(comment1.getID());
+    commentReply1.setAnnotationUri("reply1-to-comment1-uri");
+    commentReply1.setTitle("reply1-to-comment1-title");
+    commentReply1.setBody("reply1-to-comment1-body");
+    commentReply1.setCreated(lastMonth.getTime());
+    dummyDataStore.store(commentReply1);
+
+    Annotation comment1ReplyToReply = new Annotation(creator, AnnotationType.REPLY, comment1.getArticleID());
+    comment1ReplyToReply.setParentID(commentReply1.getID());
+    comment1ReplyToReply.setAnnotationUri("reply-to-reply-to-comment1-uri");
+    comment1ReplyToReply.setTitle("reply-to-reply-to-comment1-title");
+    comment1ReplyToReply.setBody("reply-to-reply-to-comment1-body");
+    dummyDataStore.store(comment1ReplyToReply);
+
+    replyMap.put(comment1.getID(), Arrays.asList(commentReply1));
+    replyMap.put(commentReply1.getID(), Arrays.asList(comment1ReplyToReply));
 
     Article article2 = new Article("id:doi-for-annotationsTopLevel-test-2");
     article2.setJournal("test journal");
@@ -120,40 +149,91 @@ public class AnnotationServiceTest extends BaseTest {
         "pass");
     dummyDataStore.store(creator2);
 
-    /**********RETURN ORDER SHOULD BE comment, retraction*******/
-
-
-    Annotation comment = new Annotation(creator2, AnnotationType.COMMENT, article2.getID());
-    comment.setAnnotationUri("comment-annotationsTopLevel-r1");
-    comment.setTitle("comment-annotationsTopLevel-r1");
-    comment.setBody("comment-annotationsTopLevel-body-r1");
+    Annotation comment2 = new Annotation(creator2, AnnotationType.COMMENT, article2.getID());
+    comment2.setAnnotationUri("comment2-annotationsTopLevel-uri");
+    comment2.setTitle("comment2-annotationsTopLevel-title");
+    comment2.setBody("comment2-annotationsTopLevel-body-body");
     comment.setCreated(lastMonth.getTime());
     dummyDataStore.store(comment);
 
-    AnnotationView commentView = new AnnotationView(comment, article2.getDoi(), article2.getTitle(), replyMap);
-    //Pass in query parameters and expected results for each set of articles / citations
+    Annotation comment2Reply1 = new Annotation(creator, AnnotationType.REPLY, comment2.getArticleID());
+    comment2Reply1.setParentID(comment2.getID());
+    comment2Reply1.setAnnotationUri("reply1-comment2-uri");
+    comment2Reply1.setTitle("reply1-to-comment2-title");
+    comment2Reply1.setBody("reply1-to-comment2-body");
+    comment2Reply1.setCreated(lastMonth.getTime());
+    dummyDataStore.store(comment2Reply1);
+
+    Annotation comment2Reply2 = new Annotation(creator, AnnotationType.REPLY, comment2.getArticleID());
+    comment2Reply1.setParentID(comment2.getID());
+    comment2Reply1.setAnnotationUri("reply2-to-comment2-uri");
+    comment2Reply1.setTitle("reply2-to-comment2-title");
+    comment2Reply1.setBody("reply2-to-comment2-body");
+    comment2Reply1.setCreated(lastMonth.getTime());
+    dummyDataStore.store(comment2Reply1);
+
+    replyMap.put(comment2.getID(), Arrays.asList(comment2Reply1));
+    replyMap.put(comment2.getID(), Arrays.asList(comment2Reply2));
+
+    AnnotationView commentView = new AnnotationView(comment, article.getDoi(), article.getTitle(), replyMap);
+    AnnotationView comment1View = new AnnotationView(comment1, article1.getDoi(), article1.getTitle(), replyMap);
+    AnnotationView comment2View = new AnnotationView(comment2, article2.getDoi(), article2.getTitle(), replyMap);
+    //Pass in query parameters and expected results for each set of articles
     return new Object[][]{
-
         {
-            article2,
-            EnumSet.of(AnnotationType.COMMENT),
-            AnnotationService.AnnotationOrder.MOST_RECENT_REPLY,
-            new AnnotationView[]{
-                commentView,  //comment has more recent created date
-            },
+          article,
+          EnumSet.of(AnnotationType.COMMENT),
+          AnnotationService.AnnotationOrder.MOST_RECENT_REPLY,
+          new AnnotationView[]{
+            commentView
+          },
+          replyMap
+        },
+        {
+          article,
+          EnumSet.of(AnnotationType.COMMENT),
+          AnnotationService.AnnotationOrder.OLDEST_TO_NEWEST,
+          new AnnotationView[]{
+            commentView
+          },
+          replyMap
+        },
+        {
+          article1,
+          EnumSet.of(AnnotationType.COMMENT),
+          AnnotationService.AnnotationOrder.MOST_RECENT_REPLY,
+          new AnnotationView[]{
+            comment1View
+          },
+          replyMap
+        },
+        {
+          article1,
+          EnumSet.of(AnnotationType.COMMENT),
+          AnnotationService.AnnotationOrder.OLDEST_TO_NEWEST,
+          new AnnotationView[]{
+          comment1View
+          },
+          replyMap
+        },
+        {
+          article2,
+          EnumSet.of(AnnotationType.COMMENT),
+          AnnotationService.AnnotationOrder.MOST_RECENT_REPLY,
+          new AnnotationView[]{
+            comment2View,  //comment has more recent created date
+          },
             replyMap
         },
         {
-            article2,
-            EnumSet.of(AnnotationType.COMMENT),
-            AnnotationService.AnnotationOrder.OLDEST_TO_NEWEST,
-            new AnnotationView[]{
-
-                commentView  //comment has more recent created date
-            },
-            replyMap
+          article2,
+          EnumSet.of(AnnotationType.COMMENT),
+          AnnotationService.AnnotationOrder.OLDEST_TO_NEWEST,
+          new AnnotationView[]{
+            comment2View  //comment has more recent created date
+          },
+          replyMap
         },
-
     };
   }
 
@@ -170,8 +250,6 @@ public class AnnotationServiceTest extends BaseTest {
     assertNotNull(resultViews, "returned null array of results");
     assertEquals(resultViews.length, expectedViews.length, "returned incorrect number of results");
     for (int i = 0; i < resultViews.length; i++) {
-      assertEquals(resultViews[i].getCitation(), expectedViews[i].getCitation(),
-          "Result " + (i + 1) + " had incorrect citation with order " + order);
       assertEquals(resultViews[i], expectedViews[i], "Result " + (i + 1) + " was incorrect with order " + order);
       recursivelyCheckReplies(resultViews[i], fullReplyMap);
     }
@@ -192,8 +270,6 @@ public class AnnotationServiceTest extends BaseTest {
       assertNotNull(resultViews, "returned null array of results");
       assertEquals(resultViews.length, expectedViews.length, "returned incorrect number of results");
       for (int i = 0; i < resultViews.length; i++) {
-        assertEquals(resultViews[i].getCitation(), expectedViews[i].getCitation(),
-            "Result " + (i + 1) + " had incorrect citation with order " + order);
         assertEquals(resultViews[i], expectedViews[i], "Result " + (i + 1) + " was incorrect with order " + order);
         assertTrue(ArrayUtils.isEmpty(resultViews[i].getReplies()), "returned annotation with replies loaded up");
       }
@@ -364,10 +440,6 @@ public class AnnotationServiceTest extends BaseTest {
     annotation.setTitle("test title for annotation service test");
     annotation.setBody("test body for annotation service test");
     annotation.setAnnotationUri("id:annotationWithReplies");
-    annotation.setAnnotationCitation(new AnnotationCitation(article));
-    annotation.getAnnotationCitation().setSummary("Citation summary");
-    annotation.getAnnotationCitation().setNote("Citation note");
-    dummyDataStore.store(annotation.getAnnotationCitation());
     dummyDataStore.store(annotation);
 
     /*
@@ -450,7 +522,6 @@ public class AnnotationServiceTest extends BaseTest {
         {reply4, replies}
     };
   }
-
 
   @Test(dataProvider = "storedAnnotation")
   public void testGetFullAnnotationView(Annotation annotation, Map<Long, List<Annotation>> fullReplyMap) {

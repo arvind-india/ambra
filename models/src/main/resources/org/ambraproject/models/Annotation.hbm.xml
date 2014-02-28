@@ -44,12 +44,7 @@
     <property name="title" column="title" type="text"/>
     <property name="body" column="body" type="text"/>
     <property name="highlightedText" column="highlightedText" type="text"/>
-
     <property name="competingInterestBody" type="text" column="competingInterestBody"/>
-
-    <!--Don't put cascade delete orphan here. It causes null pointers when updating annotations that have no citation-->
-    <many-to-one name="annotationCitation" cascade="all" unique="true"
-                 class="AnnotationCitation" fetch="join" column="annotationCitationID"/>
 
   </class>
 
