@@ -19,6 +19,7 @@
 package org.ambraproject.service.article;
 
 import org.ambraproject.ApplicationException;
+import org.ambraproject.util.XPathUtil;
 import org.ambraproject.views.CitedArticleView;
 import org.ambraproject.views.SearchHit;
 import org.ambraproject.views.UserProfileInfo;
@@ -61,6 +62,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateAccessor;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.Document;
+
+import javax.xml.xpath.XPathExpressionException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.sql.SQLException;
@@ -207,6 +211,22 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     }
 
     return ArticleType.isCorrectionArticle(articleType);
+  }
+
+  public boolean isAmendment(Article article) throws ApplicationException, NoSuchArticleIdException {
+    ArticleType articleType = ArticleType.getDefaultArticleType();
+
+    for (String artTypeUri : article.getTypes()) {
+      if (ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri)) != null) {
+        articleType = ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri));
+        break;
+      }
+    }
+    if (articleType == null) {
+      throw new ApplicationException("Unable to resolve article type for: " + article.getDoi());
+    }
+
+    return ArticleType.isCorrectionArticle(articleType) || ArticleType.isEocArticle(articleType) || ArticleType.isRetractionArticle(articleType) ;
   }
 
   /**
