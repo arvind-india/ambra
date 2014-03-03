@@ -35,6 +35,14 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.9</h2>
+  <p>Released March 4, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.9</h3>
+  <ul>
+     <li>Support for Collection Review article type</li>
+     <li>Fix for comment border display bug</li>
+  </ul>
+
   <h2>Ambra 2.9.8</h2>
   <p>Released February 25, 2014</p>
   <h3>Features Implemented in Ambra 2.9.8</h3>
