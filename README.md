@@ -17,4 +17,4 @@ Please direct developer questions to the [Ambra developers mailing list](http://
 Please direct general user questions and discussions to the [Ambra users mailing list](http://ambraproject.org/mailman/listinfo/ambra-users).
 
 ## License
-Ambra is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html). See [LICENSE](https://github.com/PLOS/ambra/LICENSE.md) for details.
+Ambra is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html). See [LICENSE](https://github.com/PLOS/ambra/blob/master/LICENSE.md) for details.
