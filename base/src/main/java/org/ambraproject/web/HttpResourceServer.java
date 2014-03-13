@@ -19,32 +19,28 @@
  */
 package org.ambraproject.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.File;
-import java.io.FileInputStream;
-
 import java.net.URL;
 import java.net.URLConnection;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A utility class that can serve up static resources (images, css, javascript etc.)  in
@@ -109,8 +105,10 @@ public class HttpResourceServer {
                             boolean content, Resource resource)
                      throws IOException {
     // Check if the conditions specified in the optional If headers are satisfied.
-    if (!checkIfHeaders(request, response, resource))
+    if (!checkIfHeaders(request, response, resource)) {
+      resource.streamContent().close();
       return;
+    }
 
     // Parse range specifier
     ArrayList<Range> ranges = parseRange(request, response, resource);
@@ -160,8 +158,10 @@ public class HttpResourceServer {
         }
       }
     } else {
-      if ((ranges == null) || (ranges.isEmpty()))
+      if ((ranges == null) || (ranges.isEmpty())) {
+        resource.streamContent().close();
         return;
+      }
 
       if (log.isDebugEnabled())
         log.debug("Partial content response for " + resource);
@@ -202,6 +202,8 @@ public class HttpResourceServer {
         }
       }
     }
+
+    // TODO: Close resource.streamContent() if it was not closed already. perhaps IOUtils.closeQuietly
   }
 
   /**
