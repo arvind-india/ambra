@@ -35,6 +35,14 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.11</h2>
+  <p>Released March 18, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.11</h3>
+  <ul>
+     <li>Integration of CrossMark by CrossRef in our article pages</li>
+     <li>Minor bug fix around the ORCID integration</li>
+  </ul>
+
   <h2>Ambra 2.9.10</h2>
   <p>Released March 11, 2014</p>
   <h3>Features Implemented in Ambra 2.9.10</h3>
