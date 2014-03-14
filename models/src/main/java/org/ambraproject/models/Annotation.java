@@ -34,9 +34,6 @@ public class Annotation extends AmbraEntity {
 
   private String competingInterestBody;
 
-  //required for getting the comments' authors
-  private AnnotationCitation annotationCitation;
-
   public Annotation() {
     super();
   }
@@ -111,14 +108,6 @@ public class Annotation extends AmbraEntity {
 
   public void setCompetingInterestBody(String competingInterestBody) {
     this.competingInterestBody = competingInterestBody;
-  }
-
-  public AnnotationCitation getAnnotationCitation() {
-    return annotationCitation;
-  }
-
-  public void setAnnotationCitation(AnnotationCitation annotationCitation) {
-    this.annotationCitation = annotationCitation;
   }
 
   public String getHighlightedText() {

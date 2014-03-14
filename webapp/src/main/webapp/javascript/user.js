@@ -721,7 +721,7 @@ $(function () {
       modal: true,
       resizable: false,
       dialogClass: 'default-modal',
-      title: 'De-link ORCiD account',
+      title: 'De-link ORCID account',
       buttons: [
         { text: "De-link",
           className: "primary",

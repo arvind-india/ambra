@@ -68,7 +68,6 @@ public class AnnotationView {
   private final AnnotationView[] replies;
   private final Date lastReplyDate;
   private final int totalNumReplies;
-  private final AnnotationCitationView citation;
 
   /**
    * Create a new AnnotationView
@@ -131,12 +130,6 @@ public class AnnotationView {
     this.articleID = annotation.getArticleID();
     this.parentID = annotation.getParentID();
     this.type = annotation.getType();
-
-    if (annotation.getAnnotationCitation() == null) {
-      this.citation = null;
-    } else {
-      this.citation = new AnnotationCitationView(annotation.getAnnotationCitation());
-    }
 
     //Defensive copy
     Calendar date = Calendar.getInstance();
@@ -201,7 +194,6 @@ public class AnnotationView {
     if (articleID != null ? !articleID.equals(that.articleID) : that.articleID != null) return false;
     if (parentID != null ? !parentID.equals(that.parentID) : that.parentID != null) return false;
     if (body != null ? !body.equals(that.body) : that.body != null) return false;
-    if (citation != null ? !citation.equals(that.citation) : that.citation != null) return false;
     if (competingInterestStatement != null ? !competingInterestStatement.equals(that.competingInterestStatement) : that.competingInterestStatement != null)
       return false;
     if (creatorID != null ? !creatorID.equals(that.creatorID) : that.creatorID != null) return false;
@@ -230,7 +222,6 @@ public class AnnotationView {
     result = 31 * result + (articleDoi != null ? articleDoi.hashCode() : 0);
     result = 31 * result + (articleTitle != null ? articleTitle.hashCode() : 0);
     result = 31 * result + (type != null ? type.hashCode() : 0);
-    result = 31 * result + (citation != null ? citation.hashCode() : 0);
     return result;
   }
 
@@ -347,15 +338,9 @@ public class AnnotationView {
     return created.getTime();
   }
 
-  public AnnotationCitationView getCitation() {
-    return citation;
-  }
-
   public AnnotationType getType() {
     return type;
   }
-
-
 
   public String getArticleDoi() {
     return articleDoi;
