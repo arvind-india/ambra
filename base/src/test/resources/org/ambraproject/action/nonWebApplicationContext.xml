@@ -42,9 +42,10 @@
     <constructor-arg index="0" value="info:doi/10.1371/journal.pgen.1000096"/>
   </bean>
 
-  <bean id="fileStoreService" class="org.ambraproject.filestore.impl.FileSystemImpl">
-    <constructor-arg index="0" value="filestore"/>
-    <constructor-arg index="1" value=""/>
+  <bean class="org.ambraproject.filestore.impl.ContentRepoImpl" id="fileStoreService">
+    <!-- TODO: move constructor values to a config location instead of hard coding here -->
+    <constructor-arg index="0" type="java.lang.String" value="http://localhost:8081"/>
+    <constructor-arg index="1" type="java.lang.String" value="filestoretest.plos.org" />
   </bean>
 
   <bean id="ambraConfiguration" class="org.ambraproject.testutils.AmbraTestConfigurationFactory"
