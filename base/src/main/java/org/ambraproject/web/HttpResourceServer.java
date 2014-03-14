@@ -104,106 +104,114 @@ public class HttpResourceServer {
   public void serveResource(HttpServletRequest request, HttpServletResponse response,
                             boolean content, Resource resource)
                      throws IOException {
-    // Check if the conditions specified in the optional If headers are satisfied.
-    if (!checkIfHeaders(request, response, resource)) {
-      resource.streamContent().close();
-      return;
-    }
 
-    // Parse range specifier
-    ArrayList<Range> ranges = parseRange(request, response, resource);
-    // ETag header
-    response.setHeader("ETag", getETag(resource));
-    // Last-Modified header
-    response.setHeader("Last-Modified", resource.getLastModifiedHttp());
+    InputStream resourceInputStream = null;
 
-    // Special case for zero length files, which would cause a
-    // (silent) ISE when setting the output buffer size
-    if (resource.getContentLength() == 0L)
-      content = false;
+    try {
 
-    ServletOutputStream ostream       = null;
-    PrintWriter         writer        = null;
-    String              contentType   = resource.getContentType();
-    long                contentLength = resource.getContentLength();
+      resourceInputStream = resource.streamContent();
 
-    if (content) {
-      // Trying to retrieve the servlet output stream
-      try {
-        ostream = response.getOutputStream();
-      } catch (IllegalStateException e) {
-        // If it fails, we try to get a Writer instead if we're trying to serve a text file
-        if ((contentType == null) || (contentType.startsWith("text"))
-             || (contentType.endsWith("xml"))) {
-          writer = response.getWriter();
-        } else {
-          throw e;
-        }
-      }
-    }
-
-    if ((((ranges == null) || (ranges.isEmpty())) && (request.getHeader("Range") == null))
-         || (ranges == FULL)) {
-      if (log.isDebugEnabled())
-        log.debug("Full content response for " + resource);
-
-      setOutputHeaders(response, contentType, contentLength, content);
-
-      // Copy the input stream to our output stream (if requested)
-      if (content) {
-        if (ostream != null) {
-          copy(resource, ostream);
-        } else {
-          copy(resource, writer);
-        }
-      }
-    } else {
-      if ((ranges == null) || (ranges.isEmpty())) {
-        resource.streamContent().close();
+      // Check if the conditions specified in the optional If headers are satisfied.
+      if (!checkIfHeaders(request, response, resource))
         return;
+
+      // Parse range specifier
+      ArrayList<Range> ranges = parseRange(request, response, resource);
+      // ETag header
+      response.setHeader("ETag", getETag(resource));
+      // Last-Modified header
+      response.setHeader("Last-Modified", resource.getLastModifiedHttp());
+
+      // Special case for zero length files, which would cause a
+      // (silent) ISE when setting the output buffer size
+      if (resource.getContentLength() == 0L)
+        content = false;
+
+      ServletOutputStream ostream       = null;
+      PrintWriter         writer        = null;
+      String              contentType   = resource.getContentType();
+      long                contentLength = resource.getContentLength();
+
+      if (content) {
+        // Trying to retrieve the servlet output stream
+        try {
+          ostream = response.getOutputStream();
+        } catch (IllegalStateException e) {
+          // If it fails, we try to get a Writer instead if we're trying to serve a text file
+          if ((contentType == null) || (contentType.startsWith("text"))
+               || (contentType.endsWith("xml"))) {
+            writer = response.getWriter();
+          } else {
+            throw e;
+          }
+        }
       }
 
-      if (log.isDebugEnabled())
-        log.debug("Partial content response for " + resource);
+      if ((((ranges == null) || (ranges.isEmpty())) && (request.getHeader("Range") == null))
+           || (ranges == FULL)) {
+        if (log.isDebugEnabled())
+          log.debug("Full content response for " + resource);
 
-      response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+        setOutputHeaders(response, contentType, contentLength, content);
 
-      if (ranges.size() == 1) {
-        Range range = ranges.get(0);
-        response.addHeader("Content-Range",
-                           "bytes " + range.start + "-" + range.end + "/" + range.length);
-
-        long length = range.end - range.start + 1;
-
-        setOutputHeaders(response, contentType, length, content);
-
+        // Copy the input stream to our output stream (if requested)
         if (content) {
           if (ostream != null) {
-            copy(resource, ostream, range);
+            copy(resource.getContent(), resourceInputStream, ostream);
           } else {
-            copy(resource, writer, range);
+            copy(resourceInputStream, writer);
           }
         }
       } else {
-        response.setContentType("multipart/byteranges; boundary=" + MIME_SEPARATION);
+        if ((ranges == null) || (ranges.isEmpty()))// {
+          //resource.streamContent().close();
+          return;
+        //}
 
-        if (content) {
-          try {
-            response.setBufferSize(OUTPUT_BUFFER_SIZE);
-          } catch (IllegalStateException e) {
-            // Silent catch
+        if (log.isDebugEnabled())
+          log.debug("Partial content response for " + resource);
+
+        response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+
+        if (ranges.size() == 1) {
+          Range range = ranges.get(0);
+          response.addHeader("Content-Range",
+                             "bytes " + range.start + "-" + range.end + "/" + range.length);
+
+          long length = range.end - range.start + 1;
+
+          setOutputHeaders(response, contentType, length, content);
+
+          if (content) {
+            if (ostream != null) {
+              copy(resourceInputStream, ostream, range);
+            } else {
+              copy(resourceInputStream, writer, range);
+            }
           }
+        } else {
+          response.setContentType("multipart/byteranges; boundary=" + MIME_SEPARATION);
 
-          if (ostream != null) {
-            copy(resource, ostream, ranges.iterator(), contentType);
-          } else {
-            copy(resource, writer, ranges.iterator(), contentType);
+          if (content) {
+            try {
+              response.setBufferSize(OUTPUT_BUFFER_SIZE);
+            } catch (IllegalStateException e) {
+              // Silent catch
+            }
+
+            if (ostream != null) {
+              copy(resourceInputStream, ostream, ranges.iterator(), contentType);
+            } else {
+              copy(resourceInputStream, writer, ranges.iterator(), contentType);
+            }
           }
         }
       }
-    }
 
-    // TODO: Close resource.streamContent() if it was not closed already. perhaps IOUtils.closeQuietly
+    } finally {
+      if (resourceInputStream != null)
+        resourceInputStream.close();
+    }
   }
 
   /**
@@ -657,15 +665,16 @@ public class HttpResourceServer {
    * Copy the contents of the specified input stream to the specified output stream, and
    * ensure that both streams are closed before returning (even in the face of an exception).
    *
-   * @param resource The resource information
+   * @param buffer The binary content
+   * @param resourceInputStream The stream to the Resource object
    * @param ostream The output stream to write to
    *
    * @exception IOException if an input/output error occurs
    */
-  protected void copy(Resource resource, ServletOutputStream ostream)
+  protected void copy(byte[] buffer, InputStream resourceInputStream, ServletOutputStream ostream)
                throws IOException {
     // Optimization: If the binary content has already been loaded, send it directly
-    byte[] buffer = resource.getContent();
+    //byte[] buffer = resource.getContent();
 
     if (buffer != null) {
       ostream.write(buffer, 0, buffer.length);
@@ -674,11 +683,11 @@ public class HttpResourceServer {
     }
 
     // Copy the input stream to the output stream
-    InputStream istream   = resource.streamContent();
-    IOException exception = copyRange(istream, ostream);
+    //InputStream istream   = resource.streamContent();
+    IOException exception = copyRange(resourceInputStream, ostream);
 
     // Clean up the input stream
-    istream.close();
+    //istream.close();
 
     // Rethrow any exception that has occurred
     if (exception != null)
@@ -689,13 +698,12 @@ public class HttpResourceServer {
    * Copy the contents of the specified input stream to the specified output stream, and
    * ensure that both streams are closed before returning (even in the face of an exception).
    *
-   * @param resource The resource info
+   * @param resourceInputStream The stream to the Resource object
    * @param writer The writer to write to
    *
    * @exception IOException if an input/output error occurs
    */
-  protected void copy(Resource resource, PrintWriter writer) throws IOException {
-    InputStream resourceInputStream = resource.streamContent();
+  protected void copy(InputStream resourceInputStream, PrintWriter writer) throws IOException {
 
     Reader reader = new InputStreamReader(resourceInputStream, FILE_ENCODING);
 
@@ -714,19 +722,18 @@ public class HttpResourceServer {
    * Copy the contents of the specified input stream to the specified output stream, and
    * ensure that both streams are closed before returning (even in the face of an exception).
    *
-   * @param resource The ResourceInfo object
+   * @param resourceInputStream The stream to the Resource object
    * @param ostream The output stream to write to
    * @param range Range the client wanted to retrieve
    *
    * @exception IOException if an input/output error occurs
    */
-  protected void copy(Resource resource, ServletOutputStream ostream, Range range)
+  protected void copy(InputStream resourceInputStream, ServletOutputStream ostream, Range range)
                throws IOException {
-    InputStream istream   = resource.streamContent();
-    IOException exception = copyRange(istream, ostream, range.start, range.end);
+    IOException exception = copyRange(resourceInputStream, ostream, range.start, range.end);
 
     // Clean up the input stream
-    istream.close();
+//    resourceInputStream.close();
 
     // Rethrow any exception that has occurred
     if (exception != null)
@@ -737,15 +744,14 @@ public class HttpResourceServer {
    * Copy the contents of the specified input stream to the specified output stream, and
    * ensure that both streams are closed before returning (even in the face of an exception).
    *
-   * @param resource The ResourceInfo object
+   * @param resourceInputStream The stream to the Resource object
    * @param writer The writer to write to
    * @param range Range the client wanted to retrieve
    *
    * @exception IOException if an input/output error occurs
    */
-  protected void copy(Resource resource, PrintWriter writer, Range range)
+  protected void copy(InputStream resourceInputStream, PrintWriter writer, Range range)
                throws IOException {
-    InputStream resourceInputStream = resource.streamContent();
 
     Reader      reader = new InputStreamReader(resourceInputStream, FILE_ENCODING);
 
@@ -763,19 +769,19 @@ public class HttpResourceServer {
    * Copy the contents of the specified input stream to the specified output stream, and
    * ensure that both streams are closed before returning (even in the face of an exception).
    *
-   * @param resource The ResourceInfo object
+   * @param resourceInputStream The stream to the Resource object
    * @param ostream The output stream to write to
    * @param ranges Enumeration of the ranges the client wanted to retrieve
    * @param contentType Content type of the resource
    *
    * @exception IOException if an input/output error occurs
    */
-  protected void copy(Resource resource, ServletOutputStream ostream, Iterator ranges,
+  protected void copy(InputStream resourceInputStream, ServletOutputStream ostream, Iterator ranges,
                       String contentType) throws IOException {
     IOException exception = null;
 
     while ((exception == null) && (ranges.hasNext())) {
-      InputStream istream      = resource.streamContent();
+
       Range       currentRange = (Range) ranges.next();
 
       // Writing MIME header.
@@ -790,9 +796,9 @@ public class HttpResourceServer {
       ostream.println();
 
       // Printing content
-      exception = copyRange(istream, ostream, currentRange.start, currentRange.end);
+      exception = copyRange(resourceInputStream, ostream, currentRange.start, currentRange.end);
 
-      istream.close();
+//      resourceInputStream.close();
     }
 
     ostream.println();
@@ -807,19 +813,18 @@ public class HttpResourceServer {
    * Copy the contents of the specified input stream to the specified output stream, and
    * ensure that both streams are closed before returning (even in the face of an exception).
    *
-   * @param resource The ResourceInfo object
+   * @param resourceInputStream The stream to the Resource object
    * @param writer The writer to write to
    * @param ranges Enumeration of the ranges the client wanted to retrieve
    * @param contentType Content type of the resource
    *
    * @exception IOException if an input/output error occurs
    */
-  protected void copy(Resource resource, PrintWriter writer, Iterator ranges, String contentType)
+  protected void copy(InputStream resourceInputStream, PrintWriter writer, Iterator ranges, String contentType)
                throws IOException {
     IOException exception = null;
 
     while ((exception == null) && (ranges.hasNext())) {
-      InputStream resourceInputStream = resource.streamContent();
 
       Reader      reader = new InputStreamReader(resourceInputStream, FILE_ENCODING);
 
