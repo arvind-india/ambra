@@ -14,7 +14,6 @@
 package org.ambraproject.service.article;
 
 import org.ambraproject.action.BaseTest;
-import org.ambraproject.filestore.FSIDMapper;
 import org.ambraproject.filestore.FileStoreService;
 import org.ambraproject.models.Article;
 import org.ambraproject.models.ArticleAsset;
@@ -862,7 +861,7 @@ public class FetchArticleServiceTest extends BaseTest {
   @Test(dataProvider = "articleAffiliations")
   public void testGetAffiliations(String doi, Map<String, List<AuthorView>> affiliationSets) throws Exception {
 
-    String fsid = FSIDMapper.doiTofsid(doi, "XML");
+    String fsid = fileStoreService.objectIDMapper().doiTofsid(doi, "XML");
     InputStream is = fileStoreService.getFileInStream(fsid);
     org.w3c.dom.Document doc = xmlService.createDocBuilder().parse(is);
 
@@ -911,7 +910,7 @@ public class FetchArticleServiceTest extends BaseTest {
 
   @Test(dataProvider = "articlesForCorrespondingTest")
   public void testCorrespondingAuthors(ArticleInfo article, List<String> authors) throws Exception {
-    String fsid = FSIDMapper.doiTofsid(article.getDoi(), "XML");
+    String fsid = fileStoreService.objectIDMapper().doiTofsid(article.getDoi(), "XML");
     InputStream fs = fileStoreService.getFileInStream(fsid);
     org.w3c.dom.Document dom = xmlService.createDocBuilder().parse(fs);
 
@@ -930,7 +929,7 @@ public class FetchArticleServiceTest extends BaseTest {
 
   @Test(dataProvider = "articlesWithDummyAffils")
   public void testGetAuthors(ArticleInfo article, List<AuthorView> testAuthors) throws Exception {
-    String fsid = FSIDMapper.doiTofsid(article.getDoi(), "XML");
+    String fsid = fileStoreService.objectIDMapper().doiTofsid(article.getDoi(), "XML");
     InputStream fs = fileStoreService.getFileInStream(fsid);
     org.w3c.dom.Document dom = xmlService.createDocBuilder().parse(fs);
 
@@ -1014,7 +1013,7 @@ public class FetchArticleServiceTest extends BaseTest {
    */
   @Test (dataProvider = "articlesWithEoc")
   public void testEoc(ArticleInfo articleInfo,String eocTest) throws Exception {
-    String fsid = FSIDMapper.doiTofsid(articleInfo.getDoi(), "XML");
+    String fsid = fileStoreService.objectIDMapper().doiTofsid(articleInfo.getDoi(), "XML");
      InputStream fs = fileStoreService.getFileInStream(fsid);
      org.w3c.dom.Document dom = xmlService.createDocBuilder().parse(fs);
 

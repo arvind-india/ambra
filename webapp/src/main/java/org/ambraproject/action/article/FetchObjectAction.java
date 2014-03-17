@@ -21,7 +21,6 @@ package org.ambraproject.action.article;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.ambraproject.action.BaseSessionAwareActionSupport;
-import org.ambraproject.filestore.FSIDMapper;
 import org.ambraproject.filestore.FileStoreService;
 import org.ambraproject.models.ArticleAsset;
 import org.ambraproject.models.ArticleView;
@@ -87,7 +86,7 @@ public class FetchObjectAction extends BaseSessionAwareActionSupport {
 
       // Using the uri (doi) and representation (the file type)
       // construct a fsid to get the Inputstream
-      String fsid = FSIDMapper.doiTofsid(uri, representation);
+      String fsid = fileStoreService.objectIDMapper().doiTofsid(uri, representation);
 
       // If x-reproxy is available and they are not requesting a transformed
       // document then get the redirect urls.
@@ -162,7 +161,7 @@ public class FetchObjectAction extends BaseSessionAwareActionSupport {
 
       // Using the uri (doi) and representation (the file type)
       // construct the fsid to get the Inputstream.
-      String fsid = FSIDMapper.doiTofsid(uri, articleAsset.getExtension());
+      String fsid = fileStoreService.objectIDMapper().doiTofsid(uri, articleAsset.getExtension());
 
       if (fileStoreService.hasXReproxy()) {
         StringBuilder str = new StringBuilder();

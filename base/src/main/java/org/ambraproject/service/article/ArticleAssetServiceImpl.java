@@ -22,7 +22,6 @@
 package org.ambraproject.service.article;
 
 import org.ambraproject.ApplicationException;
-import org.ambraproject.filestore.FSIDMapper;
 import org.ambraproject.filestore.FileStoreException;
 import org.ambraproject.filestore.FileStoreService;
 import org.ambraproject.models.Article;
@@ -309,7 +308,7 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
 
     try {
 
-      byte[] image = fileStoreService.getFileByteArray(FSIDMapper.doiTofsid(assetDoi, "PNG_M"));
+      byte[] image = fileStoreService.getFileByteArray(fileStoreService.objectIDMapper().doiTofsid(assetDoi, "PNG_M"));
       tempOutputStream = new ByteArrayOutputStream(image.length);
 
       //make the new slide
