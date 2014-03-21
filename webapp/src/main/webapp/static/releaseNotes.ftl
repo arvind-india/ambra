@@ -35,6 +35,13 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.12</h2>
+  <p>Released March 25, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.12</h3>
+  <ul>
+     <li>Bug fix in socket management, ensuring streams are properly closed</li>
+  </ul>
+
   <h2>Ambra 2.9.11</h2>
   <p>Released March 18, 2014</p>
   <h3>Features Implemented in Ambra 2.9.11</h3>
