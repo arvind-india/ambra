@@ -1010,7 +1010,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   @Override
   @Transactional
   public String refreshCitedArticle(Long citedArticleID) throws Exception {
-    log.debug("refreshArticleCitation for citedArticleID: {}", citedArticleID);
+    log.info("refreshArticleCitation for citedArticleID: {}", citedArticleID);
     StringBuilder sb = new StringBuilder();
 
     CitedArticle citedArticle = hibernateTemplate.get(CitedArticle.class, citedArticleID);
@@ -1084,7 +1084,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     String doi = null;
 
     if(sb.length() == 0) {
-      log.debug("No data for citation ({}), not searching for DOI", citedArticleID);
+      log.info("No data for citation ({}), not searching for DOI", citedArticleID);
     } else {
       doi = crossRefLookupService.findDoi(sb.toString());
 
@@ -1092,10 +1092,10 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
         //A fix for FEND-1077. crossref seems to append a URL to the DOI.  WTF
         doi = doi.replace("http://dx.doi.org/","");
 
-        log.debug("refreshArticleCitation doi found: {}", doi);
+        log.info("refreshArticleCitation doi found: {}", doi);
         setCitationDoi(citedArticle, doi);
       } else {
-        log.debug("refreshArticleCitation nothing found");
+        log.info("refreshArticleCitation nothing found");
       }
     }
 
