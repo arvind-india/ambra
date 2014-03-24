@@ -167,8 +167,7 @@ public class UserRegistrationServiceTest extends BaseTest {
     dummyDataStore.store(profile);
 
     String passwordToSet = "a new password";
-    userRegistrationService.resetPassword(profile.getEmail(),
-        profile.getVerificationToken(), passwordToSet);
+    userRegistrationService.resetPassword(profile.getEmail(), passwordToSet);
 
     String storedPassword = dummyDataStore.get(UserProfile.class, profile.getID()).getPassword();
     assertFalse(storedPassword.equalsIgnoreCase(profile.getPassword()), "failed to change password");

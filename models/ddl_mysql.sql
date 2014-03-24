@@ -356,6 +356,16 @@
         primary key (userProfileID)
     );
 
+    create table userProfileMetaData (
+        userProfileMetaDataID bigint not null auto_increment,
+        lastModified datetime not null,
+        created datetime not null,
+        userProfileID bigint not null,
+        metaKey varchar(50),
+        metaValue varchar(255),
+        primary key (userProfileMetaDataID)
+    );
+
     create table userProfileRoleJoinTable (
         userProfileID bigint not null,
         userRoleID bigint not null,
