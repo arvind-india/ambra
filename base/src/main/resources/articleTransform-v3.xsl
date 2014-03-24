@@ -1018,8 +1018,9 @@
     <xsl:template match="fig | table-wrap">
       <xsl:variable name="figId"><xsl:value-of select="@id"/></xsl:variable>
       <xsl:variable name="apos">'</xsl:variable>
-      <xsl:if test=".//graphic">
-        <xsl:variable name="imageURI"><xsl:value-of select=".//graphic/@xlink:href"/></xsl:variable>
+      <!-- Fix here for AMEC-2351 only pick graphic nodes that are immediate children of the fig or table-wrap nodes -->
+      <xsl:if test="./graphic">
+        <xsl:variable name="imageURI"><xsl:value-of select="./graphic/@xlink:href"/></xsl:variable>
         <xsl:variable name="slideshowURL">
           <xsl:value-of select="concat($pubAppContext, '/article/fetchObject.action?uri=',
                   $imageURI,'&amp;representation=PNG_M')"/>
