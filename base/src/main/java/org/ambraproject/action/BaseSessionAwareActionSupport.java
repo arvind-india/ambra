@@ -47,7 +47,7 @@ public class BaseSessionAwareActionSupport extends BaseActionSupport implements 
    *
    * @return Logged in user object
    */
-  protected UserProfile getCurrentUser() {
+  public UserProfile getCurrentUser() {
     return (UserProfile) session.get(AMBRA_USER_KEY);
   }
 
