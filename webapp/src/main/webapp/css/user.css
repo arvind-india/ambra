@@ -30,6 +30,15 @@ div#user-forms {
   border: none;
 }
 
+div#user-tabs:after {
+  clear: none;
+}
+
+div#profileHeader {
+  position: relative;
+  margin-bottom: 25px;
+}
+
 div#user-tabs ul {
   background: none;
   border-top: none;
@@ -657,4 +666,45 @@ li.subjectAreaSelector div.selectSubjectAreas {
     background: #3c63af !important;
     color: #fff !important;
     margin-right: 10px;
+}
+
+#edBoardKnowledgeBasePlug {
+  width: 225px;
+  padding: 20px;
+  background: #333333;
+  color: #FFFFFF;
+  border-radius: 4px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+#edBoardKnowledgeBasePlug h4 a {
+  font-weight: bold;
+  font-size: 14px;
+  color: #8AA1CF;
+  margin-bottom: 10px;
+}
+
+#edBoardKnowledgeBasePlug h4 a:hover {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+#edBoardKnowledgeBasePlug h4 a:hover img {
+  background: url('/images/icon.externalLink.white.png');
+  background-size: contain;
+}
+
+#edBoardKnowledgeBasePlug h4 a img {
+  background: url('/images/icon.externalLink.rhcContainer.png');
+  background-size: contain;
+  vertical-align: text-top;
+}
+
+#edBoardKnowledgeBasePlug p {
+  font-size: 13px;
+  color: #FFFFFF;
+  padding: 0;
+  margin: 0;
 }
