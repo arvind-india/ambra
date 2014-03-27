@@ -35,6 +35,15 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.13</h2>
+  <p>Released April 1, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.13</h3>
+  <ul>
+     <li>Update to taxonomy synonyms</li>
+     <li>Changes to article logging implementation</li>
+     <li>Administrative changes to support additional authentication integration</li>
+  </ul>
+
   <h2>Ambra 2.9.12</h2>
   <p>Released March 25, 2014</p>
   <h3>Features Implemented in Ambra 2.9.12</h3>
