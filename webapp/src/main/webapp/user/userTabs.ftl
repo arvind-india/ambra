@@ -18,32 +18,49 @@
 -->
 <@s.url action="privacy" namespace="/static" includeParams="none" id="privacyURL"/>
 
-
-<h1 class="displayName">${displayName}</h1>
-<ul class="info-list">
-  <li>Display Name: <b>${displayName}</b>&nbsp;<span class="note">(Display names are permanent)</span></li>
-  <li>
-    Email: <b>${email}</b> <a href="${freemarker_config.changeEmailURL}"
-                              title="Click here to change your e-mail address">Change your e-mail address</a>
-  </li>
-  <li class="close-top note">(Your e-mail address will always be kept private. See the <a
-      href="${privacyURL}">${freemarker_config.orgName} Privacy Statement</a> for more information.)
-  </li>
-  <li>
-    <a href="${freemarker_config.changePasswordURL}" title="Click here to change your password">Change your
-      password</a>
-  </li>
-</ul>
-
-
+<#assign moodleUser = false>
+<#list currentUser.roles as role>
+  <#if role.roleName = "AE-PLOSONE">
+    <#assign moodleUser = true>
+  </#if>
+</#list>
 
 <div id="user-forms" class="tab-block" active="${tabID}">
-  <div id="user-tabs" class="nav tab-nav">
-    <ul>
-      <li><a href="#profile" url="/user/secure/profile">Profile</a></li>
-      <li><a href="#journalAlerts" url="/user/secure/profile/alerts/journal">Journal Alerts</a></li>
-      <li><a href="#savedSearchAlerts" url="/user/secure/profile/alerts/search">Search Alerts</a></li>
-    </ul>
+  <div id="profileHeader">
+    <div>
+      <h1 class="displayName">${displayName}</h1>
+      <ul class="info-list">
+        <li>Display Name: <b>${displayName}</b>&nbsp;<span class="note">(Display names are permanent)</span></li>
+        <li>
+          Email: <b>${email}</b> <a href="${freemarker_config.changeEmailURL}"
+                                    title="Click here to change your e-mail address">Change your e-mail address</a>
+        </li>
+        <li class="close-top note">(Your e-mail address will always be kept private. See the <a
+          href="${privacyURL}">${freemarker_config.orgName} Privacy Statement</a> for more information.)
+        </li>
+        <li>
+          <a href="${freemarker_config.changePasswordURL}" title="Click here to change your password">Change your
+            password</a>
+        </li>
+      </ul>
+
+      <div id="user-tabs" class="nav tab-nav">
+        <ul>
+          <li><a href="#profile" url="/user/secure/profile">Profile</a></li>
+          <li><a href="#journalAlerts" url="/user/secure/profile/alerts/journal">Journal Alerts</a></li>
+          <li><a href="#savedSearchAlerts" url="/user/secure/profile/alerts/search">Search Alerts</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <#if moodleUser = true>
+      <div id="edBoardKnowledgeBasePlug">
+        <h4><a href="http://plos.mrooms.net">Editorial Board<br/>Knowledge Base <img src="/images/transparent.gif" height="13" width="13"/></a></h4>
+        <p>Please visit the PLOS ONE Editorial Knowledge Base to learn about our policies and practices, and
+          participate in conversations in our forums.</p>
+      </div>
+    </#if>
+    <div class="clear"></div>
   </div>
   <div class="tab-content">
     <div id="profile" class="tab-pane">
