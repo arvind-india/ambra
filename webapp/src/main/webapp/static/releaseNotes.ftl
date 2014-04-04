@@ -40,6 +40,7 @@
   <h3>Features Implemented in Ambra 2.9.14</h3>
   <ul>
      <li>A small bugfix to inline figure display</li>
+     <li>A bugfix in the password change workflow</li>
      <li>Administrative changes: small bug fixes and integration enhancements</li>
   </ul>
 
