@@ -35,6 +35,14 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.15</h2>
+  <p>Released April 15, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.15</h3>
+  <ul>
+     <li>A bugfix in how we manage reference DOI</li>
+     <li>Administrative changes: small bug fixes and integration enhancements</li>
+  </ul>
+
   <h2>Ambra 2.9.14</h2>
   <p>Released April 8, 2014</p>
   <h3>Features Implemented in Ambra 2.9.14</h3>
