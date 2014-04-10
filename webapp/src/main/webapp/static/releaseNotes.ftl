@@ -40,7 +40,8 @@
   <h3>Features Implemented in Ambra 2.9.15</h3>
   <ul>
      <li>A bugfix in how we manage reference DOI</li>
-     <li>Administrative changes: small bug fixes and integration enhancements</li>
+     <li>Additional administrative changes: small bug fixes and integration enhancements</li>
+     <li>A bugfix for a 500 error retrieving article comments</li>
   </ul>
 
   <h2>Ambra 2.9.14</h2>
