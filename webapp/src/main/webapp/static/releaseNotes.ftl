@@ -35,6 +35,13 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.16</h2>
+  <p>Released April 22, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.16</h3>
+  <ul>
+     <li>A bugfix for inline figure and table display for certain articles</li>
+  </ul>
+
   <h2>Ambra 2.9.15</h2>
   <p>Released April 15, 2014</p>
   <h3>Features Implemented in Ambra 2.9.15</h3>
