@@ -100,6 +100,16 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
   public void mail(final String toEmailAddresses, final String fromEmailAddress, final String subject,
                    final Map<String, Object> context, final Multipart content) {
 
+    mail(toEmailAddresses, null, fromEmailAddress, subject, context, content);
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public void mail(final String toEmailAddresses, final String bccAddress,
+                   final String fromEmailAddress, final String subject,
+                   final Map<String, Object> context, final Multipart content) {
+
     final StringTokenizer emailTokens = new StringTokenizer(toEmailAddresses);
 
     while (emailTokens.hasMoreTokens()) {
@@ -109,6 +119,11 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
           final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true,
             configuration.getDefaultEncoding());
           message.setTo(new InternetAddress(toEmailAddress));
+
+          if(bccAddress != null && bccAddress.trim().length() > 0) {
+            message.setBcc(new InternetAddress(bccAddress));
+          }
+
           message.setFrom(new InternetAddress(fromEmailAddress, (String) context.get(USER_NAME_KEY)));
           message.setSubject(subject);
 
@@ -121,6 +136,7 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
       log.debug("Mail sent to: {}", toEmailAddress);
     }
   }
+
 
   /**
    * @inheritDoc

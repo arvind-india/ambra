@@ -55,6 +55,13 @@ public class MockTemplateMailer implements TemplateMailer {
 
   }
 
+  public void mail(final String toEmailAddress, final String bccAddress,
+                   final String fromEmailAddress, final String subject,
+                   final Map<String, Object> context, final Multipart content)
+  {
+
+  }
+
   public void mail(final String toEmailAddress, final String fromEmailAddress, final String subject,
                    final Map<String, Object> context, final String textTemplateFilename,
                    final String htmlTemplateFilename) {
