@@ -83,6 +83,19 @@ public interface TemplateMailer {
             String htmlTemplateFilename);
 
   /**
+   * Send a mail with both a text and a HTML version.
+   * @param toEmailAddress the email address where to send the email
+   * @param bccAddress the email address to send a blind carbon copy
+   * @param fromEmailAddress fromEmailAddress
+   * @param subject subject of the email
+   * @param context a {@link java.util.Map} of objects to expose to the template engine
+   * @param content the content of the message to send
+   */
+  void mail(String toEmailAddress, String bccAddress,
+            String fromEmailAddress, String subject,
+            Map<String, Object> context, Multipart content);
+
+  /**
    * Mail to multiple email addresses with both a text and a HTML version.
    * Each email comes with it's corresponding context to use for the templates
    * @param emailAddressContextMap email address and it's corresponding context
