@@ -35,6 +35,16 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.17</h2>
+  <p>Released April 29, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.17</h3>
+  <ul>
+     <li>A bugfix for display of Data Availability Statement on newly published articles</li>
+     <li>A bugfix for article ingestion when article payload included striking images</li>
+     <li>A bugfix for a test function for displayName uniqueness</li>
+     <li>A minor bugfix for a recent SSO migration around welcome email content</li>
+  </ul>
+
   <h2>Ambra 2.9.16</h2>
   <p>Released April 22, 2014</p>
   <h3>Features Implemented in Ambra 2.9.16</h3>
