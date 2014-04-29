@@ -39,6 +39,7 @@
   <p>Released April 29, 2014</p>
   <h3>Features Implemented in Ambra 2.9.17</h3>
   <ul>
+     <li>Patching Struts to version 2.3.16.2</li>
      <li>A bugfix for display of Data Availability Statement on newly published articles</li>
      <li>A bugfix for article ingestion when article payload included striking images</li>
      <li>A bugfix for a test function for displayName uniqueness</li>
