@@ -35,6 +35,17 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.18</h2>
+  <p>Released May 6, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.18</h3>
+  <ul>
+     <li>A bugfix to ensure new registration emails are unique</li>
+     <li>A bugfix in registration verification</li>
+     <li>Administrative enhancements to user import</li>
+     <li>A refinement for a test function for displayName uniqueness</li>
+     <li>An update to the Administrative environment</li>
+  </ul>
+
   <h2>Ambra 2.9.17</h2>
   <p>Released April 29, 2014</p>
   <h3>Features Implemented in Ambra 2.9.17</h3>
