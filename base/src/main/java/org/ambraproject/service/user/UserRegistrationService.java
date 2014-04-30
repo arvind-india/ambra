@@ -106,7 +106,8 @@ public interface UserRegistrationService {
    *
    * @return the generated token to be used to authenticate the new email address
    */
-  public String sendEmailChangeMessage(String oldEmail, String newEmail, String password) throws NoSuchUserException;
+  public String sendEmailChangeMessage(String oldEmail, String newEmail, String password)
+    throws NoSuchUserException, DuplicateUserException;
 
   /**
    * Change a user's email address
@@ -117,5 +118,5 @@ public interface UserRegistrationService {
    * @throws NoSuchUserException if no user with the given email exists
    */
   public void updateEmailAddress(String oldEmail, String newEmail, String verificationToken) throws
-    NoSuchUserException, VerificationTokenException;
+    NoSuchUserException, VerificationTokenException, DuplicateUserException;
 }
