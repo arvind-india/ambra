@@ -163,8 +163,10 @@ public class AIArticleClassifier implements ArticleClassifier {
   boolean appendElementIfExists(StringBuilder sb, Document dom, String elementName) {
     NodeList list = dom.getElementsByTagName(elementName);
     if (list != null && list.getLength() > 0) {
-      sb.append(list.item(0).getTextContent());
-      sb.append("\n");
+      for(int a = 0; a < list.getLength(); a++) {
+        sb.append(list.item(a).getTextContent());
+        sb.append("\n");
+      }
       return true;
     } else {
       return false;
