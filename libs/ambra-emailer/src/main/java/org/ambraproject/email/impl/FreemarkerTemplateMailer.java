@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006-2013 by Public Library of Science
+ * Copyright (c) 2006-2014 by Public Library of Science
+ *
  * http://plos.org
  * http://ambraproject.org
  *
@@ -7,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -99,6 +100,16 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
   public void mail(final String toEmailAddresses, final String fromEmailAddress, final String subject,
                    final Map<String, Object> context, final Multipart content) {
 
+    mail(toEmailAddresses, null, fromEmailAddress, subject, context, content);
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public void mail(final String toEmailAddresses, final String bccAddress,
+                   final String fromEmailAddress, final String subject,
+                   final Map<String, Object> context, final Multipart content) {
+
     final StringTokenizer emailTokens = new StringTokenizer(toEmailAddresses);
 
     while (emailTokens.hasMoreTokens()) {
@@ -108,6 +119,11 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
           final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true,
             configuration.getDefaultEncoding());
           message.setTo(new InternetAddress(toEmailAddress));
+
+          if(bccAddress != null && bccAddress.trim().length() > 0) {
+            message.setBcc(new InternetAddress(bccAddress));
+          }
+
           message.setFrom(new InternetAddress(fromEmailAddress, (String) context.get(USER_NAME_KEY)));
           message.setSubject(subject);
 
@@ -121,19 +137,21 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
     }
   }
 
+
   /**
    * @inheritDoc
    */
-  public Multipart createContent(String textTemplateFilename, String htmlTemplateFilename,
-      final Map<String, Object> context) throws IOException, MessagingException {
 
+  public Multipart createContent(Template textTemplate, Template htmlTemplate,
+    final Map<String, Object> context) throws IOException, MessagingException
+  {
     // Create a "text" Multipart message
-    final Multipart mp = createPartForMultipart(textTemplateFilename, context, "alternative",
+    final Multipart mp = createPartForMultipart(textTemplate, context, "alternative",
       MIME_TYPE_TEXT_PLAIN + "; charset=" +
         configuration.getDefaultEncoding());
 
     // Create a "HTML" Multipart message
-    final Multipart htmlContent = createPartForMultipart(htmlTemplateFilename, context, "related",
+    final Multipart htmlContent = createPartForMultipart(htmlTemplate, context, "related",
       MIME_TYPE_TEXT_HTML + "; charset=" +
         configuration.getDefaultEncoding());
 
@@ -146,22 +164,33 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
     return mp;
   }
 
-  private Multipart createPartForMultipart(final String templateFilename, final Map<String, Object> context,
+  /**
+   * @inheritDoc
+   */
+  public Multipart createContent(String textTemplateFilename, String htmlTemplateFilename,
+      final Map<String, Object> context) throws IOException, MessagingException {
+
+    final Template htmlTemplate = configuration.getTemplate(htmlTemplateFilename);
+    final Template textTemplate = configuration.getTemplate(textTemplateFilename);
+
+    return createContent(textTemplate, htmlTemplate, context);
+  }
+
+  private Multipart createPartForMultipart(final Template htmlTemplate, final Map<String, Object> context,
                                            final String multipartType, final String mimeType)
     throws IOException, MessagingException {
     final Multipart multipart = new MimeMultipart(multipartType);
 
-    multipart.addBodyPart(createBodyPart(mimeType, templateFilename, context));
+    multipart.addBodyPart(createBodyPart(mimeType, htmlTemplate, context));
 
     return multipart;
   }
 
-  private BodyPart createBodyPart(final String mimeType, final String htmlTemplateFilename,
+  private BodyPart createBodyPart(final String mimeType, final Template htmlTemplate,
                                   final Map<String, Object> context)
     throws IOException, MessagingException {
 
     final BodyPart htmlPage = new MimeBodyPart();
-    final Template htmlTemplate = configuration.getTemplate(htmlTemplateFilename);
     final String encoding = configuration.getDefaultEncoding();
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream(100);
     final Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, encoding));

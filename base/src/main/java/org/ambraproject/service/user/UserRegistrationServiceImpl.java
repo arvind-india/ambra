@@ -235,10 +235,9 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
    */
   @Override
   @Transactional
-  public void resetPassword(final String email, final String verificationToken, final String newPassword) {
+  public void resetPassword(final String email, final String newPassword) {
     for (Map.Entry<String, String> argument : new HashMap<String, String>() {{
       put("email", email);
-      put("verificationToken", verificationToken);
       put("new password", newPassword);
     }}.entrySet()) {
       if (StringUtils.isEmpty(argument.getValue())) {
@@ -249,18 +248,15 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
     UserProfile profile = (UserProfile) DataAccessUtils.uniqueResult(
         hibernateTemplate.findByCriteria(
             DetachedCriteria.forClass(UserProfile.class)
-                .add(Restrictions.eq("email", email))
-                .add(Restrictions.eq("verificationToken", verificationToken))
-        )
+                .add(Restrictions.eq("email", email)))
     );
     if (profile == null) {
-      throw new IllegalArgumentException("Incorrect email/verfication token: "
-          + email + " / " + verificationToken);
+      throw new IllegalArgumentException("Incorrect email: " + email);
     }
+
     log.debug("Setting new password for {}", email);
     profile.setPassword(passwordDigestService.generateDigest(newPassword));
     hibernateTemplate.update(profile);
-
   }
 
   /**
@@ -268,7 +264,8 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
    */
   @Override
   @Transactional
-  public String sendEmailChangeMessage(final String oldEmail, final String newEmail, final String password) throws NoSuchUserException {
+  public String sendEmailChangeMessage(final String oldEmail, final String newEmail, final String password)
+      throws NoSuchUserException, DuplicateUserException {
     for (Map.Entry<String, String> argument : new HashMap<String, String>() {{
       put("old email", oldEmail);
       put("new email", newEmail);
@@ -295,6 +292,16 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
       throw new SecurityException("Invalid password");
     }
 
+    int existingUserCount = DataAccessUtils.intResult(
+      hibernateTemplate.findByCriteria(
+        DetachedCriteria.forClass(UserProfile.class)
+          .add(Restrictions.eq("email", newEmail).ignoreCase())
+          .setProjection(Projections.count("email")))
+    );
+    if (existingUserCount > 0) {
+      throw new DuplicateUserException(DuplicateUserException.Field.EMAIL);
+    }
+
     log.debug("sending email change verification to {}", newEmail);
     profile.setVerificationToken(TokenGenerator.getUniqueToken());
     hibernateTemplate.update(profile);
@@ -306,7 +313,7 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
   @Override
   @Transactional
   public void updateEmailAddress(final String oldEmail, final String newEmail, final String verificationToken) throws
-    NoSuchUserException, VerificationTokenException {
+    NoSuchUserException, VerificationTokenException, DuplicateUserException {
     for (Map.Entry<String, String> argument : new HashMap<String, String>() {{
       put("old email", oldEmail);
       put("new email", newEmail);
@@ -328,6 +335,16 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
       throw new NoSuchUserException("No user with the email: " + oldEmail);
     } else if (!verificationToken.equals(profile.getVerificationToken())) {
       throw new VerificationTokenException("An invalid verification token was given for this user");
+    }
+
+    int existingUserCount = DataAccessUtils.intResult(
+      hibernateTemplate.findByCriteria(
+        DetachedCriteria.forClass(UserProfile.class)
+          .add(Restrictions.eq("email", newEmail).ignoreCase())
+          .setProjection(Projections.count("email")))
+    );
+    if (existingUserCount > 0) {
+      throw new DuplicateUserException(DuplicateUserException.Field.EMAIL);
     }
 
     log.debug("Changing email for {} to {}", oldEmail, newEmail);

@@ -20,6 +20,7 @@
 
 package org.ambraproject.email;
 
+import freemarker.template.Template;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import javax.mail.MessagingException;
@@ -35,6 +36,12 @@ import java.util.Map;
  */
 public class MockTemplateMailer implements TemplateMailer {
 
+  public Multipart createContent(Template textTemplate, Template htmlTemplate,
+                                 final Map<String, Object> context) throws IOException, MessagingException
+  {
+    return null;
+  }
+
   public Multipart createContent(String textTemplateFilename, String htmlTemplateFilename,
                                  final Map<String, Object> context) throws IOException, MessagingException
   {
@@ -44,6 +51,13 @@ public class MockTemplateMailer implements TemplateMailer {
 
   public void mail(final String toEmailAddress, final String fromEmailAddress, final String subject,
             final Map<String, Object> context, final Multipart content)
+  {
+
+  }
+
+  public void mail(final String toEmailAddress, final String bccAddress,
+                   final String fromEmailAddress, final String subject,
+                   final Map<String, Object> context, final Multipart content)
   {
 
   }

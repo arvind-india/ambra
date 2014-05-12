@@ -35,6 +35,68 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.18</h2>
+  <p>Released May 6, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.18</h3>
+  <ul>
+     <li>A bugfix to ensure new registration emails are unique</li>
+     <li>A bugfix in registration verification</li>
+     <li>Administrative enhancements to user import</li>
+     <li>A refinement for a test function for displayName uniqueness</li>
+     <li>An update to the Administrative environment</li>
+  </ul>
+
+  <h2>Ambra 2.9.17</h2>
+  <p>Released April 29, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.17</h3>
+  <ul>
+     <li>Patching Struts to version 2.3.16.2</li>
+     <li>A bugfix for display of Data Availability Statement on newly published articles</li>
+     <li>A bugfix for article ingestion when article payload included striking images</li>
+     <li>A bugfix for a test function for displayName uniqueness</li>
+     <li>A minor bugfix for a recent SSO migration around welcome email content</li>
+  </ul>
+
+  <h2>Ambra 2.9.16</h2>
+  <p>Released April 22, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.16</h3>
+  <ul>
+     <li>A bugfix for inline figure and table display for certain articles</li>
+  </ul>
+
+  <h2>Ambra 2.9.15</h2>
+  <p>Released April 15, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.15</h3>
+  <ul>
+     <li>A bugfix in how we manage reference DOI</li>
+     <li>Additional administrative changes: small bug fixes and integration enhancements</li>
+     <li>A bugfix for a 500 error retrieving article comments</li>
+  </ul>
+
+  <h2>Ambra 2.9.14</h2>
+  <p>Released April 8, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.14</h3>
+  <ul>
+     <li>A bugfix in the password change workflow</li>
+     <li>Administrative changes: small bug fixes and integration enhancements</li>
+  </ul>
+
+  <h2>Ambra 2.9.13</h2>
+  <p>Released April 1, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.13</h3>
+  <ul>
+     <li>Update to taxonomy synonyms</li>
+     <li>Changes to article logging implementation</li>
+     <li>Administrative changes to support additional authentication integration</li>
+  </ul>
+
+  <h2>Ambra 2.9.12</h2>
+  <p>Released March 25, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.12</h3>
+  <ul>
+     <li>Bug fix in socket management, ensuring streams are properly closed</li>
+  </ul>
+
   <h2>Ambra 2.9.11</h2>
   <p>Released March 18, 2014</p>
   <h3>Features Implemented in Ambra 2.9.11</h3>

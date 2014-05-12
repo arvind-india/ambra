@@ -1,5 +1,6 @@
 <#--
-  Copyright (c) 2007-2013 by Public Library of Science
+  Copyright (c) 2007-2014 by Public Library of Science
+
   http://plos.org
   http://ambraproject.org
   
@@ -42,7 +43,6 @@
     <#include "/includes/orcid_status.ftl">
   <#else>
     <#include "/includes/orcid_info.ftl">
-
   </#if>
 
   <#--store the email, alerts, and displayName on the page so that they get set on the action when we go back to save-->

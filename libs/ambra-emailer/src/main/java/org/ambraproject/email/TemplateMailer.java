@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006-2013 by Public Library of Science
+ * Copyright (c) 2006-2014 by Public Library of Science
+ *
  * http://plos.org
  * http://ambraproject.org
  *
@@ -7,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,9 +16,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ambraproject.email;
 
+import freemarker.template.Template;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import java.io.IOException;
@@ -41,7 +42,20 @@ public interface TemplateMailer {
    * @throws MessagingException
    */
   public Multipart createContent(String textTemplateFilename, String htmlTemplateFilename,
-                                 final Map<String, Object> context) throws IOException, MessagingException;
+                                 Map<String, Object> context) throws IOException, MessagingException;
+
+  /**
+   * Helper method for creating Multiparts from a freemarker template for emailing
+   *
+   * @param textTemplate the text freemarker template
+   * @param htmlTemplate the html freemarker template
+   * @param context a {@link java.util.Map} of objects to expose to the template engine
+   * @return the multipart content for a new email
+   * @throws IOException
+   * @throws MessagingException
+   */
+  public Multipart createContent(Template textTemplate, Template htmlTemplate,
+                                 Map<String, Object> context) throws IOException, MessagingException;
 
   /**
    * Send a mail with the content specified
@@ -52,8 +66,8 @@ public interface TemplateMailer {
    * @param context a {@link java.util.Map} of objects to expose to the template engine
    * @param content the content of the message to send
    */
-  void mail(final String toEmailAddress, final String fromEmailAddress, final String subject,
-            final Map<String, Object> context, final Multipart content);
+  void mail(String toEmailAddress, String fromEmailAddress, String subject,
+            Map<String, Object> context, Multipart content);
 
   /**
    * Send a mail with both a text and a HTML version.
@@ -64,9 +78,22 @@ public interface TemplateMailer {
    * @param textTemplateFilename textTemplateFilename
    * @param htmlTemplateFilename htmlTemplateFilename
    */
-  void mail(final String toEmailAddress, final String fromEmailAddress, final String subject,
-            final Map<String, Object> context, final String textTemplateFilename,
-            final String htmlTemplateFilename);
+  void mail(String toEmailAddress, String fromEmailAddress, String subject,
+            Map<String, Object> context, String textTemplateFilename,
+            String htmlTemplateFilename);
+
+  /**
+   * Send a mail with both a text and a HTML version.
+   * @param toEmailAddress the email address where to send the email
+   * @param bccAddress the email address to send a blind carbon copy
+   * @param fromEmailAddress fromEmailAddress
+   * @param subject subject of the email
+   * @param context a {@link java.util.Map} of objects to expose to the template engine
+   * @param content the content of the message to send
+   */
+  void mail(String toEmailAddress, String bccAddress,
+            String fromEmailAddress, String subject,
+            Map<String, Object> context, Multipart content);
 
   /**
    * Mail to multiple email addresses with both a text and a HTML version.
@@ -76,6 +103,6 @@ public interface TemplateMailer {
    * @param textTemplateFilename textTemplateFilename
    * @param htmlTemplateFilename htmlTemplateFilename
    */
-  void massMail(final Map<String, Map<String, Object>> emailAddressContextMap, final String subject,
-                final String textTemplateFilename, final String htmlTemplateFilename);
+  void massMail(Map<String, Map<String, Object>> emailAddressContextMap, String subject,
+                String textTemplateFilename, String htmlTemplateFilename);
 }
