@@ -10,13 +10,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ambraproject.service.article;
 
 import org.w3c.dom.Document;
-
+import java.io.OutputStream;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Alex Kudlick
@@ -33,4 +31,14 @@ public interface ArticleClassifier {
    *         strength of the match.
    */
   public List<String> classifyArticle(Document articleXml) throws Exception;
+
+  /**
+   * Classify an article from its xml and output a lot of debugging information to the passed in stream
+   * This does not actually store any information
+   *
+   * @param os the stream to write to
+   * @param doi the doi of the article
+   * @param thesaurus the thesaurus to use
+   */
+  public void testThesaurus(OutputStream os, String doi, String thesaurus) throws Exception;
 }

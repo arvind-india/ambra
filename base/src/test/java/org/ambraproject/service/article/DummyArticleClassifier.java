@@ -15,6 +15,7 @@ package org.ambraproject.service.article;
 
 import org.w3c.dom.Document;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,5 +28,10 @@ public class DummyArticleClassifier implements ArticleClassifier {
   @Override
   public List<String> classifyArticle(Document articleXml) throws Exception {
     return new ArrayList<String>(Arrays.asList("/TopLevel1/term1", "/TopLevel2/term2"));
+  }
+
+  public void testThesaurus(OutputStream os, String doi, String thesaurus) throws Exception
+  {
+    throw new Exception("not implemented.");
   }
 }

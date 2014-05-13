@@ -27,18 +27,17 @@ import org.springframework.beans.factory.annotation.Required;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathException;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -227,6 +226,9 @@ public class AIArticleClassifier implements ArticleClassifier {
   private static final String XML_URL = "http://www.plosone.org/article/fetchObjectAttachment.action"
       + "?uri=info%%3Adoi%%2F10.1371%%2Fjournal.%s&representation=XML";
 
+  private static final String XML_URL_FULLDOI = "http://www.plosone.org/article/fetchObjectAttachment.action"
+    + "?uri=%s&representation=XML";
+
   /**
    * Returns the XML for an article.  Note that this fetches the article XML via a
    * web request to the live site, not using a filestore.
@@ -235,8 +237,8 @@ public class AIArticleClassifier implements ArticleClassifier {
    * @return String of the article XML, if found
    * @throws Exception
    */
-  private static String fetchXml(String doi) throws Exception {
-    URL url = new URL(String.format(XML_URL, doi));
+  private String fetchXml(String doi) throws Exception {
+    URL url = new URL(doi);
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     conn.connect();
     InputStream is = conn.getInputStream();
@@ -246,13 +248,54 @@ public class AIArticleClassifier implements ArticleClassifier {
   }
 
   /**
+   * @inheritDoc
+   */
+  public void testThesaurus(final OutputStream os, final String doi, final String thesaurus) throws Exception {
+    String full_doi = String.format(XML_URL_FULLDOI, doi);
+    String xml = fetchXml(full_doi);
+    PrintStream ps = new PrintStream(os);
+
+    Document dom = DocumentBuilderFactoryCreator.createFactory().newDocumentBuilder().parse(
+      new ByteArrayInputStream(xml.getBytes("utf-8")));
+
+    AIArticleClassifier classifier = new AIArticleClassifier();
+
+    ps.println("Content to send to taxonomy server:");
+    ps.println("\n\n" + classifier.getCategorizationContent(dom) + "\n\n");
+
+    classifier.setServiceUrl("http://tax.plos.org:9080/servlet/dh");
+    classifier.setThesaurus(thesaurus);
+    classifier.setHttpClient(new HttpClient(new MultiThreadedHttpConnectionManager()));
+
+    List<String> rawOutput = classifier.getRawTerms(dom);
+
+    ps.println("\n\nTerms returned by taxonomy server:");
+
+    for (String s : rawOutput) {
+
+      // Strip out XML wrapping
+      s = s.replace("<TERM>", "");
+      s = s.replace("</TERM>", "");
+
+      // Replicate the hack in classifyArticle() above, so that this main method only shows what
+      // we would actually store in mysql.
+      if (!s.startsWith("/Earth sciences/Geography/Locations/")) {
+        ps.println(s);
+      }
+    }
+    ps.println("\n\n");
+  }
+
+  /**
    * Main method that categorizes a single article, based on its DOI as input on
    * the command line.
    *
    * @param args
    * @throws Exception
    */
+  @Deprecated
   public static void main(String... args) throws Exception {
+    //TODO: Delete me, not likely in use any longer
     if (args.length != 2) {
       System.err.println("You must specify the thesaurus as the first argument, and the PLOS "
           + "article as the second.  You entered: " + Arrays.toString(args));
@@ -261,33 +304,13 @@ public class AIArticleClassifier implements ArticleClassifier {
 
     Matcher matcher = DOI_REGEX.matcher(args[1]);
     matcher.find();
+
     String doi = matcher.group(1);
+
     if (doi != null) {
-      String xml = fetchXml(doi);
-      Document dom = DocumentBuilderFactoryCreator.createFactory().newDocumentBuilder().parse(
-          new ByteArrayInputStream(xml.getBytes("utf-8")));
-      AIArticleClassifier classifier = new AIArticleClassifier();
-      System.out.println("Content to send to taxonomy server:");
-      System.out.println("\n\n" + classifier.getCategorizationContent(dom) + "\n\n");
-
-      classifier.setServiceUrl("http://tax.plos.org:9080/servlet/dh");
-      classifier.setThesaurus(args[0].trim());
-      classifier.setHttpClient(new HttpClient(new MultiThreadedHttpConnectionManager()));
-      List<String> rawOutput = classifier.getRawTerms(dom);
-      System.out.println("\n\nTerms returned by taxonomy server:");
-      for (String s : rawOutput) {
-
-        // Strip out XML wrapping
-        s = s.replace("<TERM>", "");
-        s = s.replace("</TERM>", "");
-
-        // Replicate the hack in classifyArticle() above, so that this main method only shows what
-        // we would actually store in mysql.
-        if (!s.startsWith("/Earth sciences/Geography/Locations/")) {
-          System.out.println(s);
-        }
-      }
-      System.out.println("\n\n");
+      doi = String.format(XML_URL, doi);
+      AIArticleClassifier aiArticleClassifier = new AIArticleClassifier();
+      aiArticleClassifier.testThesaurus(System.out, doi, args[0].trim());
     } else {
       System.out.println(args[1] + " is not a valid DOI");
       System.exit(1);
