@@ -48,7 +48,8 @@ public class UserRole extends AmbraEntity {
     MANAGE_CORRECTIONS,
     RESEND_EMAIL_ALERTS,
     BETA_FEATURES,
-    MANAGE_FEATURED_ARTICLES
+    MANAGE_FEATURED_ARTICLES,
+    TEST_THESAURUS
   }
 
   private String roleName;
