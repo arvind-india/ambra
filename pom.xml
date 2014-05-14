@@ -44,7 +44,7 @@
     <mysql-connector-java.version>5.1.9</mysql-connector-java.version>
     <filestore.version>1.2.0</filestore.version>
     <httpclient.version>4.3.3</httpclient.version>
-    <httpmime.version>4.2.1</httpmime.version>
+    <httpmime.version>4.3.3</httpmime.version>
     <solr.version>4.1.0</solr.version>
     <testng.version>6.8.1</testng.version>
     <camel.version>2.11.1</camel.version>
