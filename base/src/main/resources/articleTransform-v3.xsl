@@ -219,7 +219,7 @@
         <xsl:if test="custom-meta-group/custom-meta[@id='data-availability']">
         <p>
           <strong>Data Availability:</strong><xsl:text> </xsl:text>
-          <xsl:apply-templates select="custom-meta-group/custom-meta[@id='data-availability']/meta-value" mode="metadata" />
+          <xsl:copy-of select="custom-meta-group/custom-meta[@id='data-availability']/meta-value" mode="metadata" />
         </p>
         </xsl:if>
         <!-- funding statement -->
