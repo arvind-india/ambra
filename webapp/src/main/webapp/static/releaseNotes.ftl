@@ -36,10 +36,14 @@
   </p>
 
   <h2>Ambra 2.9.19</h2>
-  <p>Released May 13, 2014</p>
+  <p>Released May 20, 2014</p>
   <h3>Features Implemented in Ambra 2.9.19</h3>
   <ul>
      <li>An enhancement to registration surrounding password reset reminders</li>
+     <li>An enhancement to the display of article metadata in mobile</li>
+     <li>An enhancement to taxonomic analysis - allowing multiple abstract to be utilized</li>
+     <li>An enhancement to Administrative functions around user import</li>
+     <li>A UI change around the User Profile screen</li>
   </ul>
 
   <h2>Ambra 2.9.18</h2>
