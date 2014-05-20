@@ -218,8 +218,7 @@
         <!-- Data Availability -->
         <xsl:if test="custom-meta-group/custom-meta[@id='data-availability']">
         <p>
-          <strong>Data Availability:</strong><xsl:text> </xsl:text>
-          <xsl:copy-of select="custom-meta-group/custom-meta[@id='data-availability']/meta-value" mode="metadata" />
+          <xsl:apply-templates select="custom-meta-group/custom-meta[@id='data-availability']/meta-value" mode="metadata"/>
         </p>
         </xsl:if>
         <!-- funding statement -->
@@ -304,6 +303,13 @@
     <xsl:template match="product" mode="metadata" />
     <xsl:template match="permissions" mode="metadata" />
     <xsl:template match="copyright-statement" mode="metadata"/>
+
+    <!-- 5/20/14: plos modifications -->
+    <xsl:template match="custom-meta-group/custom-meta[@id='data-availability']/meta-value" mode="metadata">
+      <strong>Data Availability: </strong>
+      <xsl:apply-templates />
+    </xsl:template>
+
 
     <!-- 1/4/12: plos modifications -->
     <xsl:template match="license" mode="metadata">
