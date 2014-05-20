@@ -35,6 +35,14 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.20</h2>
+  <p>Released May 27, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.20</h3>
+  <ul>
+     <li>An enhancement to registration verification</li>
+     <li>An enhancement to the display of article data availability statements</li>
+  </ul>
+
   <h2>Ambra 2.9.19</h2>
   <p>Released May 20, 2014</p>
   <h3>Features Implemented in Ambra 2.9.19</h3>
