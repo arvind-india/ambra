@@ -166,7 +166,7 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
         hibernateTemplate.findByCriteria(
             DetachedCriteria.forClass(UserProfile.class)
                 .add(Restrictions.eq("email", email))
-        ));
+                .add(Restrictions.eq("verified", true))));
     if (profile == null) {
       throw new NoSuchUserException("No user with the email: " + email);
     }

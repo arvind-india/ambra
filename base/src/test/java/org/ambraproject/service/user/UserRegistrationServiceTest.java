@@ -134,6 +134,8 @@ public class UserRegistrationServiceTest extends BaseTest {
         "testSendForgotPasswordMessage",
         "pass");
 
+    profile.setVerified(true);
+
     Long id = Long.valueOf(dummyDataStore.store(profile));
     String oldEmailVerificationToken = profile.getVerificationToken();
     int numSentEmails = dummyMailer.getEmailsSent().size();
@@ -150,6 +152,18 @@ public class UserRegistrationServiceTest extends BaseTest {
     assertEquals(passwordEmail.getContext().get("email"), profile.getEmail(), "sent incorrect email in template");
     assertEquals(passwordEmail.getContext().get("verificationToken"), profile.getVerificationToken(),
         "sent incorrect email verification token");
+  }
+
+  @Test(expectedExceptions = NoSuchUserException.class)
+  public void testSendForgotPasswordMessageNotVerified() throws Exception {
+    UserProfile profile = new UserProfile(
+      "sendForgotPasswordMessage2@test.org",
+      "testSendForgotPasswordMessage2",
+      "pass2");
+
+    dummyDataStore.store(profile);
+
+    userRegistrationService.sendForgotPasswordMessage(profile.getEmail());
   }
 
   @Test
