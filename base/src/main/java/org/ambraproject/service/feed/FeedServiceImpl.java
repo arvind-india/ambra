@@ -29,8 +29,8 @@ import org.ambraproject.service.search.SolrHttpService;
 import org.ambraproject.service.trackback.TrackbackService;
 import org.ambraproject.views.AnnotationView;
 import org.ambraproject.views.LinkbackView;
+import org.ambraproject.views.TOCArticle;
 import org.ambraproject.views.TOCArticleGroup;
-import org.ambraproject.views.article.ArticleInfo;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -371,9 +371,9 @@ public class FeedServiceImpl extends HibernateServiceImpl implements FeedService
    */
   @Override
   @Transactional(readOnly = true)
-  public List<ArticleInfo> getIssueArticles(final FeedSearchParameters searchParameters, String journal, String authId) throws
+  public List<TOCArticle> getIssueArticles(final FeedSearchParameters searchParameters, String journal, String authId) throws
       URISyntaxException, ApplicationException {
-    List<ArticleInfo> articleList = new ArrayList<ArticleInfo>();
+    List<TOCArticle> articleList = new ArrayList<TOCArticle>();
 
     String issurURI = (searchParameters.getIssueURI() != null) ? searchParameters.getIssueURI() : null;
 

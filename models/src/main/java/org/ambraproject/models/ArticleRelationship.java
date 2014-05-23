@@ -103,7 +103,7 @@ public class ArticleRelationship extends AmbraEntity {
    * @param type relationship type
    * @return true/false
    */
-  public boolean isAmendmentRelationship(String type) {
+  public static boolean isAmendmentRelationship(String type) {
     if (ORIGINAL_ARTICLE_AMENDMENT_TYPE.contains(type)) {
       return true;
     }
@@ -115,7 +115,7 @@ public class ArticleRelationship extends AmbraEntity {
    * @param type the relationship type
    * @return true/false
    */
-  public boolean isOriginalArticleOfAmendment(String type) {
+  public static boolean isOriginalArticleOfAmendment(String type) {
     if (AMENDMENT_ARTICLE_RELATIONSHIP_TYPE.contains(type)) {
       return true;
     }

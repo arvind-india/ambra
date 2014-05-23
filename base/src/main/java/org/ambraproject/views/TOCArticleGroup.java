@@ -22,9 +22,7 @@ package org.ambraproject.views;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
-import org.ambraproject.views.article.ArticleInfo;
-import org.ambraproject.views.article.ArticleInfoMostRecentDateComparator;
+import java.util.Comparator;
 import org.ambraproject.views.article.ArticleType;
 
 /**
@@ -34,7 +32,7 @@ import org.ambraproject.views.article.ArticleType;
  */
 public class TOCArticleGroup {
   ArticleType type;
-  public ArrayList<ArticleInfo> articles = new ArrayList<ArticleInfo>();
+  public ArrayList<TOCArticle> articles = new ArrayList<TOCArticle>();
   private String id = null;
   private String heading = null;
   private String pluralHeading = null;
@@ -106,7 +104,7 @@ public class TOCArticleGroup {
     }
   }
 
-  public void addArticle(ArticleInfo article) {
+  public void addArticle(TOCArticle article) {
     articles.add(article);
   }
 
@@ -114,7 +112,7 @@ public class TOCArticleGroup {
     return type;
   }
 
-  public ArrayList<ArticleInfo> getArticles() {
+  public ArrayList<TOCArticle> getArticles() {
     return articles;
   }
 
@@ -127,7 +125,18 @@ public class TOCArticleGroup {
   }
 
   public void sortArticles() {
-    ArticleInfoMostRecentDateComparator comparator = new ArticleInfoMostRecentDateComparator();
-    Collections.sort(articles, comparator);
+    Collections.sort(articles, new Comparator<TOCArticle>() {
+      @Override
+      public int compare(TOCArticle o1, TOCArticle o2) {
+        if (o1.getDate().after(o2.getDate())) {
+          return -1;
+        }
+        if (o1.getDate().before(o2.getDate())) {
+          return 1;
+        }
+
+        return o1.getDoi().compareTo(o2.getDoi());
+      }
+    });
   }
 }

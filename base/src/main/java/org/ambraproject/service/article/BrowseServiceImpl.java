@@ -33,6 +33,7 @@ import org.ambraproject.service.search.SolrServiceUtil;
 import org.ambraproject.views.BrowseResult;
 import org.ambraproject.views.IssueInfo;
 import org.ambraproject.views.SearchHit;
+import org.ambraproject.views.TOCArticle;
 import org.ambraproject.views.TOCArticleGroup;
 import org.ambraproject.views.VolumeInfo;
 import org.ambraproject.views.article.ArticleInfo;
@@ -566,6 +567,7 @@ public class BrowseServiceImpl extends HibernateServiceImpl implements BrowseSer
    *
    */
   @Override
+  @Transactional(readOnly = true)
   public List<TOCArticleGroup> getArticleGrpList(IssueInfo issue, String authId){
     List<TOCArticleGroup> groupList = new ArrayList<TOCArticleGroup>();
 
@@ -587,13 +589,13 @@ public class BrowseServiceImpl extends HibernateServiceImpl implements BrowseSer
     //There are some pretty big inefficiencies here.  We load up complete article classes when
     //we only need doi/title/authors.  A new TOCArticle class should probably be created once article lazy
     //loading is working correctly
-    List<ArticleInfo> articlesInIssue = articleService.getArticleInfos(issue.getArticleUriList(), authId);
+    List<TOCArticle> articlesInIssue = articleService.getArticleTOCEntries(issue.getArticleUriList(), authId);
 
     /*
      * For every article that is of the same ArticleType as a TOCArticleGroup, add it to that group.
      * Articles can appear in multiple TOCArticleGroups.
      */
-    for (ArticleInfo ai : articlesInIssue)
+    for (TOCArticle ai : articlesInIssue)
       for (TOCArticleGroup ag : articleGroups)
         for (ArticleType articleType : ai.getArticleTypes())
           if (ag.getArticleType().equals(articleType)) {

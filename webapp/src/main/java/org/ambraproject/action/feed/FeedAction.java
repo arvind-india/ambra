@@ -29,7 +29,7 @@ import org.ambraproject.service.feed.FeedService;
 import org.ambraproject.service.feed.FeedService.FEED_TYPES;
 import org.ambraproject.views.AnnotationView;
 import org.ambraproject.views.LinkbackView;
-import org.ambraproject.views.article.ArticleInfo;
+import org.ambraproject.views.TOCArticle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -96,7 +96,7 @@ public class FeedAction extends BaseActionSupport implements ModelDriven {
 
   private FeedService feedService;     // Feed Service Spring injected.
   private FeedSearchParameters searchParams;    // The action data model
-  private List<ArticleInfo> articles;        // List of Article IDs; result of search
+  private List<TOCArticle> articles;        // List of Article IDs; result of search
   private List<AnnotationView> annotations;     // List of Annotations; result of search
   private List<LinkbackView> trackbacks;      // List of tracks; results of search
   private Document resultFromSolr;  // list of articles for the rss feed
@@ -198,7 +198,7 @@ public class FeedAction extends BaseActionSupport implements ModelDriven {
    *
    * @return the list of article/annotation ID's returned from the query.
    */
-  public List<ArticleInfo> getArticles() {
+  public List<TOCArticle> getArticles() {
     return articles;
   }
 

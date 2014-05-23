@@ -20,7 +20,7 @@
 package org.ambraproject.service.feed;
 
 import org.ambraproject.ApplicationException;
-import org.ambraproject.views.article.ArticleInfo;
+import org.ambraproject.views.TOCArticle;
 import org.ambraproject.models.AnnotationType;
 import org.ambraproject.views.AnnotationView;
 import org.ambraproject.views.LinkbackView;
@@ -96,7 +96,7 @@ public interface FeedService {
    * @throws URISyntaxException   URISyntaxException
    * @parem authId the current user authId
    */
-  public List<ArticleInfo> getIssueArticles(final FeedSearchParameters searchParams, String journal, String authId) throws
+  public List<TOCArticle> getIssueArticles(final FeedSearchParameters searchParams, String journal, String authId) throws
       URISyntaxException, ApplicationException;
 
   /**

@@ -25,6 +25,7 @@ import org.ambraproject.models.Category;
 import org.ambraproject.models.CitedArticle;
 import org.ambraproject.views.CitedArticleView;
 import org.ambraproject.views.SearchHit;
+import org.ambraproject.views.TOCArticle;
 import org.ambraproject.views.article.ArticleInfo;
 import org.ambraproject.views.article.BaseArticleInfo;
 import org.springframework.dao.DataAccessException;
@@ -32,12 +33,59 @@ import org.springframework.transaction.annotation.Transactional;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Joe Osowski
  */
 
 public interface ArticleService {
+  /**
+   * Determines if the set contains a type of research article
+   *
+   * @param types The set of types to search
+   * @return True if the article is a research article
+   * @throws ApplicationException
+   *                                  if there was a problem talking to the OTM
+   * @throws NoSuchArticleIdException When the article does not exist
+   */
+  public boolean containsResearchType(final Set<String> types)
+    throws NoSuchArticleIdException, ApplicationException;
+
+  /**
+   * Determines if the set contains a type of retraction
+   *
+   * @param types The set of types to search
+   * @return True if the article is a retraction article
+   * @throws NoSuchArticleIdException
+   * @throws ApplicationException
+   */
+  public boolean containsRetractionType(final Set<String> types)
+    throws NoSuchArticleIdException, ApplicationException;
+
+  /**
+   * Determines if the set contains a type of expression of concern
+   *
+   * @param types The set of types to search
+   * @return True if the article is a eoc article
+   * @throws ApplicationException
+   * @throws NoSuchArticleIdException When the article does not exist
+   */
+  public boolean containsEocType(final Set<String> types)
+    throws NoSuchArticleIdException, ApplicationException;
+
+
+  /**
+   * Determines if the set contains a type of Correction
+   *
+   * @param types The set of types to search
+   * @return True if the article is a correction article
+   * @throws ApplicationException
+   * @throws NoSuchArticleIdException When the article does not exist
+   */
+  public boolean containsCorrectionType(final Set<String> types)
+    throws NoSuchArticleIdException, ApplicationException;
+
   /**
    * Determines if the articleURI is of type researchArticle
    *
@@ -215,13 +263,8 @@ public interface ArticleService {
    */
   public ArticleInfo getArticleInfo(final Long articleID, final String authId) throws NoSuchArticleIdException;
 
-  /**
-   * Get the articleInfo objects for the list of articles
-   * @param articleDois the IDs of the articles
-   * @param authId the authorization ID of the current user
-   * @return articleInfos
-   */
-  public List<ArticleInfo> getArticleInfos(final List<String> articleDois, final String authId);
+  //TODO: Document
+  public List<TOCArticle> getArticleTOCEntries(final List<String> articleDois, final String authId);
 
   /**
    * Get a basic view object for the article with the corresponding id

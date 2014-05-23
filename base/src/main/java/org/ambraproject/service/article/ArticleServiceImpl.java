@@ -19,9 +19,10 @@
 package org.ambraproject.service.article;
 
 import org.ambraproject.ApplicationException;
-import org.ambraproject.util.XPathUtil;
 import org.ambraproject.views.CitedArticleView;
 import org.ambraproject.views.SearchHit;
+import org.ambraproject.views.TOCArticle;
+import org.ambraproject.views.TOCRelatedArticle;
 import org.ambraproject.views.UserProfileInfo;
 import org.ambraproject.views.article.ArticleInfo;
 import org.ambraproject.views.article.ArticleType;
@@ -58,13 +59,9 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateAccessor;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Document;
-
-import javax.xml.xpath.XPathExpressionException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.sql.SQLException;
@@ -91,33 +88,33 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   private PermissionsService permissionsService;
   private CrossRefLookupService crossRefLookupService;
 
-  /**
-   * Determines if the articleURI is of type researchArticle
-   *
-   * @param article The article object
-   * @return True if the article is a research article
-   * @throws org.ambraproject.ApplicationException
-   *                                  if there was a problem talking to the OTM
-   * @throws NoSuchArticleIdException When the article does not exist
-   */
   @Override
-  public boolean isResearchArticle(final Article article)
-      throws ApplicationException, NoSuchArticleIdException {
-    // resolve article type and supported properties
+  public boolean containsResearchType(final Set<String> types) throws ApplicationException {
     ArticleType articleType = ArticleType.getDefaultArticleType();
 
-    for (String artTypeUri : article.getTypes()) {
-      if (ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri)) != null) {
-        articleType = ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri));
-        break;
+    if(types != null) {
+      for (String artTypeUri : types) {
+        if (ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri)) != null) {
+          articleType = ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri));
+
+          if(articleType != null && ArticleType.isResearchArticle(articleType)) {
+            return true;
+          }
+        }
       }
     }
 
     if (articleType == null) {
-      throw new ApplicationException("Unable to resolve article type for: " + article.getDoi());
+      throw new ApplicationException("Unable to resolve article type");
     }
 
-    return ArticleType.isResearchArticle(articleType);
+    return false;
+  }
+
+  @Override
+  public boolean isResearchArticle(final Article article)
+      throws ApplicationException, NoSuchArticleIdException {
+    return containsResearchType(article.getTypes());
   }
 
   /**
@@ -131,22 +128,31 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
    */
   public boolean isResearchArticle(final ArticleInfo articleInfo)
       throws ApplicationException, NoSuchArticleIdException {
+
+    return containsResearchType(articleInfo.getTypes());
+  }
+
+  public boolean containsRetractionType(final Set<String> types) throws ApplicationException {
     ArticleType articleType = ArticleType.getDefaultArticleType();
 
-    for (String artTypeUri : articleInfo.getTypes()) {
-      if (ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri)) != null) {
-        articleType = ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri));
-        break;
+    if(types != null) {
+      for (String artTypeUri : types) {
+        if (ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri)) != null) {
+          articleType = ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri));
+
+          if(articleType != null && ArticleType.isRetractionArticle(articleType)) {
+            return true;
+          }
+        }
       }
     }
 
     if (articleType == null) {
-      throw new ApplicationException("Unable to resolve article type for: " + articleInfo.getDoi());
+      throw new ApplicationException("Unable to resolve article type");
     }
 
-    return ArticleType.isResearchArticle(articleType);
+    return false;
   }
-
   /**
    *
    * @param articleInfo The ArticleInfo object
@@ -156,19 +162,30 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
    */
   public boolean isRetractionArticle(final BaseArticleInfo articleInfo)
           throws ApplicationException, NoSuchArticleIdException {
+    return containsRetractionType(articleInfo.getTypes());
+  }
+
+
+  public boolean containsEocType(final Set<String> types) throws ApplicationException {
     ArticleType articleType = ArticleType.getDefaultArticleType();
 
-    for (String artTypeUri : articleInfo.getTypes()) {
-      if (ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri)) != null) {
-        articleType = ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri));
-        break;
+    if(types != null) {
+      for (String artTypeUri : types) {
+        if (ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri)) != null) {
+          articleType = ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri));
+
+          if(articleType != null && ArticleType.isEocArticle(articleType)) {
+            return true;
+          }
+        }
       }
     }
+
     if (articleType == null) {
-      throw new ApplicationException("Unable to resolve article type for: " + articleInfo.getDoi());
+      throw new ApplicationException("Unable to resolve article type");
     }
 
-    return ArticleType.isRetractionArticle(articleType);
+    return false;
   }
 
   /**
@@ -181,52 +198,40 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
    */
   public boolean isEocArticle(final BaseArticleInfo articleInfo)
       throws ApplicationException, NoSuchArticleIdException {
+    return containsEocType(articleInfo.getTypes());
+  }
+
+  public boolean containsCorrectionType(final Set<String> types) throws ApplicationException {
     ArticleType articleType = ArticleType.getDefaultArticleType();
 
-    for (String artTypeUri : articleInfo.getTypes()) {
-      if (ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri)) != null) {
-        articleType = ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri));
-        break;
+    if(types != null) {
+      for (String artTypeUri : types) {
+        if (ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri)) != null) {
+          articleType = ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri));
+
+          if(articleType != null && ArticleType.isCorrectionArticle(articleType)) {
+            return true;
+          }
+        }
       }
     }
+
     if (articleType == null) {
-      throw new ApplicationException("Unable to resolve article type for: " + articleInfo.getDoi());
+      throw new ApplicationException("Unable to resolve article type");
     }
 
-    return ArticleType.isEocArticle(articleType);
+    return false;
   }
 
   public boolean isCorrectionArticle(final BaseArticleInfo articleInfo)
           throws ApplicationException, NoSuchArticleIdException {
-    ArticleType articleType = ArticleType.getDefaultArticleType();
-
-    for (String artTypeUri : articleInfo.getTypes()) {
-      if (ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri)) != null) {
-        articleType = ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri));
-        break;
-      }
-    }
-    if (articleType == null) {
-      throw new ApplicationException("Unable to resolve article type for: " + articleInfo.getDoi());
-    }
-
-    return ArticleType.isCorrectionArticle(articleType);
+    return containsCorrectionType(articleInfo.getTypes());
   }
 
   public boolean isAmendment(Article article) throws ApplicationException, NoSuchArticleIdException {
-    ArticleType articleType = ArticleType.getDefaultArticleType();
-
-    for (String artTypeUri : article.getTypes()) {
-      if (ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri)) != null) {
-        articleType = ArticleType.getKnownArticleTypeForURI(URI.create(artTypeUri));
-        break;
-      }
-    }
-    if (articleType == null) {
-      throw new ApplicationException("Unable to resolve article type for: " + article.getDoi());
-    }
-
-    return ArticleType.isCorrectionArticle(articleType) || ArticleType.isEocArticle(articleType) || ArticleType.isRetractionArticle(articleType) ;
+    return containsCorrectionType(article.getTypes()) ||
+      containsEocType(article.getTypes()) ||
+      containsRetractionType(article.getTypes());
   }
 
   /**
@@ -234,7 +239,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
    *
    * @param articleDoi uri
    * @param authId the authorization ID of the current user
-   * @param state   state
+   * @param state state
    *
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
@@ -716,27 +721,6 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     return createArticleInfo(article, authId);
   }
 
-  /**
-   * Get the articleInfo object for an article
-   * @param articleDois the ID of the article
-   * @param authId the authorization ID of the current user
-   * @return articleInfo
-   */
-  @Transactional(readOnly = true)
-  @Override
-  @SuppressWarnings("unchecked")
-  public List<ArticleInfo> getArticleInfos(final List<String> articleDois, final String authId) {
-
-    final List<Article> articles = getArticles(articleDois, authId);
-    List<ArticleInfo> articleInfos = new ArrayList<ArticleInfo>();
-
-    for(Article article : articles) {
-      articleInfos.add(createArticleInfo(article, authId));
-    }
-
-    return articleInfos;
-  }
-
   private ArticleInfo createArticleInfo(Article article, final String authId) {
     final ArticleInfo articleInfo = new ArticleInfo();
 
@@ -823,44 +807,9 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     //get related articles
     //this results in more queries than doing a join, but getArticle() already has security logic built in to it
     //and a very small percentage of articles even have related articles
-    articleInfo.setRelatedArticles(new ArrayList<RelatedArticleInfo>(article.getRelatedArticles().size()));
-    for (ArticleRelationship relationship : article.getRelatedArticles()) {
-      if (relationship.getOtherArticleDoi() != null) {
-        try {
-          // related articles of the article itself
-          Article otherArticle = getArticle(relationship.getOtherArticleDoi(), authId);
-          RelatedArticleInfo relatedArticleInfo = getRelatedArticleInfo(relationship, otherArticle);
-
-          if (!articleInfo.getRelatedArticles().contains(relatedArticleInfo)) {
-            articleInfo.getRelatedArticles().add(relatedArticleInfo);
-          }
-           /* Logic for the amendments Related Article Sidebar to include the link to its original article's other amendments */
-          if (isRetractionArticle(articleInfo) || isEocArticle(articleInfo) || isCorrectionArticle(articleInfo)) {
-            // make sure that the related article is the amendment's original article
-            if (relationship.isOriginalArticleOfAmendment(relationship.getType())) {
-
-              for (ArticleRelationship otherArticleRelationship :otherArticle.getRelatedArticles()) {
-                // exclude the current amendment article, non-amendment articles, and other articles th
-                if (!articleInfo.getDoi().equals( otherArticleRelationship.getOtherArticleDoi())
-                        && otherArticleRelationship.isAmendmentRelationship(otherArticleRelationship.getType())) {
-
-                  Article otherArticleRelatedArticle = getArticle(otherArticleRelationship.getOtherArticleDoi(), authId);
-                  RelatedArticleInfo otherArticleRelatedArticleInfo = getRelatedArticleInfo(otherArticleRelationship, otherArticleRelatedArticle);
-
-                  if (!articleInfo.getRelatedArticles().contains(otherArticleRelatedArticleInfo)) {
-                    articleInfo.getRelatedArticles().add(otherArticleRelatedArticleInfo);
-                  }
-                }
-              }
-            }
-          }
-        } catch (NoSuchArticleIdException e) {
-          //exclude this article
-        } catch (ApplicationException e) {
-
-        }
-      }
-    }
+    List<RelatedArticleInfo> articleInfos = getRelatedArticleInfos(articleInfo.getDoi(), articleInfo.getTypes(),
+      article.getRelatedArticles(), authId);
+    articleInfo.setRelatedArticles(articleInfos);
 
     log.debug("loaded ArticleInfo: id={}, articleTypes={}, " +
       "date={}, title={}, authors={}, related-articles={}",
@@ -868,6 +817,221 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
         articleInfo.getTitle(), Arrays.toString(articleInfo.getAuthors().toArray()),
         Arrays.toString(articleInfo.getRelatedArticles().toArray())});
     return articleInfo;
+  }
+
+  private List<RelatedArticleInfo> getRelatedArticleInfos(final String doi, final Set<String> types,
+      final List<ArticleRelationship> articleRelationships, String authId) {
+    List<RelatedArticleInfo> results = new ArrayList<RelatedArticleInfo>(articleRelationships.size());
+
+    for (ArticleRelationship relationship : articleRelationships) {
+      if (relationship.getOtherArticleDoi() != null) {
+        try {
+          // related articles of the article itself
+          //Just fetch the related articles for the other article
+          Article otherArticle = getArticle(relationship.getOtherArticleDoi(), authId);
+          RelatedArticleInfo relatedArticleInfo = getRelatedArticleInfo(relationship, otherArticle);
+
+          if (!results.contains(relatedArticleInfo)) {
+            results.add(relatedArticleInfo);
+          }
+
+          if(isDisplayableRelationship(types, relationship.getType())) {
+            for (ArticleRelationship otherArticleRelationship : otherArticle.getRelatedArticles()) {
+              if (isEqualOrAmmendment(doi, otherArticleRelationship.getOtherArticleDoi(),
+                otherArticleRelationship.getType()))
+              {
+                Article otherRelatedArticle = getArticle(relationship.getOtherArticleDoi(), authId);
+                RelatedArticleInfo otherArticleRelatedArticleInfo = getRelatedArticleInfo(otherArticleRelationship, otherRelatedArticle);
+
+                if (!results.contains(otherArticleRelatedArticleInfo)) {
+                  results.add(otherArticleRelatedArticleInfo);
+                }
+              }
+            }
+          }
+        } catch (NoSuchArticleIdException e) {
+          //exclude this article
+        } catch (ApplicationException e) {
+          //exclude this article
+        }
+      }
+    }
+
+    return results;
+  }
+
+  @SuppressWarnings("unchecked")
+  private List<TOCRelatedArticle> getRelatedArticlesForTOC(final String doi, final Set<String> types, String authId) {
+    List<Object[]> relatedArticles = getRelatedArticles(doi, authId);
+    List<TOCRelatedArticle> results = new ArrayList<TOCRelatedArticle>();
+
+    for (Object relationship[] : relatedArticles) {
+      final String relatedDoi = (String)relationship[0];
+      final String relatedTitle = (String)relationship[1];
+      final String relatedType = (String)relationship[2];
+      final Date relatedDate = (Date)relationship[3];
+
+      if (relatedDoi != null) {
+        try {
+          TOCRelatedArticle tocRelatedArticle = new TOCRelatedArticle(relatedDoi, relatedTitle, relatedType, relatedDate);
+
+          if (!results.contains(tocRelatedArticle)) {
+            results.add(tocRelatedArticle);
+          }
+
+          if(isDisplayableRelationship(types, relatedType)) {
+            List<Object[]> otherArticleRelationships = getRelatedArticles(relatedDoi, authId);
+
+            for (Object[] otherArticleRelationship : otherArticleRelationships) {
+              String otherArticleDoi = (String)otherArticleRelationship[0];
+              String otherArticleTitle = (String)otherArticleRelationship[1];
+              String otherArticleRelationshipType = (String)otherArticleRelationship[2];
+              Date otherArticleDate = (Date)otherArticleRelationship[3];
+
+              if (isEqualOrAmmendment(doi, otherArticleDoi, otherArticleRelationshipType)) {
+                TOCRelatedArticle tocOtherRelatedArticle = new TOCRelatedArticle(otherArticleDoi,
+                  otherArticleTitle, relatedType, otherArticleDate);
+
+                if (!results.contains(tocOtherRelatedArticle)) {
+                  results.add(tocOtherRelatedArticle);
+                }
+              }
+            }
+          }
+        } catch (ApplicationException e) {
+          //exclude this article
+        }
+      }
+    }
+
+    return results;
+  }
+
+  private boolean isEqualOrAmmendment(final String doi, final String otherDoi, final String otherRelationshipType) {
+    // exclude the current amendment article, non-amendment articles, and other articles th
+    return !doi.equals(otherDoi) && ArticleRelationship.isAmendmentRelationship(otherRelationshipType);
+  }
+
+  private boolean isDisplayableRelationship(final Set<String> types, final String type) throws ApplicationException {
+    /* Logic for the amendments Related Article Sidebar to include the link to its original article's other amendments */
+    if (containsRetractionType(types) || containsEocType(types) || containsCorrectionType(types)) {
+      // make sure that the related article is the amendment's original article
+      if (ArticleRelationship.isOriginalArticleOfAmendment(type)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @Transactional(readOnly = true)
+  @SuppressWarnings("unchecked")
+  public List<TOCArticle> getArticleTOCEntries(final List<String> articleDois, final String authId) {
+    for(int a = 0; a < articleDois.size(); a++) {
+      try {
+        checkArticleState(articleDois.get(a), authId);
+      } catch(NoSuchArticleIdException ex) {
+        articleDois.remove(a);
+      }
+    }
+
+    return hibernateTemplate.execute(new HibernateCallback<List<TOCArticle>>() {
+      @Override
+      public List<TOCArticle> doInHibernate(Session session) throws HibernateException, SQLException {
+        List<TOCArticle> results = new ArrayList<TOCArticle>(articleDois.size());
+
+        for(String doi : articleDois) {
+          List<String> articleStringTypes = session.createSQLQuery("select at.type from articleType at " +
+            "join article a on a.articleID = at.articleID where a.doi = :doi")
+            .setParameter("doi", doi).list();
+
+          assert(articleStringTypes != null);
+
+          Set<ArticleType> articleTypes = new HashSet<ArticleType>(articleStringTypes.size());
+
+          for (String artType : articleStringTypes) {
+            articleTypes.add(ArticleType.getArticleTypeForURI(URI.create(artType), true));
+          }
+
+          //Can assume here it's a valid doi from the checkArticleState query from above
+          Object[] article = ((List<Object[]>)session.createSQLQuery("select a.doi, a.title, j.title as journal, " +
+            "a.date, count(*) from article a left outer join articleAsset ass on a.articleID = ass.articleID " +
+            "left outer join journal j on a.eIssn = j.eIssn " +
+            "where a.doi = :doi group by a.doi, a.title, a.journal, a.date")
+            .setParameter("doi", doi)
+            .list()).get(0);
+
+          List<String> collaborativeAuthors = session.createSQLQuery("select ca.name from " +
+            "articleCollaborativeAuthors ca join article a on ca.articleID = a.articleID " +
+            "where a.doi = :doi order by ca.sortOrder asc")
+            .setParameter("doi", doi)
+            .list();
+
+          List<String> authors = session.createSQLQuery("select ap.fullName from " +
+            "articlePerson ap join article a on ap.articleID = a.articleID " +
+            "where a.doi = :doi and ap.type = 'author' order by ap.sortOrder asc")
+            .setParameter("doi", doi)
+            .list();
+
+          List<TOCRelatedArticle> relatedArticleInfos = getRelatedArticlesForTOC(doi,
+            new HashSet<String>(articleStringTypes), authId);
+
+          TOCArticle tocArticle = TOCArticle.builder()
+            .setDoi((String)article[0])
+            .setTitle((String)article[1])
+            .setAuthors(authors)
+            .setCollaborativeAuthors(collaborativeAuthors)
+            .setArticleTypes(articleTypes)
+            .setRelatedArticles(relatedArticleInfos)
+            .setPublishedJournal((String)article[2])
+            .setDate((Date)article[3])
+              //ignore article xml and pdf
+            .setHasFigures(((BigInteger)article[4]).intValue() > 2)
+            .build();
+
+          results.add(tocArticle);
+        }
+
+        return results;
+      }
+    });
+  }
+
+  @SuppressWarnings("unchecked")
+  @Transactional(readOnly = true)
+  private List<Object[]> getRelatedArticles(final String doi, final String authId) {
+    //Query for rows, take authId into account
+    List<Object[]> tempRes = (List<Object[]>)hibernateTemplate.execute(new HibernateCallback() {
+      @Override
+      public Object doInHibernate(Session session) throws HibernateException, SQLException {
+        String sqlQuery = "select ar.otherArticleDoi, a1.title, ar.type, a1.date " +
+          "from article a " +
+          "join articleRelationship ar on a.articleID = ar.parentArticleID " +
+          "join article a1 on ar.otherArticleID = a1.articleID " +
+          "where a.doi = :doi";
+
+        return session.createSQLQuery(sqlQuery)
+          .setParameter("doi", doi)
+          .list();
+      }
+    });
+
+    List<Object[]> results = new ArrayList<Object[]>();
+    for(Object[] row : tempRes) {
+      String otherArticleDoi = (String)row[0];
+      String otherArticleTitle = (String)row[1];
+      String otherArticleType = (String)row[2];
+      Date otherArticleDate = (Date)row[3];
+
+      try {
+        checkArticleState(doi, authId);
+        results.add(new Object[] { otherArticleDoi, otherArticleTitle, otherArticleType, otherArticleDate } );
+      } catch(NoSuchArticleIdException ex) {
+        //Do nothing
+      }
+    }
+
+    return results;
   }
 
   @Override
