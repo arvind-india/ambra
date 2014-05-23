@@ -534,8 +534,8 @@ public class BrowseServiceImpl extends HibernateServiceImpl implements BrowseSer
 
       // Article Loop
       while (y.hasNext()) {
-        ArticleInfo ai = (ArticleInfo) y.next();
-        articleList.append(ai.doi);
+        TOCArticle ai = (TOCArticle) y.next();
+        articleList.append(ai.getDoi());
 
         if (y.hasNext())
           articleList.append(',');

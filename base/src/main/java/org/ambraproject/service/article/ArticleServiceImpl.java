@@ -941,8 +941,8 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
         List<TOCArticle> results = new ArrayList<TOCArticle>(articleDois.size());
 
         for(String doi : articleDois) {
-          List<String> articleStringTypes = session.createSQLQuery("select at.type from articleType at " +
-            "join article a on a.articleID = at.articleID where a.doi = :doi")
+          List<String> articleStringTypes = session.createSQLQuery("select articleType.type from articleType " +
+            "join article on article.articleID = articleType.articleID where article.doi = :doi")
             .setParameter("doi", doi).list();
 
           assert(articleStringTypes != null);
@@ -954,10 +954,10 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
           }
 
           //Can assume here it's a valid doi from the checkArticleState query from above
-          Object[] article = ((List<Object[]>)session.createSQLQuery("select a.doi, a.title, j.title as journal, " +
-            "a.date, count(*) from article a left outer join articleAsset ass on a.articleID = ass.articleID " +
-            "left outer join journal j on a.eIssn = j.eIssn " +
-            "where a.doi = :doi group by a.doi, a.title, a.journal, a.date")
+          Object[] article = ((List<Object[]>)session.createSQLQuery("select article.doi, article.title, journal.title as journal, " +
+            "article.date, count(*) from article left outer join articleAsset on article.articleID = articleAsset.articleID " +
+            "left outer join journal on article.eIssn = journal.eIssn " +
+            "where article.doi = :doi group by article.doi, article.title, journal.title, article.date")
             .setParameter("doi", doi)
             .list()).get(0);
 
