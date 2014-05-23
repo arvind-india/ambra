@@ -263,7 +263,14 @@ public interface ArticleService {
    */
   public ArticleInfo getArticleInfo(final Long articleID, final String authId) throws NoSuchArticleIdException;
 
-  //TODO: Document
+  /**
+   * Get a table of Contents style list of articles
+   *
+   * @param articleDois the list of articles to fetch
+   * @param authId the authorization ID of the current user
+   *
+   * @return
+   */
   public List<TOCArticle> getArticleTOCEntries(final List<String> articleDois, final String authId);
 
   /**
