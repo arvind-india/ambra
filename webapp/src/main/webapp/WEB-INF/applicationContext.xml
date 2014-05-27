@@ -410,9 +410,10 @@
     <property name="httpClient" ref="httpClient"/>
   </bean>
 
-  <bean id="mostViewedArticleService" class="org.ambraproject.service.search.SolrMostViewedArticleService">
+  <bean id="mostViewedArticleService" class="org.ambraproject.service.search.MostViewedArticleServiceImpl">
     <property name="solrFieldConverter" ref="solrFieldConverter"/>
     <property name="solrHttpService" ref="solrHttpService"/>
+    <property name="articleService" ref="articleService"/>
     <property name="sessionFactory" ref="hibernateSessionFactory"/>
   </bean>
 

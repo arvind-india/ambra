@@ -1,16 +1,14 @@
 /*
- * $HeadURL$
- * $Id$
+ * Copyright (c) 2007-2014 by Public Library of Science
  *
- * Copyright (c) 2006-2010 by Public Library of Science
- *     http://plos.org
- *     http://ambraproject.org
+ * http://plos.org
+ * http://ambraproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,20 +16,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ambraproject.service.search;
 
-import org.ambraproject.models.Article;
-import org.ambraproject.models.ArticleAuthor;
 import org.ambraproject.models.ArticleList;
+import org.ambraproject.service.article.ArticleService;
 import org.ambraproject.service.article.MostViewedArticleService;
+import org.ambraproject.service.article.NoSuchArticleIdException;
 import org.ambraproject.service.hibernate.HibernateServiceImpl;
 import org.ambraproject.util.Pair;
 import org.ambraproject.views.article.HomePageArticleInfo;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 
@@ -39,6 +39,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,9 +52,10 @@ import java.util.concurrent.ConcurrentMap;
  *         <p/>
  *         org.ambraproject.solr
  */
-public class SolrMostViewedArticleService extends HibernateServiceImpl implements MostViewedArticleService {
+public class MostViewedArticleServiceImpl extends HibernateServiceImpl implements MostViewedArticleService {
   private SolrFieldConversion solrFieldConverter;
   private SolrHttpService solrHttpService;
+  private ArticleService articleService;
 
   /**
    * Cache for the most viewed results. This is a one-off caching implementation, but since this is a spring-injected
@@ -214,33 +216,51 @@ public class SolrMostViewedArticleService extends HibernateServiceImpl implement
   }
 
   @Override
-  public List<HomePageArticleInfo> getNewsArticleInfo(String listCode) {
+  @SuppressWarnings("unchecked")
+  public List<HomePageArticleInfo> getNewsArticleInfo(final String listCode, String authId) {
+    final List<Object[]> tempRes = (List<Object[]>)hibernateTemplate.execute(new HibernateCallback() {
+      @Override
+      public Object doInHibernate(Session session) throws HibernateException, SQLException {
+        String sqlQuery = "select a.articleID, a.doi, a.title, a.strkImgURI, a.description from articleList al " +
+          "join articleListJoinTable alj on al.articleListID = alj.articleListID " +
+          "join article a on a.doi = alj.doi " +
+          "where al.listCode = :listCode " +
+          "order by alj.sortOrder asc";
+        return session.createSQLQuery(sqlQuery)
+          .setParameter("listCode", listCode)
+          .list();
+      }
+    });
 
-    ArticleList al = getArticleList(listCode);
+    List<HomePageArticleInfo> articleList = new ArrayList<HomePageArticleInfo>(tempRes.size());
 
-    List<HomePageArticleInfo> articleList = new ArrayList<HomePageArticleInfo>();
+    for(final Object row[] : tempRes) {
+      try {
+        articleService.checkArticleState((String)row[1], authId);
 
-    if(al != null) {
-      for(String doi: al.getArticleDois()){
-        List<Article> articles = hibernateTemplate.findByCriteria(
-            DetachedCriteria.forClass(Article.class)
-                .add(Restrictions.eq("doi", doi)));
-        if(articles.size() == 1) {
-          Article article = articles.get(0);
-          HomePageArticleInfo articleInfo = new HomePageArticleInfo();
-          articleInfo.setDoi(article.getDoi());
-          articleInfo.setTitle(article.getTitle());
-          articleInfo.setStrkImgURI(article.getStrkImgURI());
-          articleInfo.setDescription(article.getDescription());
-          List<String> authors = new ArrayList<String>();
-          for(ArticleAuthor author: article.getAuthors()) {
-            String authorName = author.getFullName();
-            authors.add(authorName);
+        HomePageArticleInfo articleInfo = new HomePageArticleInfo();
+        articleInfo.setDoi((String)row[1]);
+        articleInfo.setTitle((String)row[2]);
+        articleInfo.setStrkImgURI((String)row[3]);
+        articleInfo.setDescription((String)row[4]);
+
+        List<String> authorList = (List<String>)hibernateTemplate.execute(new HibernateCallback() {
+          @Override
+          public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            return session.createSQLQuery("select ap.fullName from " +
+              "articlePerson ap join article a on ap.articleID = a.articleID " +
+              "where a.articleID = :articleID and ap.type = 'author' order by ap.sortOrder asc")
+              .setParameter("articleID", row[0])
+              .list();
           }
-          String author = StringUtils.join(authors, ", ");
-          articleInfo.setAuthors(author);
-          articleList.add(articleInfo);
-        }
+        });
+
+        String authors = StringUtils.join(authorList, ", ");
+        articleInfo.setAuthors(authors);
+        articleList.add(articleInfo);
+
+      } catch(NoSuchArticleIdException ex) {
+        //Do nothing beyond not adding the article to the list
       }
     }
 
@@ -255,5 +275,10 @@ public class SolrMostViewedArticleService extends HibernateServiceImpl implement
   @Required
   public void setSolrHttpService(SolrHttpService solrHttpService) {
     this.solrHttpService = solrHttpService;
+  }
+
+  @Required
+  public void setArticleService(ArticleService articleService) {
+    this.articleService = articleService;
   }
 }
