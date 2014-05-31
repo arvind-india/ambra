@@ -22,13 +22,14 @@ import org.ambraproject.ApplicationException;
 import org.ambraproject.models.Article;
 import org.ambraproject.models.ArticleRelationship;
 import org.ambraproject.models.Category;
-import org.ambraproject.models.CitedArticle;
 import org.ambraproject.views.CitedArticleView;
+import org.ambraproject.views.CrossRefSearch;
 import org.ambraproject.views.SearchHit;
 import org.ambraproject.views.article.ArticleInfo;
 import org.ambraproject.views.article.BaseArticleInfo;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.Document;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.List;
@@ -248,25 +249,6 @@ public interface ArticleService {
    * @return the CitedArticle instance
    */
   public CitedArticleView getCitedArticle(long citedArticleID);
-
-  /**
-   * Saves a CitedArticle's doi property.
-   *
-   * @param citedArticle persistent entity
-   * @param doi the DOI to save
-   */
-  public void setCitationDoi(CitedArticle citedArticle, String doi);
-
-  /**
-   * Query crossref for the latest article doi and update the database
-   *
-   * @param citedArticleID the citedArticleID record to update
-   *
-   * @return the DOI found
-   *
-   * @throws Exception
-   */
-  public String refreshCitedArticle(Long citedArticleID) throws Exception;
 
   /**
    * Populates DB objects as necessary to assign the given categories to the given article.

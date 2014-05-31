@@ -26,6 +26,15 @@ package org.ambraproject.service.crossref;
 public interface CrossRefLookupService {
 
   /**
+   * Query crossref for the latest article citation dois and update the database
+   *
+   * @param doi the article DOI to update all citations will be updated
+   *
+   * @throws Exception
+   */
+  public void refreshCitedArticles(String doi) throws Exception;
+
+  /**
    * Find a DOI for an article based on the passed in parameters.  If multiple articles are found that match, one is
    * arbitrarily selected.
    *

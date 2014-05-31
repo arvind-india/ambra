@@ -19,7 +19,6 @@
 package org.ambraproject.service.article;
 
 import org.ambraproject.ApplicationException;
-import org.ambraproject.util.XPathUtil;
 import org.ambraproject.views.CitedArticleView;
 import org.ambraproject.views.SearchHit;
 import org.ambraproject.views.UserProfileInfo;
@@ -33,14 +32,11 @@ import org.ambraproject.models.ArticleAuthor;
 import org.ambraproject.models.ArticleRelationship;
 import org.ambraproject.models.Category;
 import org.ambraproject.models.CitedArticle;
-import org.ambraproject.models.CitedArticleAuthor;
-import org.ambraproject.models.CitedArticleEditor;
 import org.ambraproject.models.Issue;
 import org.ambraproject.models.Journal;
 import org.ambraproject.models.UserProfile;
 import org.ambraproject.models.UserRole.Permission;
 import org.ambraproject.models.Volume;
-import org.ambraproject.service.crossref.CrossRefLookupService;
 import org.ambraproject.service.hibernate.HibernateServiceImpl;
 import org.ambraproject.service.permission.PermissionsService;
 import org.ambraproject.views.ArticleCategory;
@@ -58,13 +54,9 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateAccessor;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Document;
-
-import javax.xml.xpath.XPathExpressionException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.sql.SQLException;
@@ -89,7 +81,6 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   private static final Logger log = LoggerFactory.getLogger(ArticleServiceImpl.class);
 
   private PermissionsService permissionsService;
-  private CrossRefLookupService crossRefLookupService;
 
   /**
    * Determines if the articleURI is of type researchArticle
@@ -1019,114 +1010,6 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
    */
   @Override
   @Transactional
-  public void setCitationDoi(CitedArticle citedArticle, String doi) {
-    citedArticle.setDoi(doi);
-    hibernateTemplate.update(citedArticle);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @Transactional
-  public String refreshCitedArticle(Long citedArticleID) throws Exception {
-    log.info("refreshArticleCitation for citedArticleID: {}", citedArticleID);
-    StringBuilder sb = new StringBuilder();
-
-    CitedArticle citedArticle = hibernateTemplate.get(CitedArticle.class, citedArticleID);
-
-    for(CitedArticleEditor editor : citedArticle.getEditors()) {
-      sb.append(", ");
-      sb.append(editor.getFullName());
-    }
-
-    for(CitedArticleAuthor author : citedArticle.getAuthors()) {
-      sb.append(", ");
-      sb.append(author.getFullName());
-    }
-
-    if(citedArticle.getTitle() != null) {
-      sb.append(", \"");
-      sb.append(citedArticle.getTitle());
-      sb.append("\"");
-    }
-
-    if(citedArticle.getJournal() != null) {
-      sb.append(", ");
-      sb.append(citedArticle.getJournal());
-    }
-
-    if(citedArticle.getPublisherLocation() != null) {
-      sb.append(", ");
-      sb.append(citedArticle.getPublisherLocation());
-    }
-
-    if(citedArticle.getPublisherName() != null) {
-      sb.append(", ");
-      sb.append(citedArticle.getPublisherName());
-    }
-
-    if(citedArticle.getPages() != null) {
-      sb.append(", ");
-      sb.append(citedArticle.getPages());
-    }
-
-    if(citedArticle.geteLocationID() != null) {
-      sb.append(", ");
-      sb.append(citedArticle.geteLocationID());
-    }
-
-    if(citedArticle.getYear() != null) {
-      sb.append(", ");
-      sb.append(citedArticle.getYear());
-    }
-
-    if(citedArticle.getVolume() != null) {
-      sb.append(", ");
-      sb.append(citedArticle.getVolume());
-    }
-
-    if(citedArticle.getIssue() != null) {
-      sb.append(", ");
-      sb.append(citedArticle.getIssue());
-    }
-
-    if(citedArticle.getNote() != null) {
-      sb.append(", ");
-      sb.append(citedArticle.getNote());
-    }
-
-    for(String name : citedArticle.getCollaborativeAuthors()) {
-      sb.append(", ");
-      sb.append(name);
-    }
-
-    String doi = null;
-
-    if(sb.length() == 0) {
-      log.info("No data for citation ({}), not searching for DOI", citedArticleID);
-    } else {
-      doi = crossRefLookupService.findDoi(sb.toString());
-
-      if (doi != null && !doi.isEmpty()) {
-        //A fix for FEND-1077. crossref seems to append a URL to the DOI.  WTF
-        doi = doi.replace("http://dx.doi.org/","");
-
-        log.info("refreshArticleCitation doi found: {}", doi);
-        setCitationDoi(citedArticle, doi);
-      } else {
-        log.info("refreshArticleCitation nothing found");
-      }
-    }
-
-    return doi;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  @Transactional
   public List<Category> setArticleCategories(Article article, List<String> categoryStrings) {
     List<Category> categories = new ArrayList<Category>(categoryStrings.size());
     Set<String> uniqueLeafs = new HashSet<String>();
@@ -1272,14 +1155,6 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   @Required
   public void setPermissionsService(PermissionsService permissionsService) {
     this.permissionsService = permissionsService;
-  }
-
-  /**
-   * @param crossRefLookupService the crossreflookup service to use
-   */
-  @Required
-  public void setCrossRefLookupService(CrossRefLookupService crossRefLookupService) {
-    this.crossRefLookupService = crossRefLookupService;
   }
 
   /**

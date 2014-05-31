@@ -63,7 +63,7 @@ public class XMLServiceImpl implements XMLService {
    * The DTD URL referenced in the article XML.  If validateArticleXml is false, we make sure not to
    * validate the XML against this DTD for performance reasons.
    */
-  private static final String NLM_DTD_URL = "http://dtd.nlm.nih.gov/publishing/3.0/journalpublishing3.dtd";
+  public static final String NLM_DTD_URL = "http://dtd.nlm.nih.gov/publishing/3.0/journalpublishing3.dtd";
 
   private String xslDefaultTemplate;
   private Map<String, String> xslTemplateMap;
