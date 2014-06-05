@@ -35,6 +35,13 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.21</h2>
+  <p>Released Jun 10, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.21</h3>
+  <ul>
+     <li>A bugfix to taxonomy classification to narrow the criteria for analysis</li>
+  </ul>
+
   <h2>Ambra 2.9.20</h2>
   <p>Released May 27, 2014</p>
   <h3>Features Implemented in Ambra 2.9.20</h3>
