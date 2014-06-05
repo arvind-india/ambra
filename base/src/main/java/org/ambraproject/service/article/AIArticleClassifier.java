@@ -163,6 +163,25 @@ public class AIArticleClassifier implements ArticleClassifier {
   boolean appendElementIfExists(StringBuilder sb, Document dom, String elementName) {
     NodeList list = dom.getElementsByTagName(elementName);
     if (list != null && list.getLength() > 0) {
+      sb.append(list.item(0).getTextContent());
+      sb.append("\n");
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Adds the text content of all found elements to the StringBuilder, if they exist.
+   *
+   * @param sb StringBuilder to be modified
+   * @param dom DOM tree of an article
+   * @param elementName name of element to search for in the dom
+   * @return true if the StringBuilder was modified
+   */
+  boolean appendAllElementsIfExists(StringBuilder sb, Document dom, String elementName) {
+    NodeList list = dom.getElementsByTagName(elementName);
+    if (list != null && list.getLength() > 0) {
       for(int a = 0; a < list.getLength(); a++) {
         sb.append(list.item(a).getTextContent());
         sb.append("\n");
@@ -217,7 +236,7 @@ public class AIArticleClassifier implements ArticleClassifier {
   String getCategorizationContent(Document dom) throws TransformerException, XPathException {
     StringBuilder sb = new StringBuilder();
     appendElementIfExists(sb, dom, "article-title");
-    appendElementIfExists(sb, dom, "abstract");
+    appendAllElementsIfExists(sb, dom, "abstract");
     appendElementIfExists(sb, dom, "body");
     return StringEscapeUtils.escapeXml(sb.toString().trim());
   }
