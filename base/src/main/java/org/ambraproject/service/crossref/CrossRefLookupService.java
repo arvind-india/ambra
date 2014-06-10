@@ -1,13 +1,14 @@
 /*
- * Copyright (c) 2006-2013 by Public Library of Science
+ * Copyright (c) 2006-2014 by Public Library of Science
+ *
  * http://plos.org
  * http://ambraproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ambraproject.service.crossref;
 
 /**
@@ -24,6 +24,15 @@ package org.ambraproject.service.crossref;
  * @author Dragisa Krsmanovic
  */
 public interface CrossRefLookupService {
+
+  /**
+   * Query crossref for the latest article citation dois and update the database
+   *
+   * @param doi the article DOI to update all citations will be updated
+   *
+   * @throws Exception
+   */
+  public void refreshCitedArticles(String doi) throws Exception;
 
   /**
    * Find a DOI for an article based on the passed in parameters.  If multiple articles are found that match, one is

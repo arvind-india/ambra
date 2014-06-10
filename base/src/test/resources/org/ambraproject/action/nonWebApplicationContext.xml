@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (c) 2006-2013 by Public Library of Science
+  Copyright (c) 2006-2014 by Public Library of Science
 
   http://plos.org
   http://ambraproject.org
@@ -94,6 +94,8 @@
   </bean>
 
   <bean id="crossRefLookupService" class="org.ambraproject.service.crossref.CrossRefLookupServiceImpl">
+    <property name="sessionFactory" ref="sessionFactory"/>
+    <property name="fileStoreService" ref="fileStoreService"/>
     <property name="httpClient" ref="httpClient"/>
     <property name="crossRefUrl" value="http://search.crossref.org/links"/>
   </bean>
@@ -101,7 +103,6 @@
   <bean id="articleService" class="org.ambraproject.service.article.ArticleServiceImpl" depends-on="ambraConfiguration2">
     <property name="sessionFactory" ref="sessionFactory"/>
     <property name="permissionsService" ref="permissionsService"/>
-    <property name="crossRefLookupService" ref="crossRefLookupService"/>
   </bean>
 
   <bean id="trackbackService" class="org.ambraproject.service.trackback.TrackbackServiceImpl">

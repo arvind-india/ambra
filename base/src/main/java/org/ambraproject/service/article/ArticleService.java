@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007-2014 by Public Library of Science
+ * Copyright (c) 2006-2014 by Public Library of Science
  *
  * http://plos.org
  * http://ambraproject.org
@@ -22,7 +22,6 @@ import org.ambraproject.ApplicationException;
 import org.ambraproject.models.Article;
 import org.ambraproject.models.ArticleRelationship;
 import org.ambraproject.models.Category;
-import org.ambraproject.models.CitedArticle;
 import org.ambraproject.views.CitedArticleView;
 import org.ambraproject.views.SearchHit;
 import org.ambraproject.views.TOCArticle;
@@ -298,25 +297,6 @@ public interface ArticleService {
    * @return the CitedArticle instance
    */
   public CitedArticleView getCitedArticle(long citedArticleID);
-
-  /**
-   * Saves a CitedArticle's doi property.
-   *
-   * @param citedArticle persistent entity
-   * @param doi the DOI to save
-   */
-  public void setCitationDoi(CitedArticle citedArticle, String doi);
-
-  /**
-   * Query crossref for the latest article doi and update the database
-   *
-   * @param citedArticleID the citedArticleID record to update
-   *
-   * @return the DOI found
-   *
-   * @throws Exception
-   */
-  public String refreshCitedArticle(Long citedArticleID) throws Exception;
 
   /**
    * Populates DB objects as necessary to assign the given categories to the given article.
