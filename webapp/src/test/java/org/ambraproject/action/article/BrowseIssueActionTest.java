@@ -2,12 +2,12 @@ package org.ambraproject.action.article;
 
 import org.ambraproject.action.AmbraWebTest;
 import org.ambraproject.action.BaseActionSupport;
+import org.ambraproject.models.Article;
 import org.ambraproject.models.Issue;
 import org.ambraproject.models.Journal;
 import org.ambraproject.models.Volume;
 import org.ambraproject.views.IssueInfo;
 import org.ambraproject.web.VirtualJournalContext;
-import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
@@ -16,6 +16,7 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.testng.Assert.assertEquals;
@@ -58,15 +59,28 @@ public class BrowseIssueActionTest extends AmbraWebTest {
           "and drop the smaller airline they have an account with. Peggy pays a visit to her mother and sister, " +
           "who are now guardians of a child.");
       volume.setIssues(new ArrayList<Issue>(4));
+
       for (int i = 1; i <= 3; i++) {
+        List<String> articleDOIs = Arrays.asList(
+          volumeName + "Issue" + i + "Article1",
+          volumeName + "Issue" + i + "Article2",
+          volumeName + "Issue" + i + "Article3"
+        );
+
+        for(String doi : articleDOIs) {
+          Article art = new Article();
+          art.setDoi(doi);
+          art.setState(0);
+          art.setTitle(doi);
+
+          dummyDataStore.store(art);
+        }
+
         Issue issue = new Issue("id:" + volumeName + "Issue" + i);
         issue.setTitle(volumeName + " Issue " + i);
         issue.setDescription(volumeName + " Issue " + i);
-        issue.setArticleDois(Arrays.asList(
-            volumeName + "Issue" + i + "Article1",
-            volumeName + "Issue" + i + "Article2",
-            volumeName + "Issue" + i + "Article3"
-        ));
+        issue.setArticleDois(articleDOIs);
+
         volume.getIssues().add(issue);
       }
       journal.getVolumes().add(volume);

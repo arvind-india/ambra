@@ -1,7 +1,6 @@
-/* $HeadURL$
- * $Id$
+/*
+ * Copyright (c) 2007-2014 by Public Library of Science
  *
- * Copyright (c) 2006-2010 by Public Library of Science
  * http://plos.org
  * http://ambraproject.org
  *
@@ -9,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +19,7 @@
 package org.ambraproject.service.feed;
 
 import org.ambraproject.ApplicationException;
-import org.ambraproject.views.article.ArticleInfo;
+import org.ambraproject.views.TOCArticle;
 import org.ambraproject.models.AnnotationType;
 import org.ambraproject.views.AnnotationView;
 import org.ambraproject.views.LinkbackView;
@@ -96,7 +95,7 @@ public interface FeedService {
    * @throws URISyntaxException   URISyntaxException
    * @parem authId the current user authId
    */
-  public List<ArticleInfo> getIssueArticles(final FeedSearchParameters searchParams, String journal, String authId) throws
+  public List<TOCArticle> getIssueArticles(final FeedSearchParameters searchParams, String journal, String authId) throws
       URISyntaxException, ApplicationException;
 
   /**

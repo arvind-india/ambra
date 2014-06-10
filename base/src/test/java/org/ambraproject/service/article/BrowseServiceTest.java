@@ -1,7 +1,6 @@
-/* $HeadURL$
- * $Id$
+/*
+ * Copyright (c) 2007-2014 by Public Library of Science
  *
- * Copyright (c) 2006-2010 by Public Library of Science
  * http://plos.org
  * http://ambraproject.org
  *
@@ -9,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,14 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ambraproject.service.article;
 
 import org.ambraproject.action.BaseTest;
+import org.ambraproject.views.TOCArticle;
 import org.ambraproject.views.TOCArticleGroup;
 import org.ambraproject.views.IssueInfo;
 import org.ambraproject.views.VolumeInfo;
-import org.ambraproject.views.article.ArticleInfo;
 import org.ambraproject.views.article.ArticleType;
 import org.ambraproject.models.Article;
 import org.ambraproject.models.ArticleAuthor;
@@ -410,6 +408,7 @@ public class BrowseServiceTest extends BaseTest {
     };
   }
 
+
   @Test(dataProvider = "articleGroupListWithIssueId")
   public void testGetArticleGroupListByIssueId(String issueUri, Map<URI, Integer> numExpectedPerGroup) {
     List<TOCArticleGroup> results = browseService.getArticleGrpList(issueUri, DEFAULT_ADMIN_AUTHID);
@@ -456,13 +455,14 @@ public class BrowseServiceTest extends BaseTest {
     assertNotNull(csv, "returned null csv");
     assertTrue(csv.length() > 0, "returned empty csv");
     for (TOCArticleGroup articleGroup : articleGroups) {
-      for (ArticleInfo articleInfo : articleGroup.getArticles()) {
-        assertTrue(csv.indexOf(articleInfo.getDoi()) != -1,
-            "csv didn't contain expected article id: " + articleInfo.getDoi());
+      for (TOCArticle tocArticle : articleGroup.getArticles()) {
+        assertTrue(csv.indexOf(tocArticle.getDoi()) != -1,
+            "csv didn't contain expected article id: " + tocArticle.getDoi());
       }
     }
 
   }
+
 
   @DataProvider(name = "latestIssue")
   public Object[][] getLatestIssue() {

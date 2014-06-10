@@ -1,13 +1,14 @@
 /*
- * Copyright (c) 2006-2013 by Public Library of Science
- *     http://plos.org
- *     http://ambraproject.org
+ * Copyright (c) 2007-2014 by Public Library of Science
+ *
+ * http://plos.org
+ * http://ambraproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,8 +30,8 @@ import org.ambraproject.service.search.SolrHttpService;
 import org.ambraproject.service.trackback.TrackbackService;
 import org.ambraproject.views.AnnotationView;
 import org.ambraproject.views.LinkbackView;
+import org.ambraproject.views.TOCArticle;
 import org.ambraproject.views.TOCArticleGroup;
-import org.ambraproject.views.article.ArticleInfo;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -371,9 +372,9 @@ public class FeedServiceImpl extends HibernateServiceImpl implements FeedService
    */
   @Override
   @Transactional(readOnly = true)
-  public List<ArticleInfo> getIssueArticles(final FeedSearchParameters searchParameters, String journal, String authId) throws
+  public List<TOCArticle> getIssueArticles(final FeedSearchParameters searchParameters, String journal, String authId) throws
       URISyntaxException, ApplicationException {
-    List<ArticleInfo> articleList = new ArrayList<ArticleInfo>();
+    List<TOCArticle> articleList = new ArrayList<TOCArticle>();
 
     String issurURI = (searchParameters.getIssueURI() != null) ? searchParameters.getIssueURI() : null;
 
