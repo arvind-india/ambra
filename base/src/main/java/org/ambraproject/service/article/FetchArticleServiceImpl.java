@@ -14,7 +14,6 @@
 package org.ambraproject.service.article;
 
 import org.ambraproject.ApplicationException;
-import org.ambraproject.filestore.FSIDMapper;
 import org.ambraproject.filestore.FileStoreService;
 import org.ambraproject.models.ArticleAsset;
 import org.ambraproject.models.CitedArticle;
@@ -133,7 +132,7 @@ public class FetchArticleServiceImpl extends HibernateServiceImpl implements Fet
    */
   private DataSource getArticleXML(final String articleDoi)
       throws NoSuchArticleIdException {
-    String fsid = FSIDMapper.doiTofsid(articleDoi, "XML");
+    String fsid = fileStoreService.objectIDMapper().doiTofsid(articleDoi, "XML");
 
     if (fsid == null)
       throw new NoSuchArticleIdException(articleDoi);
