@@ -35,6 +35,16 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.22</h2>
+  <p>Released Jun 17, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.22</h3>
+  <ul>
+     <li>An enhancement to administrative functionality around article taxonomy</li>
+     <li>An optimization to database queries on home and issue pages</li>
+     <li>Enhancements to handling of reference DOI</li>
+     <li>Adding support for different content repositories</li>
+  </ul>
+
   <h2>Ambra 2.9.21</h2>
   <p>Released Jun 10, 2014</p>
   <h3>Features Implemented in Ambra 2.9.21</h3>
