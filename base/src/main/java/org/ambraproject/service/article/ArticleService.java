@@ -33,6 +33,7 @@ import java.net.URI;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 /**
  * @author Joe Osowski
@@ -300,13 +301,16 @@ public interface ArticleService {
 
   /**
    * Populates DB objects as necessary to assign the given categories to the given article.
+   * This only selects the top 8 categories given to it and saves those categories.
+   *
+   * Sorted by weight.  The items with the lowest weights beyond 8 are dropped
    *
    * @param article article to update
    * @param categories List of category strings
    *
    * @return The list of categories applied to the article
    */
-  public List<Category> setArticleCategories(Article article, List<String> categories);
+  public Map<Category, Integer> setArticleCategories(Article article, Map<String, Integer> categories);
 
   /**
    * Throw a NoSuchArticleIdException exception if the article doesn't exist or the user does not have permission

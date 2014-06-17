@@ -30,11 +30,14 @@ import org.testng.annotations.Test;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertEqualsNoOrder;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
@@ -156,13 +159,18 @@ public class ArticleTest extends BaseHibernateTest {
   public void testArticleWithCategories() {
     Article article = new Article();
     article.setDoi("doi5");
-    Set<Category> categories = new HashSet<Category>(2);
+
     Category category1 = new Category();
     category1.setPath("/category1");
-    categories.add(category1);
+    hibernateTemplate.save(category1);
+
     Category category2 = new Category();
     category2.setPath("/category2");
-    categories.add(category2);
+    hibernateTemplate.save(category2);
+
+    Map<Category, Integer> categories = new HashMap<Category, Integer>(2);
+    categories.put(category1, 10);
+    categories.put(category2, 20);
 
     article.setCategories(categories);
 
@@ -172,6 +180,7 @@ public class ArticleTest extends BaseHibernateTest {
     assertNotNull(article, "couldn't retrieve article");
     assertEquals(article.getCategories().size(), 2, "incorrect number of categories");
 
+    assertEqualsNoOrder(article.getCategories().values().toArray(), new Object[] { 10, 20 });
   }
 
   @Test

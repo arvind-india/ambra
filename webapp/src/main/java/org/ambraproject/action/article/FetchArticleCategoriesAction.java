@@ -46,7 +46,7 @@ public class FetchArticleCategoriesAction extends BaseSessionAwareActionSupport 
       addActionError(String.format("Article %s not found", articleURI));
       return ERROR;
     }
-    Set<Category> articleCategories = article.getCategories();
+    Set<Category> articleCategories = article.getCategories().keySet();
     categories = new HashSet<String>(articleCategories.size());
     for (Category category : articleCategories) {
       categories.add(category.getPath());

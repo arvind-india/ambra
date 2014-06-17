@@ -20,7 +20,7 @@ package org.ambraproject.service.article;
 
 import org.w3c.dom.Document;
 import java.io.OutputStream;
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author Alex Kudlick
@@ -36,7 +36,7 @@ public interface ArticleClassifier {
    *         delimit subject hierarchy.  Categories are returned in descending order of the
    *         strength of the match.
    */
-  public List<String> classifyArticle(Document articleXml) throws Exception;
+  public Map<String, Integer> classifyArticle(Document articleXml) throws Exception;
 
   /**
    * Classify an article from its xml and output a lot of debugging information to the passed in stream

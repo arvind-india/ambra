@@ -69,9 +69,13 @@ public class Category extends AmbraEntity {
 
     Category other = (Category) o;
     if (path == null) {
-      return other.path == null;
+      //We have to use the getPath() method instead of the private property as hibernate doesn't seem to populate the
+      //property prior to the method call all the time.  It's some kind of proxy object magic.
+      return other.getPath() == null;
     } else {
-      return path.equals(other.path);
+      //We have to use the getPath() method instead of the private property as hibernate doesn't seem to populate the
+      //property prior to the method call all the time.  It's some kind of proxy object magic.
+      return path.equals(other.getPath());
     }
   }
 

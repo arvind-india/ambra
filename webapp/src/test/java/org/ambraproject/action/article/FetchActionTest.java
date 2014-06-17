@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.testng.annotations.BeforeMethod;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 
 /**
  * Base class for {@link FetchArticleTabsActionTest} and {@link FetchObjectActionTest} since those both need to use the same doi, and we need
@@ -51,7 +51,7 @@ public abstract class FetchActionTest extends AmbraWebTest {
     article.getAssets().add(new ArticleAsset());
     article.getAssets().get(0).setDoi(article.getDoi());
     article.getAssets().get(0).setExtension("XML");
-    article.setCategories(new HashSet<Category>(0));
+    article.setCategories(new HashMap<Category, Integer>());
 
     dummyDataStore.store(article);
   }

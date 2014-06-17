@@ -20,6 +20,7 @@ import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 
 import java.io.File;
+import java.util.AbstractMap;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -108,13 +109,45 @@ public class ArticleClassifierTest extends BaseTest {
   @Test
   public void testParseVectorElement() throws Exception {
     assertEquals(AIArticleClassifier.parseVectorElement(
-        "<TERM>/Biology and life sciences/Computational biology/Computational neuroscience/Single neuron function|(1) neuron*(1)</TERM>"),
-        "/Biology and life sciences/Computational biology/Computational neuroscience/Single neuron function");
+        "<TERM>/Biology and life sciences/Computational biology/Computational neuroscience/Single neuron function|(5) neuron*(5)</TERM>"),
+        new AbstractMap.SimpleImmutableEntry<String, Integer>(
+          "/Biology and life sciences/Computational biology/Computational neuroscience/Single neuron function"
+          ,5));
+
+    assertEquals(AIArticleClassifier.parseVectorElement(
+      "<TERM>/Medicine and health sciences/Anesthesiology/Anesthesia|(5) anesthesia(5)</TERM>"),
+      new AbstractMap.SimpleImmutableEntry<String, Integer>(
+        "/Medicine and health sciences/Anesthesiology/Anesthesia"
+        ,5));
+
+    assertEquals(AIArticleClassifier.parseVectorElement(
+      "<TERM>/Medicine and health sciences/Geriatrics/Frailty|(19) frailty(18) frail*(1)</TERM>"),
+      new AbstractMap.SimpleImmutableEntry<String, Integer>(
+        "/Medicine and health sciences/Geriatrics/Frailty"
+        ,19));
+
+    assertEquals(AIArticleClassifier.parseVectorElement(
+      "<TERM>/Biology and life sciences/Anatomy/Head/Face/Nose|(311) nose(311)</TERM>"),
+      new AbstractMap.SimpleImmutableEntry<String, Integer>(
+        "/Biology and life sciences/Anatomy/Head/Face/Nose"
+        ,311));
+
+    assertEquals(AIArticleClassifier.parseVectorElement(
+      "<TERM>/People and places/Demography|(7) demographics(7)</TERM>"),
+      new AbstractMap.SimpleImmutableEntry<String, Integer>(
+        "/People and places/Demography"
+        ,7));
+
+    assertEquals(AIArticleClassifier.parseVectorElement(
+      "<TERM>/Medicine and health sciences/Neurology/Cognitive neurology|(2) cognit*(2)</TERM>"),
+      new AbstractMap.SimpleImmutableEntry<String, Integer>(
+        "/Medicine and health sciences/Neurology/Cognitive neurology"
+        ,2));
 
     // This appears to be a bug in the AI server--it sometimes does not return an
     // absolute path to a top-level category.  In these cases, the returned value
     // should be discarded.
     assertNull(AIArticleClassifier.parseVectorElement(
-        "<TERM>Background noise (acoustics)|(1) background noise(1)</TERM>"));
+      "<TERM>Background noise (acoustics)|(1) background noise(1)</TERM>"));
   }
 }

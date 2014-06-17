@@ -131,7 +131,7 @@ public abstract class BaseTest extends AbstractTestNGSpringContextTests {
     assertEquals(actual.geteIssn(), expected.geteIssn(), "returned incorrect eIssn");
     assertEquals(actual.getTitle(), expected.getTitle(), "Article had incorrect Title");
     assertEquals(actual.getDescription(), expected.getDescription(), "Article had incorrect description");
-    assertEqualsNoOrder(actual.getCategories().toArray(), expected.getCategories().toArray(), "Incorrect categories");
+    assertEqualsNoOrder(actual.getCategories().toArray(), expected.getCategories().keySet().toArray(), "Incorrect categories");
   }
 
   /**
@@ -162,7 +162,10 @@ public abstract class BaseTest extends AbstractTestNGSpringContextTests {
         "Article had incorrect description");
     assertEquals(actual.getArchiveName(), expected.getArchiveName(), "Article had incorrect archive name");
 
-    assertEqualsNoOrder(actual.getCategories().toArray(), expected.getCategories().toArray(), "Incorrect categories");
+    assertEqualsNoOrder(actual.getCategories().keySet().toArray(),
+      expected.getCategories().keySet().toArray(), "Incorrect categories");
+    assertEqualsNoOrder(actual.getCategories().values().toArray(),
+      expected.getCategories().values().toArray(), "Incorrect category weights");
 
     if (expected.getAssets() != null) {
       assertEquals(actual.getAssets().size(), expected.getAssets().size(), "incorrect number of assets");
@@ -317,7 +320,7 @@ public abstract class BaseTest extends AbstractTestNGSpringContextTests {
 
       Set<String> collapsedCategories = new HashSet<String>(expectedArticle.getCategories().size());
 
-      for (Category category : expectedArticle.getCategories()) {
+      for (Category category : expectedArticle.getCategories().keySet()) {
         boolean foundCategory = false;
 
         collapsedCategories.add(category.getMainCategory());

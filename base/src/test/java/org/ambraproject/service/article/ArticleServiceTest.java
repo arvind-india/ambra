@@ -44,12 +44,15 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertEqualsNoOrder;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
@@ -88,20 +91,20 @@ public class ArticleServiceTest extends BaseTest {
     collaborativeAuthorsForArticle1.add("Fake CollaborativeAuthor FOUR for Article 1");
     article1.setCollaborativeAuthors(collaborativeAuthorsForArticle1);
 
-    Set<Category> categoriesForArticle1 = new HashSet<Category>();
+    Map<Category, Integer> categoriesForArticle1 = new HashMap<Category, Integer>();
     Category category1ForArticle1 = new Category();
     category1ForArticle1.setPath("/Fake Main Category/for/category1ForArticle1");
     category1ForArticle1.setCreated(new Date());
     category1ForArticle1.setLastModified(new Date());
-    categoriesForArticle1.add(category1ForArticle1);
+    categoriesForArticle1.put(category1ForArticle1, 10);
     Category category2ForArticle1 = new Category();
     category2ForArticle1.setPath("/Fake Main Category/for/category2ForArticle1");
     category2ForArticle1.setCreated(new Date());
     category2ForArticle1.setLastModified(new Date());
-    categoriesForArticle1.add(category2ForArticle1);
+    categoriesForArticle1.put(category2ForArticle1, 20);
     Category category3ForArticle1 = new Category();
     category3ForArticle1.setPath("/Fake Main Category/for/category3ForArticle1");
-    categoriesForArticle1.add(category3ForArticle1);
+    categoriesForArticle1.put(category3ForArticle1, 20);
     article1.setCategories(categoriesForArticle1);
 
     List<ArticleAsset> assetsForArticle1 = new LinkedList<ArticleAsset>();
@@ -287,20 +290,20 @@ public class ArticleServiceTest extends BaseTest {
     collaborativeAuthorsForArticle2.add("Fake CollaborativeAuthor FOUR for Article 1");
     article2.setCollaborativeAuthors(collaborativeAuthorsForArticle2);
 
-    Set<Category> categoriesForArticle2 = new HashSet<Category>();
+    Map<Category, Integer> categoriesForArticle2 = new HashMap<Category,  Integer>();
     Category category1ForArticle2 = new Category();
     category1ForArticle2.setPath("/Fake Main Category/for/category1ForArticle2");
     category1ForArticle2.setCreated(new Date());
     category1ForArticle2.setLastModified(new Date());
-    categoriesForArticle2.add(category1ForArticle2);
+    categoriesForArticle2.put(category1ForArticle2, 10);
     Category category2ForArticle2 = new Category();
     category2ForArticle2.setPath("/Fake Main Category/for/category2ForArticle2");
     category2ForArticle2.setCreated(new Date());
     category2ForArticle2.setLastModified(new Date());
-    categoriesForArticle2.add(category2ForArticle2);
+    categoriesForArticle2.put(category2ForArticle2, 10);
     Category category3ForArticle2 = new Category();
     category3ForArticle2.setPath("/Fake Main Category/for/category3ForArticle2");
-    categoriesForArticle2.add(category3ForArticle2);
+    categoriesForArticle2.put(category3ForArticle2, 10);
     article2.setCategories(categoriesForArticle2);
 
     List<ArticleAsset> assetsForArticle2 = new LinkedList<ArticleAsset>();
@@ -480,6 +483,24 @@ public class ArticleServiceTest extends BaseTest {
 
     Article article1 = getArticle1();
     Article article2 = getArticle2();
+
+    //Force hibernate to store the categories first otherwise we get a
+    //unsaved transient instance error when saving the article
+    //"object references an unsaved transient instance - save the transient instance before
+    // flushing: org.ambraproject.models.Category"
+    Map<String, Integer> categories1 = new HashMap<String, Integer>();
+    for(Category c : article1.getCategories().keySet()) {
+      dummyDataStore.store(c);
+      categories1.put(c.getPath(), article1.getCategories().get(c));
+    }
+    articleService.setArticleCategories(article1, categories1);
+
+    Map<String, Integer> categories2 = new HashMap<String, Integer>();
+    for(Category c : article2.getCategories().keySet()) {
+      dummyDataStore.store(c);
+      categories2.put(c.getPath(), article2.getCategories().get(c));
+    }
+    articleService.setArticleCategories(article2, categories2);
 
     dummyDataStore.store(article1);
     dummyDataStore.store(article2);
@@ -685,15 +706,19 @@ public class ArticleServiceTest extends BaseTest {
     article.setVolume("testVolume");
     article.setDescription("test, test, test, this is a test");
 
-    Set<Category> categories = new HashSet<Category>(2);
+    Map<Category, Integer> categories = new HashMap<Category, Integer>(2);
     Category cat1 = new Category();
     cat1.setPath("/maincat1");
+
+    dummyDataStore.store(cat1);
 
     Category cat2 = new Category();
     cat2.setPath("/maincat2");
 
-    categories.add(cat1);
-    categories.add(cat2);
+    dummyDataStore.store(cat2);
+
+    categories.put(cat1, 5);
+    categories.put(cat2, 10);
 
     article.setCategories(categories);
 
@@ -941,7 +966,7 @@ public class ArticleServiceTest extends BaseTest {
     }
   }
 
-  private Set<Category> addCategory(Set<Category> categories, String path) {
+  private List<Category> addCategory(List<Category> categories, String path) {
     Category category = new Category();
     category.setPath(path);
     categories.add(category);
@@ -950,21 +975,24 @@ public class ArticleServiceTest extends BaseTest {
 
   @Test(dataProvider = "savedArticlesID")
   public void testSetArticleCategories(Long articleID, Article expectedArticle) throws Exception {
-    List<String> terms = Arrays.asList(
-        "/Biology and life sciences/Cell biology/Cellular types/Animal cells/Blood cells/White blood cells/T cells",
-        "/Biology and life sciences",
-        "/Biology and life sciences/Anatomy and physiology/Immune physiology/Spleen",
-        "/Biology and life sciences/Anatomy and physiology/Immune physiology/Antigens",
-        "/Research and analysis methods/Imaging techniques/Radiologic imaging/Gastrointestinal imaging/Liver and spleen scan",
-        "/Medicine and health sciences/Pathology and laboratory medicine/Infectious diseases/Viral diseases/Hepatitis",
-        "/Biology and life sciences/Anatomy and physiology/Liver",
-        "/Biology and life sciences/Anatomy and physiology/Lymphatic system/Lymph nodes",
-        "/Biology and life sciences/Cell biology/Cellular types/Animal cells/Antigen-presenting cells"
-        );
+    Map<String, Integer> terms = new HashMap<String, Integer>() {{
+      put("/Biology and life sciences/Cell biology/Cellular types/Animal cells/Blood cells/White blood cells/T cells", 10);
+      put("/Biology and life sciences", 15);
+      put("/Biology and life sciences/Anatomy and physiology/Immune physiology/Spleen", 7);
+      //The follow two have the lowest score.  Since there are more then 8 categories, these should be dropped
+      put("/Biology and life sciences/Cell biology/Cellular types/Animal cells/Antigen-presenting cells", 2);
+      put("/Biology and life sciences/Cell biology/Joe Foo/Animal cells/Antigen-presenting cells", 1);
+      put("/Biology and life sciences/Anatomy and physiology/Immune physiology/Antigens", 500);
+      put("/Research and analysis methods/Imaging techniques/Radiologic imaging/Gastrointestinal imaging/Liver and spleen scan", 60);
+      put("/Medicine and health sciences/Pathology and laboratory medicine/Infectious diseases/Viral diseases/Hepatitis", 55);
+      put("/Biology and life sciences/Anatomy and physiology/Liver", 143);
+      put("/Biology and life sciences/Anatomy and physiology/Lymphatic system/Lymph nodes", 143);
+    }};
+
     Article article = articleService.getArticle(articleID, DEFAULT_ADMIN_AUTHID);
     articleService.setArticleCategories(article, terms);
 
-    Set<Category> expectedCategories = new HashSet<Category>(8);
+    List<Category> expectedCategories = new ArrayList<Category>(8);
     addCategory(expectedCategories,
         "/Biology and life sciences/Cell biology/Cellular types/Animal cells/Blood cells/White blood cells/T cells");
     addCategory(expectedCategories, "/Biology and life sciences");
@@ -979,20 +1007,26 @@ public class ArticleServiceTest extends BaseTest {
     addCategory(expectedCategories, "/Biology and life sciences/Anatomy and physiology/Liver");
     addCategory(expectedCategories,
         "/Biology and life sciences/Anatomy and physiology/Lymphatic system/Lymph nodes");
-    assertEquals(article.getCategories(), expectedCategories);
+    assertEqualsNoOrder(article.getCategories().keySet().toArray(), expectedCategories.toArray());
 
     // setArticleCategories should only store the first 8 categories returned by
     // the taxonomy server.
     Category shouldntExist = new Category();
     shouldntExist.setPath(
         "/Biology and life sciences/Cell biology/Cellular types/Animal cells/Antigen-presenting cells");
-    assertFalse(article.getCategories().contains(shouldntExist));
+    assertFalse(article.getCategories().keySet().contains(shouldntExist));
   }
 
   @Test(dataProvider = "savedArticlesID", expectedExceptions = IllegalArgumentException.class)
   public void testSetArticleCategoriesError(Long articleID, Article expectedArticle)
       throws Exception {
-    List<String> terms = Arrays.asList("bogus", "response", "from", "server");
+    Map<String, Integer> terms = new HashMap() {{
+      put("bogus", 5);
+      put("response", 10);
+      put("from", 15);
+      put("server", 15);
+    }};
+
     Article article = articleService.getArticle(articleID, DEFAULT_ADMIN_AUTHID);
     articleService.setArticleCategories(article, terms);
   }

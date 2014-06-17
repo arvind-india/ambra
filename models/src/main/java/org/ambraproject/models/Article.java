@@ -23,6 +23,7 @@ package org.ambraproject.models;
 import java.lang.String;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -69,7 +70,7 @@ public class Article extends AmbraEntity{
   private Set<String> types;
 
   //collections of persistent objects
-  private Set<Category> categories;
+  private Map<Category, Integer> categories;
   private List<ArticleAsset> assets;
   private List<CitedArticle> citedArticles;
   private List<ArticleRelationship> relatedArticles;
@@ -252,11 +253,11 @@ public class Article extends AmbraEntity{
     this.collaborativeAuthors = collaborativeAuthors;
   }
 
-  public Set<Category> getCategories() {
+  public Map<Category, Integer> getCategories() {
     return categories;
   }
 
-  public void setCategories(Set<Category> categories) {
+  public void setCategories(Map<Category, Integer> categories) {
     this.categories = categories;
   }
 
