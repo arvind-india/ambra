@@ -71,6 +71,7 @@
 
     create table articleCategoryJoinTable (
         articleID bigint not null,
+        weight integer not null,
         categoryID bigint not null,
         primary key (articleID, categoryID)
     );
