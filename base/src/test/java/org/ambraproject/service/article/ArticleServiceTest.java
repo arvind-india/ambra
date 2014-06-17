@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2013 by Public Library of Science
+ * Copyright (c) 2006-2014 by Public Library of Science
  *
  * http://plos.org
  * http://ambraproject.org
@@ -9,14 +9,13 @@
  * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
- *   
+ *
  * Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- *   limitations under the License.
+ * limitations under the License.
  */
-
 package org.ambraproject.service.article;
 
 import org.ambraproject.action.BaseTest;
@@ -50,7 +49,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertEqualsNoOrder;
 import static org.testng.Assert.assertFalse;
