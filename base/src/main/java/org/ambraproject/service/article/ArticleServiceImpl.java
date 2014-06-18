@@ -1177,26 +1177,23 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   }
 
   /**
-   * Create a sorted set sorted by the integer value, largest first, smallest last
+   * Create a sorted list sorted by the integer value, largest first, smallest last
    *
    * @param values the Map to sort
    *
-   * @return the SortedSet of the map passed in
+   * @return a List of the map entries of the map passed in
    */
-  private SortedSet<Map.Entry<String, Integer>> sortCategoriesByValue(Map<String, Integer> values) {
-    SortedSet<Map.Entry<String, Integer>> categoryStringsSorted = new TreeSet<Map.Entry<String, Integer>>(
-      new Comparator<Map.Entry<String, Integer>>() {
-        @Override
-        public int compare(Map.Entry<String, Integer> e1, Map.Entry<String, Integer> e2) {
-          if (e1.getValue() >= e2.getValue()) {
-            return -1;
-          } else {
-            return 1;
-          } // returning 0 would merge keys
-        }
-      });
+  protected static List<Map.Entry<String, Integer>> sortCategoriesByValue(Map<String, Integer> values) {
+    List<Map.Entry<String, Integer>> categoryStringsSorted = new ArrayList<Map.Entry<String, Integer>>();
 
     categoryStringsSorted.addAll(values.entrySet());
+
+    Collections.sort(categoryStringsSorted, new Comparator<Map.Entry<String, Integer>>() {
+      @Override
+      public int compare(Map.Entry<String, Integer> e1, Map.Entry<String, Integer> e2) {
+        return e2.getValue().compareTo(e1.getValue());
+      }
+    });
 
     return categoryStringsSorted;
   }
@@ -1207,7 +1204,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   @Override
   @Transactional
   public Map<Category, Integer> setArticleCategories(Article article, Map<String, Integer> categoryMap) {
-    SortedSet<Map.Entry<String, Integer>> sortedCategories = sortCategoriesByValue(categoryMap);
+    List<Map.Entry<String, Integer>> sortedCategories = sortCategoriesByValue(categoryMap);
     //LinkedHashMap keeps things ordered by insertion order
     Map<Category, Integer> results = new LinkedHashMap<Category, Integer>(categoryMap.size());
     Set<String> uniqueLeafs = new HashSet<String>();

@@ -86,6 +86,9 @@ public class AIArticleClassifier implements ArticleClassifier {
     this.httpClient = httpClient;
   }
 
+  /**
+   * @inheritDoc
+   */
   @Override
   public Map<String, Integer> classifyArticle(Document articleXml) throws Exception {
     List<String> rawTerms = getRawTerms(articleXml);
@@ -149,13 +152,13 @@ public class AIArticleClassifier implements ArticleClassifier {
   //Confirms the response is good
   //Finds the term and places in the result
   //Finds first number wrapped in parentheses after the pipe symbol and places it in the result
-  static Pattern TERM_PATTERN = Pattern.compile("<TERM>(/.*)\\|\\((\\d+)\\).*</TERM>");
+  static Pattern TERM_PATTERN = Pattern.compile("<TERM>\\s*(/.*)\\|\\s*\\((\\d+)\\).*</TERM>");
 
   /**
    * Parses a single line of the XML response from the taxonomy server.
    *
    * @param vectorElement The text body of a line of the response
-   * @return the term to be returned, or null if the line is not valid
+   * @return the term and weight of the term or null if the line is not valid
    */
   static Map.Entry<String, Integer> parseVectorElement(String vectorElement) {
     Matcher match = TERM_PATTERN.matcher(vectorElement);

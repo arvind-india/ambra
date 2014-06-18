@@ -147,6 +147,12 @@ public class ArticleClassifierTest extends BaseTest {
         "/Medicine and health sciences/Neurology/Cognitive neurology"
         ,2));
 
+    assertEquals(AIArticleClassifier.parseVectorElement(
+        "<TERM> /Medicine and health sciences/Neurology/Cognitive neurology| (67) cognit*(2)</TERM>"),
+      new AbstractMap.SimpleImmutableEntry<String, Integer>(
+        "/Medicine and health sciences/Neurology/Cognitive neurology"
+        ,67));
+
     // This appears to be a bug in the AI server--it sometimes does not return an
     // absolute path to a top-level category.  In these cases, the returned value
     // should be discarded.

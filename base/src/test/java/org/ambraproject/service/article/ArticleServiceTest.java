@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import java.net.URI;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -1027,5 +1028,26 @@ public class ArticleServiceTest extends BaseTest {
 
     Article article = articleService.getArticle(articleID, DEFAULT_ADMIN_AUTHID);
     articleService.setArticleCategories(article, terms);
+  }
+
+  @Test
+  public void testSortCategoriesByValue() {
+    List<Map.Entry<String, Integer>> results1 = new ArrayList<Map.Entry<String, Integer>>();
+    results1.add(new AbstractMap.SimpleEntry<String, Integer>("String5", 15));
+    results1.add(new AbstractMap.SimpleEntry<String, Integer>("String1", 10));
+    results1.add(new AbstractMap.SimpleEntry<String, Integer>("String", 3));
+    results1.add(new AbstractMap.SimpleEntry<String, Integer>("String3", 2));
+    results1.add(new AbstractMap.SimpleEntry<String, Integer>("String2", 1));
+
+    List<Map.Entry<String, Integer>> results2 = ArticleServiceImpl.sortCategoriesByValue(
+      new HashMap<String, Integer>() {{
+        put("String", 3);
+        put("String1", 10);
+        put("String2", 1);
+        put("String3", 2);
+        put("String5", 15);
+      }});
+
+    assertEquals(results1, results2);
   }
 }

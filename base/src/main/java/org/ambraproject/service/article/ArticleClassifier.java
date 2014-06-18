@@ -32,9 +32,9 @@ public interface ArticleClassifier {
    * Classify an article from its xml.
    *
    * @param articleXml the article xml
-   * @return a list of categories to which the article belongs. Each entry should use <code>/</code>s to
+   * @return a map of categories to which the article belongs. Each entry should use <code>/</code>s to
    *         delimit subject hierarchy.  Categories are returned in descending order of the
-   *         strength of the match.
+   *         strength of the match paired with the strength value
    */
   public Map<String, Integer> classifyArticle(Document articleXml) throws Exception;
 
