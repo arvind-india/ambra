@@ -519,9 +519,8 @@
         </executions>
       </plugin>
 
-<!--  Rule to build a standalone .jar with the "taxonomy command-line tool" used
-      by Rachel and Jonas.  To invoke, use "mvn assembly:single".  I'm leaving
-      this commented-out for now on the off chance it might break some other build.
+      <!-- Rule to build a standalone .jar with the "taxonomy command-line tool" used
+           by Rachel and Jonas.  To invoke, use "mvn assembly:single".      -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -535,7 +534,6 @@
           </descriptorRefs>
         </configuration>
       </plugin>
--->
     </plugins>
   </build>
 </project>
