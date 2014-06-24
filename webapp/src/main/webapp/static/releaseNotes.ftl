@@ -35,6 +35,14 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.9.23</h2>
+  <p>Released July 1, 2014</p>
+  <h3>Features Implemented in Ambra 2.9.23</h3>
+  <ul>
+    <li>Updates to PLOS One publishing information</li>
+    <li>Bug fix for article ingestion relating to asset references</li>
+  </ul>
+
   <h2>Ambra 2.9.22</h2>
   <p>Released Jun 17, 2014</p>
   <h3>Features Implemented in Ambra 2.9.22</h3>
