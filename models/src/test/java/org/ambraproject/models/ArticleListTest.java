@@ -1,18 +1,25 @@
 /*
- * $HeadURL$
- * $Id$
- * Copyright (c) 2006-2013 by Public Library of Science http://plos.org http://ambraproject.org
+ * Copyright (c) 2006-2014 by Public Library of Science
+ *
+ * http://plos.org
+ * http://ambraproject.org
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0Unless required by applicable law or agreed to in writing, software
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ambraproject.models;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 import java.io.Serializable;
@@ -26,6 +33,7 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 public class ArticleListTest extends BaseHibernateTest {
+  private static final Logger log = LoggerFactory.getLogger(ArticleListTest.class);
 
   @Test
   public void testSaveBasicCategory() {
@@ -44,8 +52,9 @@ public class ArticleListTest extends BaseHibernateTest {
   }
 
   @Test
-  public void testUpdateCategory() {
+  public void testUpdateCategory() throws Exception {
     long testStart = Calendar.getInstance().getTimeInMillis();
+
     ArticleList articleList = new ArticleList("listCode:testarticleListToUpdate");
     articleList.setDisplayName("Old News Article");
     List<String> articleDois = new ArrayList<String>(3);
@@ -55,12 +64,14 @@ public class ArticleListTest extends BaseHibernateTest {
 
     articleList.setArticleDois(articleDois);
 
-
     Serializable id = hibernateTemplate.save(articleList);
 
     articleList.getArticleDois().remove(1);
     articleList.getArticleDois().add("new doi 4");
     articleList.setDisplayName("New News Articles");
+
+    //Artificial delay to make sure created time is in the past
+    Thread.sleep(250);
 
     hibernateTemplate.update(articleList);
 
@@ -68,8 +79,12 @@ public class ArticleListTest extends BaseHibernateTest {
     assertEquals(storedArticleList, articleList, "didn't update news properties");
     assertNotNull(storedArticleList.getLastModified(), "news didn't get last modified date set");
     assertTrue(storedArticleList.getLastModified().getTime() > testStart, "last modified wasn't after test start");
+
+    log.debug("Last Modified: {}", storedArticleList.getLastModified());
+    log.debug("Created: {}", storedArticleList.getCreated());
+
     assertTrue(storedArticleList.getLastModified().getTime() > storedArticleList.getCreated().getTime(),
-        "last modified wasn't after created");
+      "last modified wasn't after created");
   }
 }
 
