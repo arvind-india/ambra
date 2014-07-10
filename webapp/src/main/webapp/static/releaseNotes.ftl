@@ -35,6 +35,14 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.1</h2>
+  <p>Released Jun 15, 2014</p>
+  <h3>Features Implemented in Ambra 2.10.1</h3>
+  <ul>
+     <li>Update taxonomy thesaurus to 2014-3</li>
+     <li>Introduces a content-repo that is a versioning object store service. Ambra is now configured to use this external file store</li>
+  </ul>
+
   <h2>Ambra 2.9.22</h2>
   <p>Released Jun 17, 2014</p>
   <h3>Features Implemented in Ambra 2.9.22</h3>
