@@ -36,7 +36,7 @@
   </p>
 
   <h2>Ambra 2.10.1</h2>
-  <p>Released July 15, 2014</p>
+  <p>Released July 17, 2014</p>
   <h3>Features Implemented in Ambra 2.10.1</h3>
   <ul>
      <li>Update taxonomy thesaurus to 2014-3</li>
