@@ -25,6 +25,7 @@
     <li><a href="#features">Features Updates</a></li>
     <li><a href="#credits">Site Credits</a></li>
   </ul>
+  <p>Ambra 3.0 will be a major upgrade to our publishing platform. It is currently serving some but not all of our site pages – you can see which version serves which pages by the version numbers in the footer. The Ambra 3.0 codebase is temporarily private while PLOS finalizes some licensing decisions and develops it to full feature-completeness. Look for it to be published soon as an open-source upgrade to our existing, open-source Ambra 2.* offering.</p>
   
   <a name="features"></a>
   <h2>Features Updates</h2>
