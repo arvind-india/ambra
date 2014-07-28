@@ -1274,8 +1274,8 @@ $.fn.alm = function () {
             item, totalStat, key, itemInfoMap = {};
 
         // build tooltip
-        for (i = 0; i < source.events.items.length; i++) {
-          item = source.events.items[i], totalStat = 0, key = "";
+        for (i = 0; i < source.events.length; i++) {
+          item = source.events[i], totalStat = 0, key = "";
           if (typeof item.doi !== 'undefined' && item.doi.length > 0) {
             // if the doi ends in (.s\d+), it refers to SIs
             var pattern = /\.s\d+$/g;
