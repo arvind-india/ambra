@@ -36,6 +36,13 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.2</h2>
+  <p>Released July 31, 2014</p>
+  <h3>Features Implemented in Ambra 2.10.2</h3>
+  <ul>
+    <li>Bug fixes related to Figshare</li>
+  </ul>
+
   <h2>Ambra 2.10.1</h2>
   <p>Released July 17, 2014</p>
   <h3>Features Implemented in Ambra 2.10.1</h3>
