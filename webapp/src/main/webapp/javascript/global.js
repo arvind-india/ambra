@@ -1323,6 +1323,8 @@ if ($(document).pjax) {
       var figshare = window.figshare;
       if(figshare && figshare.relatedContent){
         figshare.relatedContent.init();
+      } else {
+        $.getScript("http://static.figshare.com/publishers/loaders/plos_related.js");
       }
     }
 
