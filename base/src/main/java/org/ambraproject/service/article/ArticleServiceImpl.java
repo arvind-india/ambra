@@ -5,10 +5,10 @@
  * http://ambraproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -67,16 +67,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author Joe Osowski
  */
-
 public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleService {
   private static final Logger log = LoggerFactory.getLogger(ArticleServiceImpl.class);
 
@@ -475,7 +479,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
 
         for (Article article : queryResults) {
           if (matchesAuthorFilter(params.getAuthors(), article.getAuthors())
-              && matchesCategoriesFilter(params.getCategories(), article.getCategories())) {
+              && matchesCategoriesFilter(params.getCategories(), article.getCategories().keySet())) {
             filteredResults.add(article);
           }
         }
@@ -749,14 +753,14 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     }
     articleInfo.setArticleAssets(aViews);
 
-    Set<Category> categories = article.getCategories();
+    Map<Category, Integer> categories = article.getCategories();
     Set<ArticleCategory> catViews = new HashSet<ArticleCategory>(categories.size());
 
 
     //See if the user flagged any of the existing categories
     List<Long> flaggedCategories = getFlaggedCategories(article.getID(), authId);
 
-    for(Category cat : categories) {
+    for(Category cat : categories.keySet()) {
       catViews.add(
         ArticleCategory.builder()
           .setCategoryID(cat.getID())
@@ -1173,20 +1177,45 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   }
 
   /**
+   * Create a sorted list sorted by the integer value, largest first, smallest last
+   *
+   * @param values the Map to sort
+   *
+   * @return a List of the map entries of the map passed in
+   */
+  protected static List<Map.Entry<String, Integer>> sortCategoriesByValue(Map<String, Integer> values) {
+    List<Map.Entry<String, Integer>> categoryStringsSorted = new ArrayList<Map.Entry<String, Integer>>();
+
+    categoryStringsSorted.addAll(values.entrySet());
+
+    Collections.sort(categoryStringsSorted, new Comparator<Map.Entry<String, Integer>>() {
+      @Override
+      public int compare(Map.Entry<String, Integer> e1, Map.Entry<String, Integer> e2) {
+        return e2.getValue().compareTo(e1.getValue());
+      }
+    });
+
+    return categoryStringsSorted;
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override
   @Transactional
-  public List<Category> setArticleCategories(Article article, List<String> categoryStrings) {
-    List<Category> categories = new ArrayList<Category>(categoryStrings.size());
+  public Map<Category, Integer> setArticleCategories(Article article, Map<String, Integer> categoryMap) {
+    List<Map.Entry<String, Integer>> sortedCategories = sortCategoriesByValue(categoryMap);
+    //LinkedHashMap keeps things ordered by insertion order
+    Map<Category, Integer> results = new LinkedHashMap<Category, Integer>(categoryMap.size());
     Set<String> uniqueLeafs = new HashSet<String>();
 
-    for (String s : categoryStrings) {
-      if (s.charAt(0) != '/') {
+    for (Map.Entry<String, Integer> s : sortedCategories) {
+      if (s.getKey().charAt(0) != '/') {
         throw new IllegalArgumentException("Bad category: " + s);
       }
+
       Category category = new Category();
-      category.setPath(s);
+      category.setPath(s.getKey());
 
       //We want a count of distinct lead nodes.  When this
       //Reaches eight stop.  Note the second check, we can be at
@@ -1200,18 +1229,14 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
       } else {
         //getSubCategory returns leaf node of the path
         uniqueLeafs.add(category.getSubCategory());
-        categories.add(category);
+        results.put(category, s.getValue());
       }
     }
 
-    // TODO: article.categories is a set according to Hibernate, but it should be
-    // a list, since the taxonomy server returns a list of categories sorted
-    // in descending order of the match.  Need to change the ambra hibernate stuff
-    // if we want to change that.
-    article.setCategories(new HashSet<Category>(categories));
+    article.setCategories(results);
     updateWithExistingCategories(article);
 
-    return categories;
+    return results;
   }
 
   /**
@@ -1232,25 +1257,26 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     int oldFlushMode = hibernateTemplate.getFlushMode();
     hibernateTemplate.setFlushMode(HibernateAccessor.FLUSH_COMMIT);
     try {
-      Set<Category> existingCategories = article.getCategories();
+      Map<Category, Integer> existingCategories = article.getCategories();
       if (existingCategories != null && !existingCategories.isEmpty()) {
-        Set<Category> correctCategories = new HashSet<Category>(existingCategories.size());
-        for (Category category : existingCategories) {
+        Map<Category, Integer> correctCategories = new LinkedHashMap<Category, Integer>(existingCategories.size());
+        for (Map.Entry<Category, Integer> entry : existingCategories.entrySet()) {
           try {
             Category existingCategory;
-            if (category.getSubCategory() != null) {
+            if (entry.getKey().getSubCategory() != null) {
               existingCategory = (Category) hibernateTemplate.findByCriteria(
                   DetachedCriteria.forClass(Category.class)
-                      .add(Restrictions.eq("path", category.getPath())), 0, 1).get(0);
+                      .add(Restrictions.eq("path", entry.getKey().getPath())), 0, 1).get(0);
             } else {
               existingCategory = (Category) hibernateTemplate.findByCriteria(
                   DetachedCriteria.forClass(Category.class)
-                      .add(Restrictions.eq("path", category.getPath())), 0, 1).get(0);
+                      .add(Restrictions.eq("path", entry.getKey().getPath())), 0, 1).get(0);
             }
-            correctCategories.add(existingCategory);
+            correctCategories.put(existingCategory, entry.getValue());
           } catch (IndexOutOfBoundsException e) {
-            //category must not have existed
-            correctCategories.add(category);
+            //category must not have existed, save it now
+            hibernateTemplate.save(entry.getKey());
+            correctCategories.put(entry.getKey(), entry.getValue());
           }
         }
         article.setCategories(correctCategories);
