@@ -36,6 +36,14 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.3</h2>
+  <p>Released August 12th, 2014</p>
+  <h3>Features Implemented in Ambra 2.10.3</h3>
+  <ul>
+      <li>Adding weights to taxonomy terms</li>
+      <li>Fixing a bug in the figure browser</li>
+  </ul>
+
   <h2>Ambra 2.10.2</h2>
   <p>Released August 5th, 2014</p>
   <h3>Features Implemented in Ambra 2.10.2</h3>

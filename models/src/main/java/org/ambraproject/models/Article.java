@@ -1,16 +1,14 @@
 /*
- * $HeadURL$
- * $Id$
+ * Copyright (c) 2007-2014 by Public Library of Science
  *
- * Copyright (c) 2006-2011 by Public Library of Science
- *     http://plos.org
- *     http://ambraproject.org
+ * http://plos.org
+ * http://ambraproject.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * You may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +21,7 @@ package org.ambraproject.models;
 import java.lang.String;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -69,7 +68,7 @@ public class Article extends AmbraEntity{
   private Set<String> types;
 
   //collections of persistent objects
-  private Set<Category> categories;
+  private Map<Category, Integer> categories;
   private List<ArticleAsset> assets;
   private List<CitedArticle> citedArticles;
   private List<ArticleRelationship> relatedArticles;
@@ -252,11 +251,11 @@ public class Article extends AmbraEntity{
     this.collaborativeAuthors = collaborativeAuthors;
   }
 
-  public Set<Category> getCategories() {
+  public Map<Category, Integer> getCategories() {
     return categories;
   }
 
-  public void setCategories(Set<Category> categories) {
+  public void setCategories(Map<Category, Integer> categories) {
     this.categories = categories;
   }
 

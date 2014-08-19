@@ -1,16 +1,21 @@
 /*
- * $HeadURL$
- * $Id$
- * Copyright (c) 2006-2012 by Public Library of Science http://plos.org http://ambraproject.org
+ * Copyright (c) 2006-2014 by Public Library of Science
+ *
+ * http://plos.org
+ * http://ambraproject.org
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0Unless required by applicable law or agreed to in writing, software
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ambraproject.service.article;
 
 import org.ambraproject.action.BaseTest;
@@ -18,9 +23,8 @@ import org.ambraproject.util.DocumentBuilderFactoryCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
-
 import java.io.File;
-
+import java.util.AbstractMap;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
@@ -108,13 +112,51 @@ public class ArticleClassifierTest extends BaseTest {
   @Test
   public void testParseVectorElement() throws Exception {
     assertEquals(AIArticleClassifier.parseVectorElement(
-        "<TERM>/Biology and life sciences/Computational biology/Computational neuroscience/Single neuron function|(1) neuron*(1)</TERM>"),
-        "/Biology and life sciences/Computational biology/Computational neuroscience/Single neuron function");
+        "<TERM>/Biology and life sciences/Computational biology/Computational neuroscience/Single neuron function|(5) neuron*(5)</TERM>"),
+        new AbstractMap.SimpleImmutableEntry<String, Integer>(
+          "/Biology and life sciences/Computational biology/Computational neuroscience/Single neuron function"
+          ,5));
+
+    assertEquals(AIArticleClassifier.parseVectorElement(
+      "<TERM>/Medicine and health sciences/Anesthesiology/Anesthesia|(5) anesthesia(5)</TERM>"),
+      new AbstractMap.SimpleImmutableEntry<String, Integer>(
+        "/Medicine and health sciences/Anesthesiology/Anesthesia"
+        ,5));
+
+    assertEquals(AIArticleClassifier.parseVectorElement(
+      "<TERM>/Medicine and health sciences/Geriatrics/Frailty|(19) frailty(18) frail*(1)</TERM>"),
+      new AbstractMap.SimpleImmutableEntry<String, Integer>(
+        "/Medicine and health sciences/Geriatrics/Frailty"
+        ,19));
+
+    assertEquals(AIArticleClassifier.parseVectorElement(
+      "<TERM>/Biology and life sciences/Anatomy/Head/Face/Nose|(311) nose(311)</TERM>"),
+      new AbstractMap.SimpleImmutableEntry<String, Integer>(
+        "/Biology and life sciences/Anatomy/Head/Face/Nose"
+        ,311));
+
+    assertEquals(AIArticleClassifier.parseVectorElement(
+      "<TERM>/People and places/Demography|(7) demographics(7)</TERM>"),
+      new AbstractMap.SimpleImmutableEntry<String, Integer>(
+        "/People and places/Demography"
+        ,7));
+
+    assertEquals(AIArticleClassifier.parseVectorElement(
+      "<TERM>/Medicine and health sciences/Neurology/Cognitive neurology|(2) cognit*(2)</TERM>"),
+      new AbstractMap.SimpleImmutableEntry<String, Integer>(
+        "/Medicine and health sciences/Neurology/Cognitive neurology"
+        ,2));
+
+    assertEquals(AIArticleClassifier.parseVectorElement(
+        "<TERM> /Medicine and health sciences/Neurology/Cognitive neurology| (67) cognit*(2)</TERM>"),
+      new AbstractMap.SimpleImmutableEntry<String, Integer>(
+        "/Medicine and health sciences/Neurology/Cognitive neurology"
+        ,67));
 
     // This appears to be a bug in the AI server--it sometimes does not return an
     // absolute path to a top-level category.  In these cases, the returned value
     // should be discarded.
     assertNull(AIArticleClassifier.parseVectorElement(
-        "<TERM>Background noise (acoustics)|(1) background noise(1)</TERM>"));
+      "<TERM>Background noise (acoustics)|(1) background noise(1)</TERM>"));
   }
 }

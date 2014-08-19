@@ -40,9 +40,12 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,12 +86,16 @@ public class AIArticleClassifier implements ArticleClassifier {
     this.httpClient = httpClient;
   }
 
+  /**
+   * @inheritDoc
+   */
   @Override
-  public List<String> classifyArticle(Document articleXml) throws Exception {
+  public Map<String, Integer> classifyArticle(Document articleXml) throws Exception {
     List<String> rawTerms = getRawTerms(articleXml);
-    List<String> results = new ArrayList<String>(rawTerms.size());
-    for (String raw : rawTerms) {
-      String term = parseVectorElement(raw);
+    Map<String, Integer> results = new LinkedHashMap<String, Integer>(rawTerms.size());
+
+    for (String rawTerm : rawTerms) {
+      Map.Entry<String, Integer> entry = parseVectorElement(rawTerm);
 
       // When the new taxonomy launched, we had a problem where lots of PLOS ONE
       // papers were being tagged with subcategories of
@@ -97,8 +104,8 @@ public class AIArticleClassifier implements ArticleClassifier {
       //
       // TODO: tweak the AI taxonomy server rulebase to make this unnecessary, and
       // remove the hack.
-      if (term != null && !term.startsWith("/Earth sciences/Geography/Locations/")) {
-        results.add(term);
+      if (entry.getKey() != null && !entry.getKey().startsWith("/Earth sciences/Geography/Locations/")) {
+        results.put(entry.getKey(), entry.getValue());
       }
     }
     return results;
@@ -132,23 +139,37 @@ public class AIArticleClassifier implements ArticleClassifier {
     return results;
   }
 
+
+  // There appears to be a bug in the AI getSuggestedTermsFullPath method.
+  // It's supposed to return a slash-delimited path that starts with a slash,
+  // like an absolute Unix file path.  However, rarely, it just returns "naked"
+  // terms without the leading slash.  Discard these, since the calling
+  // code won't be able to handle this.  (Note the first slash after <TERM> in the regex)
+
+  //Positive (Good term) example response:
+  //"<TERM>/Biology and life sciences/Computational biology/Computational neuroscience/Single neuron function|(5) neuron*(5)</TERM>"
+  //This regex:
+  //Confirms the response is good
+  //Finds the term and places in the result
+  //Finds first number wrapped in parentheses after the pipe symbol and places it in the result
+  static Pattern TERM_PATTERN = Pattern.compile("<TERM>\\s*(/.*)\\|\\s*\\((\\d+)\\).*</TERM>");
+
   /**
    * Parses a single line of the XML response from the taxonomy server.
    *
    * @param vectorElement The text body of a line of the response
-   * @return the term to be returned, or null if the line is not valid
+   * @return the term and weight of the term or null if the line is not valid
    */
-  static String parseVectorElement(String vectorElement) {
-    String text = vectorElement.split("\\|")[0].replaceFirst("<TERM>", "");
+  static Map.Entry<String, Integer> parseVectorElement(String vectorElement) {
+    Matcher match = TERM_PATTERN.matcher(vectorElement);
 
-    // There appears to be a bug in the AI getSuggestedTermsFullPath method.
-    // It's supposed to return a slash-delimited path that starts with a slash,
-    // like an absolute Unix file path.  However, rarely, it just returns "naked"
-    // terms without the leading slash.  Discard these, since the calling
-    // code won't be able to handle this.
-    if (text.charAt(0) == '/') {
-      return text;
+    if(match.find()) {
+      String text = match.group(1);
+      Integer value = Integer.valueOf(match.group(2));
+
+      return new AbstractMap.SimpleImmutableEntry<String, Integer>(text, value);
     } else {
+      //Bad term, return null
       return null;
     }
   }

@@ -4746,17 +4746,11 @@ legend.conjunction span {
   z-index: 10;
 }
 
-#fig-viewer-slides .txt .content {
+#fig-viewer-slides .txt .content,
+#fig-viewer-slides .txt .text-more {
   height: 88px;
   padding: 0 5% 0 3.1%;
   font-family: 'FS Albert Web Regular', Verdana, sans-serif;
-}
-
-#fig-viewer-slides.txt-expand .txt .content {
-  height: 190px;
-  overflow-y: auto;
-  border-top: 1px solid #bbb;
-  border-color: rgba(0,0,0,0.2);
 }
 
 #fig-viewer-slides .txt .title {
@@ -4781,7 +4775,13 @@ legend.conjunction span {
   padding-right: 16px;
 }
 
+#fig-viewer-slides.txt-expand .content {
+  display: none;
+}
+
 #fig-viewer-slides .txt .toggle.more {
+  padding: 0 5% 15px 3.1%;
+  font-weight: normal;
   text-decoration: underline;
   color: #3c63af;
   margin-top: 1px;
@@ -4818,7 +4818,15 @@ legend.conjunction span {
   display: none;
   font-size: 0.923em;
   line-height: 1.167;
-  padding: 5px 0 15px;
+  padding: 0 5% 15px 3.1%;
+}
+
+#fig-viewer-slides .text-more .desc {
+  padding: 5px 0 0 0;
+}
+
+#fig-viewer-slides .text-more .doi {
+  padding: 15px 0 15px 0;
 }
 
 #fig-viewer-slides .tease {
@@ -4827,6 +4835,10 @@ legend.conjunction span {
 
 #fig-viewer-slides.txt-expand .text-more {
   display: block;
+  height: 190px;
+  overflow-y: auto;
+  border-top: 1px solid #bbb;
+  border-color: rgba(0,0,0,0.2);
 }
 
 #fig-viewer-slides.txt-expand .tease {
