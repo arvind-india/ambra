@@ -36,6 +36,14 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.4</h2>
+  <p>Released September 2nd, 2014</p>
+  <h3>Features Implemented in Ambra 2.10.4</h3>
+  <ul>
+      <li>Changes to administration email notifications</li>
+      <li>Apache Struts upgrade, from 2.3.16.2 to 2.3.16.3</li>
+  </ul>
+
   <h2>Ambra 2.10.3</h2>
   <p>Released August 12th, 2014</p>
   <h3>Features Implemented in Ambra 2.10.3</h3>
