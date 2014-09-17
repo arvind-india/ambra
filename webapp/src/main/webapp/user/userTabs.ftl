@@ -53,6 +53,7 @@
       </div>
     </div>
 
+    <!--
     <#if moodleUser = true>
       <div id="edBoardKnowledgeBasePlug">
         <h4><a href="http://plos.mrooms.net">Editorial Board<br/>Knowledge Base <img src="/images/transparent.gif" height="13" width="13"/></a></h4>
@@ -60,6 +61,8 @@
           participate in conversations in our forums.</p>
       </div>
     </#if>
+    -->
+
     <div class="clear"></div>
   </div>
   <div class="tab-content">

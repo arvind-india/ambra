@@ -36,6 +36,13 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.6</h2>
+  <p>Released September 23rd, 2014</p>
+  <h3>Features Implemented in Ambra 2.10.6</h3>
+  <ul>
+      <li>Removing the Editorial Board Knowledge Base box from the "my profile" page</li>
+  </ul>
+
   <h2>Ambra 2.10.5</h2>
   <p>Released September 9th, 2014</p>
   <h3>Features Implemented in Ambra 2.10.5</h3>
