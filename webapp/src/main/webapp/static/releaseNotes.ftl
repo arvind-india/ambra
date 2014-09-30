@@ -36,6 +36,14 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.7</h2>
+  <p>Released October 7th, 2014</p>
+  <h3>Features Implemented in Ambra 2.10.7</h3>
+  <ul>
+      <li>Addition of Editorial Board Knowledge Base messaging on a series of account confirmation pages</li>
+  </ul>
+
+
   <h2>Ambra 2.10.6</h2>
   <p>Released September 23rd, 2014</p>
   <h3>Features Implemented in Ambra 2.10.6</h3>
