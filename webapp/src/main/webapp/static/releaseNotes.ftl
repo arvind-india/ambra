@@ -36,6 +36,13 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.9</h2>
+  <p>Released December 9th, 2014</p>
+  <h3>Features Implemented in Ambra 2.10.9</h3>
+  <ul>
+      <li>Updates to article commenting functionality</li>
+  </ul>
+
   <h2>Ambra 2.10.8</h2>
   <p>Released October 28th, 2014</p>
   <h3>Features Implemented in Ambra 2.10.8</h3>
