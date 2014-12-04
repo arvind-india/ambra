@@ -146,15 +146,7 @@ public abstract class BaseActionSupport extends ActionSupport implements Request
   protected void addProfaneMessages(final List<String> profaneWords, final String fieldName,
                                     final String readableFieldName) {
     if (!profaneWords.isEmpty()) {
-      final String joinedWords = StringUtils.join(profaneWords.toArray(), ", ");
-      String  msg;
-      if (profaneWords.size() > 1) {
-        msg = "these words";
-      } else {
-        msg = "this word";
-      }
-      addFieldError(fieldName, "Profanity filter found: " + joinedWords + ". Please remove " +
-                               msg + ".");
+      addFieldError(fieldName, "Your comment triggered a profanity filter. Please reword your comment.");
     }
   }
 
