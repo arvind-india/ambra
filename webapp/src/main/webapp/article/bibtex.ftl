@@ -22,7 +22,7 @@
 <#list citation.authorList as author>
   <#assign authorListFormatted = authorListFormatted + author.surnames>
   <#assign authorListFormatted = authorListFormatted + ", ">
-  <#if author.suffix?exists>
+  <#if author.suffix?exists && author.suffix?trim?length gt 0>
     <#assign authorListFormatted = authorListFormatted + author.suffix>
     <#assign authorListFormatted = authorListFormatted + ", ">
   </#if>
