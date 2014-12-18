@@ -345,21 +345,21 @@ function initMainContainer() {
     }
   });
 
-  $("#nav-article li a").on("click", function(event) {
-    // for metrics and related content that have dynamic javascript to populate
-    // the content, cache the content here when the user navigates away from that
-    // page. So that this cache can be reused when the user navigates back to
-    // this page later.
-    if(selected_tab == "related") {
-      if($.pjax.contentCache[window.location.href] !== undefined) {
-        $.pjax.contentCache[window.location.href].data = $("#pjax-container").outerHTML();
-        $.pjax.contentCache[window.location.href].loaded = true;
-      }
-    }
-    pjax_selected_tab = this.name;
-    selected_tab = this.name;
-    return true;
-  });
+  //$("#nav-article li a").on("click", function(event) {
+  //  // for metrics and related content that have dynamic javascript to populate
+  //  // the content, cache the content here when the user navigates away from that
+  //  // page. So that this cache can be reused when the user navigates back to
+  //  // this page later.
+  //  if(selected_tab == "related") {
+  //    if($.pjax.contentCache[window.location.href] !== undefined) {
+  //      $.pjax.contentCache[window.location.href].data = $("#pjax-container").outerHTML();
+  //      $.pjax.contentCache[window.location.href].loaded = true;
+  //    }
+  //  }
+  //  pjax_selected_tab = this.name;
+  //  selected_tab = this.name;
+  //  return true;
+  //});
 
 }
 
@@ -370,7 +370,7 @@ var tab_menu_category, tab_menu_action, tab_menu_label;
 tab_menu_category = "tab menu actions";
 tab_menu_action = "tab menu click";
 $(document).ajaxComplete(function(){
-    if(pjax_selected_tab != null){ tab_menu_label = pjax_selected_tab;};
+    //if(pjax_selected_tab != null){ tab_menu_label = pjax_selected_tab;};
     if(typeof(_gaq) !== 'undefined'){
       _gaq.push(['_trackEvent',tab_menu_category,tab_menu_action,tab_menu_label]);
     }
@@ -1257,79 +1257,79 @@ initMainContainer();
 
 // Begin PJAX related code
 
-var pjax_selected_tab = null; // last clicked pjax content
-
-if ($(document).pjax) {
-  $(document).pjax("#nav-article ul li a, .nav-col .nav-col-comments a, .sidebar .sidebar-comments p a", "#pjax-container",
-      {container: "#pjax-container", fragment: "#pjax-container", timeout: 5000, scrollTo: "do-not"});
-
-  $("#pjax-container").on("pjax:complete", function(event) {
-    // invoke document ready and window initialization code
-    onReadyMainContainer();
-    initMainContainer();
-
-    // when metrics tab is selected, load highcharts.js only
-    // if it was not already loaded. If the tab content was loaded from
-    // pjax (and not from cache) then also initialize ALM.
-
-    if (pjax_selected_tab == "metrics") {
-      if (typeof Highcharts == "undefined") {
-        $.getScript("/javascript/highcharts.js", function(data, textStatus, jqxhr) {
-          onLoadALM();
-        });
-      }
-      else {
-        onLoadALM();
-      }
-    }
-
-    else if (pjax_selected_tab == "article"){
-      // figshare_widget_load variable is defined if figshare was loaded before.
-      // but plos_widget.js must be loaded again to show the figshare when
-      // switching to article tab
-      // if switching from another tab to article tab
-      // then add figshare css and js files.
-      // e.g. metrics --> article
-      // do not add css if article tab was already opened before.
-      // e.g: article --> metrics --> article
-      // if landing page is article then p_widget.js is included from article.ftl
-      if (typeof figshare_widget_load == "undefined") {
-        function add_widget_css() {
-          var headtg = document.getElementsByTagName('head')[0];
-          if (!headtg) {
-            return;
-          }
-          var linktg = document.createElement('link');
-          linktg.type = 'text/css';
-          linktg.rel = 'stylesheet';
-          linktg.href = 'http://wl.figshare.com/static/css/p_widget.css?v=8';
-          headtg.appendChild(linktg);
-        }
-        add_widget_css();
-      }
-      $.getScript("http://wl.figshare.com/static/plos_widget.js?v=10");
-      $.getScript("http://wl.figshare.com/static/jmvc/main_app/resources/jwplayer/jwplayer.js");
-      figshare_widget_load = true;
-    }
-
-    // For related pages, if no item exists under more_by_authors and
-    // the page is not yet cached, reload the javascript to populate the
-    // related content.
-    // now that related content fetches data from alm to grab media coverage information,
-    // we will need to reload the tab every time.
-    else if (pjax_selected_tab == "related"){
-      $.getScript("/javascript/related_content.js");
-      $.getScript("http://www.google.com/recaptcha/api/js/recaptcha_ajax.js");
-      var figshare = window.figshare;
-      if(figshare && figshare.relatedContent){
-        figshare.relatedContent.init();
-      } else {
-        $.getScript("http://static.figshare.com/publishers/loaders/plos_related.js");
-      }
-    }
-
-  });
-}
+//var pjax_selected_tab = null; // last clicked pjax content
+//
+//if ($(document).pjax) {
+//  $(document).pjax("#nav-article ul li a, .nav-col .nav-col-comments a, .sidebar .sidebar-comments p a", "#pjax-container",
+//      {container: "#pjax-container", fragment: "#pjax-container", timeout: 5000, scrollTo: "do-not"});
+//
+//  $("#pjax-container").on("pjax:complete", function(event) {
+//    // invoke document ready and window initialization code
+//    onReadyMainContainer();
+//    initMainContainer();
+//
+//    // when metrics tab is selected, load highcharts.js only
+//    // if it was not already loaded. If the tab content was loaded from
+//    // pjax (and not from cache) then also initialize ALM.
+//
+//    if (pjax_selected_tab == "metrics") {
+//      if (typeof Highcharts == "undefined") {
+//        $.getScript("/javascript/highcharts.js", function(data, textStatus, jqxhr) {
+//          onLoadALM();
+//        });
+//      }
+//      else {
+//        onLoadALM();
+//      }
+//    }
+//
+//    else if (pjax_selected_tab == "article"){
+//      // figshare_widget_load variable is defined if figshare was loaded before.
+//      // but plos_widget.js must be loaded again to show the figshare when
+//      // switching to article tab
+//      // if switching from another tab to article tab
+//      // then add figshare css and js files.
+//      // e.g. metrics --> article
+//      // do not add css if article tab was already opened before.
+//      // e.g: article --> metrics --> article
+//      // if landing page is article then p_widget.js is included from article.ftl
+//      if (typeof figshare_widget_load == "undefined") {
+//        function add_widget_css() {
+//          var headtg = document.getElementsByTagName('head')[0];
+//          if (!headtg) {
+//            return;
+//          }
+//          var linktg = document.createElement('link');
+//          linktg.type = 'text/css';
+//          linktg.rel = 'stylesheet';
+//          linktg.href = 'http://wl.figshare.com/static/css/p_widget.css?v=8';
+//          headtg.appendChild(linktg);
+//        }
+//        add_widget_css();
+//      }
+//      $.getScript("http://wl.figshare.com/static/plos_widget.js?v=10");
+//      $.getScript("http://wl.figshare.com/static/jmvc/main_app/resources/jwplayer/jwplayer.js");
+//      figshare_widget_load = true;
+//    }
+//
+//    // For related pages, if no item exists under more_by_authors and
+//    // the page is not yet cached, reload the javascript to populate the
+//    // related content.
+//    // now that related content fetches data from alm to grab media coverage information,
+//    // we will need to reload the tab every time.
+//    else if (pjax_selected_tab == "related"){
+//      $.getScript("/javascript/related_content.js");
+//      $.getScript("http://www.google.com/recaptcha/api/js/recaptcha_ajax.js");
+//      var figshare = window.figshare;
+//      if(figshare && figshare.relatedContent){
+//        figshare.relatedContent.init();
+//      } else {
+//        $.getScript("http://static.figshare.com/publishers/loaders/plos_related.js");
+//      }
+//    }
+//
+//  });
+//}
 
 // End Pjax related code
 
