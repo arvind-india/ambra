@@ -36,6 +36,14 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.10</h2>
+  <p>Released December 23rd, 2014</p>
+  <h3>Features Implemented in Ambra 2.10.10</h3>
+  <ul>
+      <li>Updates to BibTex export functionality</li>
+      <li>PJAX usage changes</li>
+  </ul>
+
   <h2>Ambra 2.10.9</h2>
   <p>Released December 9th, 2014</p>
   <h3>Features Implemented in Ambra 2.10.9</h3>
