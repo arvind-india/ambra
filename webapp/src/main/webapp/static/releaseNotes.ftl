@@ -36,6 +36,14 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.11</h2>
+  <p>Released January 20th, 2015</p>
+  <h3>Features Implemented in Ambra 2.10.11</h3>
+  <ul>
+      <li>Updates to support indexing of Data Availability statements on a per-article basis</li>
+      <li>An enhancement to administration functionality related to allowed terms</li>
+  </ul>
+
   <h2>Ambra 2.10.10</h2>
   <p>Released December 23rd, 2014</p>
   <h3>Features Implemented in Ambra 2.10.10</h3>
