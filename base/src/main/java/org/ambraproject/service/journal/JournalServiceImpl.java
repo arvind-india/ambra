@@ -33,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.ambraproject.models.Journal;
 import org.ambraproject.service.hibernate.HibernateServiceImpl;
 import org.ambraproject.web.VirtualJournalContext;
+
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -64,7 +66,7 @@ public class JournalServiceImpl extends HibernateServiceImpl implements JournalS
   @Transactional(readOnly = true)
   @SuppressWarnings("unchecked")
   public Journal getJournal(final String journalKey) {
-    List<Journal> journals = hibernateTemplate.findByCriteria(
+    List<Journal> journals = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(Journal.class)
             .add(Restrictions.eq("journalKey", journalKey))
             .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
@@ -85,7 +87,7 @@ public class JournalServiceImpl extends HibernateServiceImpl implements JournalS
   @Transactional(readOnly = true)
   @SuppressWarnings("unchecked")
   public synchronized Journal getJournalByEissn(final String eIssn) {
-    List<Journal> journals = hibernateTemplate.findByCriteria(
+    List<Journal> journals = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
       DetachedCriteria.forClass(Journal.class)
         .add(Restrictions.eq("eIssn", eIssn)),0, 1);
 
@@ -118,7 +120,7 @@ public class JournalServiceImpl extends HibernateServiceImpl implements JournalS
   @Transactional(readOnly = true)
   @SuppressWarnings("unchecked")
   public Set<String> getAllJournalNames() {
-    return new HashSet<String>(configuration.getList("ambra.virtualJournals.journals"));
+    return new HashSet<String>((Collection<String>) (Collection<?>) configuration.getList("ambra.virtualJournals.journals"));
   }
 
   /**
@@ -144,7 +146,7 @@ public class JournalServiceImpl extends HibernateServiceImpl implements JournalS
     Set<Journal> journals = new HashSet<Journal>(2); //probably only going to be one journal
 
     //Is there a more efficient way to do this without using inline SQL?
-    List<Article> articles = hibernateTemplate.findByCriteria(
+    List<Article> articles = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
       DetachedCriteria.forClass(Article.class)
         .add(Restrictions.eq("doi", doi)));
 

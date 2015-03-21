@@ -154,7 +154,7 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
           .addOrder(Order.desc("created"))
           .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
-      List<Annotation> annotations = hibernateTemplate.findByCriteria(criteria);
+      List<Annotation> annotations = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,criteria);
       List<AnnotationView> views = new ArrayList<AnnotationView>(annotations.size());
 
       for (Annotation ann : annotations) {
@@ -192,14 +192,14 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
         criteria.addOrder(Order.desc("created"));
         break;
     }
-    List annotationResults = hibernateTemplate.findByCriteria(criteria);
+    List annotationResults = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,criteria);
 
 
     //Don't want to call buildAnnotationView() here because that would involve loading up the reply map for each annotation,
     // when we only need to do it once. So load up the info we need to build annotation views here
     Object[] articleTitleAndDoi;
     try {
-      articleTitleAndDoi = (Object[]) hibernateTemplate.findByCriteria(
+      articleTitleAndDoi = (Object[]) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(Article.class)
               .add(Restrictions.eq("ID", articleID))
               .setProjection(Projections.projectionList()
@@ -259,12 +259,12 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
         criteria.addOrder(Order.desc("created"));
         break;
     }
-    List annotationResults = hibernateTemplate.findByCriteria(criteria);
+    List annotationResults = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,criteria);
     //Don't want to call buildAnnotationView() here because that would involve finding the article title and doi for each annotation,
     // when we only need to do it once. So load up the info we need to build annotation views here
     Object[] articleTitleAndDoi;
     try {
-      articleTitleAndDoi = (Object[]) hibernateTemplate.findByCriteria(
+      articleTitleAndDoi = (Object[]) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(Article.class)
               .add(Restrictions.eq("ID", articleID))
               .setProjection(Projections.projectionList()
@@ -289,14 +289,14 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
   @Transactional(readOnly = true)
   public int countAnnotations(Long articleID, Set<AnnotationType> annotationTypes) {
     if (annotationTypes != null && !annotationTypes.isEmpty()) {
-      return ((Number) hibernateTemplate.findByCriteria(
+      return ((Number) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(Annotation.class)
               .add(Restrictions.eq("articleID", articleID))
               .add(Restrictions.in("type", annotationTypes))
               .setProjection(Projections.rowCount())
       ).get(0)).intValue();
     } else {
-      return ((Number) hibernateTemplate.findByCriteria(
+      return ((Number) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(Annotation.class)
               .add(Restrictions.eq("articleID", articleID))
               .setProjection(Projections.rowCount())
@@ -319,7 +319,7 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
     log.debug("Creating comment on article: {}; title: {}; body: {}", new Object[]{articleDoi, title, body});
     Long articleID;
     try {
-      articleID = (Long) hibernateTemplate.findByCriteria(
+      articleID = (Long) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(Article.class)
               .add(Restrictions.eq("doi", articleDoi))
               .setProjection(Projections.id())
@@ -349,7 +349,7 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
     log.debug("Creating reply to {}; title: {}; body: {}", new Object[]{parentId, title, body});
     Long articleID;
     try {
-      articleID = (Long) hibernateTemplate.findByCriteria(
+      articleID = (Long) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(Annotation.class)
               .add(Restrictions.eq("ID", parentId))
               .setProjection(Projections.property("articleID")), 0, 1)
@@ -406,7 +406,7 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
     log.debug("populating view object for annotation {}", annotationUri);
     Annotation annotation;
     try {
-      annotation = (Annotation) hibernateTemplate.findByCriteria(
+      annotation = (Annotation) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(Annotation.class)
               .add(Restrictions.eq("annotationUri", annotationUri))
               .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
@@ -439,7 +439,7 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
   @SuppressWarnings("unchecked")
   private Map<Long, List<Annotation>> buildReplyMap(Long articleId) {
     Map<Long, List<Annotation>> fullReplyMap = new HashMap<Long, List<Annotation>>();
-    List<Annotation> allReplies = hibernateTemplate.findByCriteria(
+    List<Annotation> allReplies = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(Annotation.class)
             .add(Restrictions.eq("articleID", articleId))
             .add(Restrictions.eq("type", AnnotationType.REPLY))
@@ -462,7 +462,7 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
   private AnnotationView buildAnnotationView(Annotation annotation, boolean loadAllReplies) {
     Object values[];
     try {
-      values = (Object[]) hibernateTemplate.findByCriteria(
+      values = (Object[]) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(Article.class)
               .add(Restrictions.eq("ID", annotation.getArticleID()))
               .setProjection(Projections.projectionList()

@@ -103,7 +103,7 @@ public class PermissionsServiceImpl extends HibernateServiceImpl implements Perm
       new Cache.SynchronizedLookup<Set<UserRole>, SecurityException>(lock) {
         public Set<UserRole> lookup() throws SecurityException {
           List<UserProfile> userProfiles =
-            hibernateTemplate.findByCriteria(DetachedCriteria.forClass(UserProfile.class)
+            org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,DetachedCriteria.forClass(UserProfile.class)
               .add(Restrictions.eq("authId", authId))
               .setFetchMode("roles", FetchMode.JOIN)
               .setFetchMode("permissions", FetchMode.JOIN)

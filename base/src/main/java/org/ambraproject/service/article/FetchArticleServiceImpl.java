@@ -137,7 +137,7 @@ public class FetchArticleServiceImpl extends HibernateServiceImpl implements Fet
     if (fsid == null)
       throw new NoSuchArticleIdException(articleDoi);
 
-    List assets = hibernateTemplate.findByCriteria(DetachedCriteria.forClass(ArticleAsset.class)
+    List assets = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,DetachedCriteria.forClass(ArticleAsset.class)
         .add(Restrictions.eq("doi", articleDoi))
         .add(Restrictions.eq("extension", "XML")));
 

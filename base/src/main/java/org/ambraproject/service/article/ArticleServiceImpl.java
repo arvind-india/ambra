@@ -245,7 +245,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   public void setState(final String articleDoi, final String authId, final int state) throws NoSuchArticleIdException {
     permissionsService.checkPermission(Permission.INGEST_ARTICLE, authId);
 
-    List articles = hibernateTemplate.findByCriteria(DetachedCriteria.forClass(Article.class)
+    List articles = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,DetachedCriteria.forClass(Article.class)
           .add(Restrictions.eq("doi", articleDoi)));
 
     if (articles.size() == 0) {
@@ -271,7 +271,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
       DetachedCriteria criteria = DetachedCriteria.forClass(UserProfile.class)
           .setProjection(Projections.property("displayName"))
           .add(Restrictions.eq("authId",authId));
-      String userName = (String) hibernateTemplate.findByCriteria(criteria, 0, 1).get(0);
+      String userName = (String) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,criteria, 0, 1).get(0);
       userName = userName == null ? "UNKNOWN" : userName;
       log.info("User '{}' {} the article {}",
           new String[] {userName, state == Article.STATE_DISABLED ?
@@ -532,7 +532,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     if (articleDoi == null)
       throw new IllegalArgumentException("articleDoi == null");
 
-    List<Article> articles = hibernateTemplate.findByCriteria(
+    List<Article> articles = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(Article.class)
             .add(Restrictions.eq("doi", articleDoi)));
 
@@ -568,7 +568,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   public void checkArticleState(final String articleDoi, final String authId) throws NoSuchArticleIdException {
     //If the article is unpublished, it should not be returned if the user is not an admin
 
-    List<Integer> results = hibernateTemplate.findByCriteria(DetachedCriteria.forClass(Article.class)
+    List<Integer> results = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,DetachedCriteria.forClass(Article.class)
         .add(Restrictions.eq("doi", articleDoi))
         .setProjection(Projections.projectionList()
             .add(Projections.property("state")))
@@ -613,7 +613,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
 
     List<Article> articles = new ArrayList<Article>();
     if(!articleDois.isEmpty()) {
-      articles = hibernateTemplate.findByCriteria(
+      articles = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
       DetachedCriteria.forClass(Article.class)
         .add(Restrictions.in("doi", articleDois)));
     }
@@ -1101,9 +1101,9 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   private ArticleInfo getBasicArticleViewArticleInfo (Object articleIdentifier) throws NoSuchArticleIdException {
 
     Object[] results = new Object[0];
-    List<ArticleAuthor> authors;
-    List<String> collabAuthors;
-    List<String> articleTypes;
+    List authors;
+    List collabAuthors;
+    List articleTypes;
 
     try {
 
@@ -1120,7 +1120,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
         dc.add(Restrictions.eq("doi", articleIdentifier));
       }
 
-      results = (Object[]) hibernateTemplate.findByCriteria(dc,0,1).get(0);
+      results = (Object[]) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,dc,0,1).get(0);
 
       authors = hibernateTemplate.find("from ArticleAuthor where articleID = ?", results[0]);
 
@@ -1139,8 +1139,8 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     articleInfo.setTitle((String) results[2]);
 
     List<String> authors2 = new ArrayList<String>(authors.size());
-    for (ArticleAuthor ac : authors) {
-      authors2.add(ac.getFullName());
+    for (Object ac : authors) {
+      authors2.add(((ArticleAuthor)ac).getFullName());
     }
     articleInfo.setAuthors(authors2);
 
@@ -1160,7 +1160,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   @Transactional(readOnly = true)
   public CitedArticleView getCitedArticle(long citedArticleID) {
     //TODO, unit test needed SE-133
-    List<String> results = (List<String>)hibernateTemplate.findByCriteria(
+    List<String> results = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
       DetachedCriteria.forClass(Article.class)
         .setProjection(Projections.property("doi"))
         .createCriteria("citedArticles", "ca")
@@ -1264,11 +1264,11 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
           try {
             Category existingCategory;
             if (entry.getKey().getSubCategory() != null) {
-              existingCategory = (Category) hibernateTemplate.findByCriteria(
+              existingCategory = (Category) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
                   DetachedCriteria.forClass(Category.class)
                       .add(Restrictions.eq("path", entry.getKey().getPath())), 0, 1).get(0);
             } else {
-              existingCategory = (Category) hibernateTemplate.findByCriteria(
+              existingCategory = (Category) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
                   DetachedCriteria.forClass(Category.class)
                       .add(Restrictions.eq("path", entry.getKey().getPath())), 0, 1).get(0);
             }
@@ -1408,7 +1408,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     if (articleDoi == null)
       throw new IllegalArgumentException("articleDoi = null");
     // TODO: order the amendments by date
-    List<ArticleRelationship> result = hibernateTemplate.find("select distinct relatedArticles from Article as art " +
+    List result = hibernateTemplate.find("select distinct relatedArticles from Article as art " +
             "inner join art.relatedArticles as relatedArticles where art.doi = ? " +
             "and relatedArticles.type in ('expressed-concern' , 'retraction', 'correction-forward')" , articleDoi);
     return result;

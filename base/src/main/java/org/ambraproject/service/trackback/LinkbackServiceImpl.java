@@ -102,7 +102,7 @@ public abstract class LinkbackServiceImpl extends HibernateServiceImpl implement
   }
 
   protected static String fetchJournalName(HibernateTemplate hibernateTemplate, String eIssn) {
-    return (String) hibernateTemplate.findByCriteria(
+    return (String) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(Journal.class)
             .add(Restrictions.eq("eIssn", eIssn))
             .setProjection(Projections.property("journalKey")),
@@ -122,7 +122,7 @@ public abstract class LinkbackServiceImpl extends HibernateServiceImpl implement
     Long articleId;
     String articleTitle;
     try {
-      Object[] articleRow = (Object[]) hibernateTemplate.findByCriteria(
+      Object[] articleRow = (Object[]) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(Article.class)
               .add(Restrictions.eq("doi", articleDoi))
               .setProjection(Projections.projectionList()
@@ -137,7 +137,7 @@ public abstract class LinkbackServiceImpl extends HibernateServiceImpl implement
     }
     log.debug("loading up linkbacks for article {}", articleDoi);
 
-    List<? extends Linkback> linkbacks = hibernateTemplate.findByCriteria(
+    List<? extends Linkback> linkbacks = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(type)
             .add(Restrictions.eq("articleID", articleId))
             .addOrder(Order.desc("created"))
@@ -163,7 +163,7 @@ public abstract class LinkbackServiceImpl extends HibernateServiceImpl implement
     }
     Long articleId;
     try {
-      articleId = (Long) hibernateTemplate.findByCriteria(
+      articleId = (Long) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(Article.class)
               .add(Restrictions.eq("doi", articleDoi))
               .setProjection(Projections.id()), 0, 1
@@ -173,7 +173,7 @@ public abstract class LinkbackServiceImpl extends HibernateServiceImpl implement
     }
 
     // Get a list of row counts, one for each subtype. Return their sum.
-    List<? extends Number> counts = hibernateTemplate.findByCriteria(
+    List<? extends Number> counts = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(type)
             .add(Restrictions.eq("articleID", articleId))
             .setProjection(Projections.rowCount())

@@ -34,6 +34,7 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -89,7 +90,7 @@ public class PingbackServiceImpl extends LinkbackServiceImpl implements Pingback
       throw PingbackFault.NO_LINK_TO_TARGET.getException();
     }
 
-    Long preexisting = (Long) hibernateTemplate.findByCriteria(DetachedCriteria.forClass(Pingback.class)
+    Long preexisting = (Long) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,DetachedCriteria.forClass(Pingback.class)
         .setProjection(Projections.rowCount())
         .add(Restrictions.eq("url", sourceUri.toString()))
         .add(Restrictions.eq("articleID", target.getID()))
@@ -140,7 +141,7 @@ public class PingbackServiceImpl extends LinkbackServiceImpl implements Pingback
     }
 
     // Look up the article referenced by that DOI, if any
-    List<Article> queryResults = hibernateTemplate.findByCriteria(
+    List<Article> queryResults = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(Article.class)
             .add(Restrictions.eq("doi", doi))
             .setFetchMode("journals", FetchMode.JOIN)

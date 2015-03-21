@@ -22,7 +22,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ambraproject</groupId>
   <artifactId>ambra</artifactId>
-  <version>2.10.11</version>
+  <version>3.10.11</version>
   <packaging>pom</packaging>
   <name>Ambra application</name>
 
@@ -44,17 +44,17 @@
   </licenses>
 
   <properties>
-    <maven.compiler.source>1.6</maven.compiler.source>
-    <maven.compiler.target>1.6</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- aggregate some documentation - javadocs & jxr -->
     <aggregate>true</aggregate>
-    <spring.version>3.2.2.RELEASE</spring.version>
+    <spring.version>4.0.3.RELEASE</spring.version>
     <struts.version>2.3.16.3</struts.version>
     <freemarker.version>2.3.19</freemarker.version>
     <slf4j.version>1.6.1</slf4j.version>
-    <ehcache.version>1.5.0</ehcache.version>
+    <ehcache.version>2.9.1</ehcache.version>
     <xbean-spring.version>3.5</xbean-spring.version>
     <xerces.version>2.9.1</xerces.version>
     <easymock.version>3.2</easymock.version>
@@ -275,7 +275,7 @@
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
-        <version>1.6</version>
+        <version>1.8</version>
       </dependency>
 
       <dependency> <!-- It is important we get version 3.x to match commons-configuration -->

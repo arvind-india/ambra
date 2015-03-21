@@ -98,7 +98,7 @@ public class UserServiceImpl extends HibernateServiceImpl implements UserService
   public UserProfile getUserByAuthId(String authId) {
     log.debug("Attempting to find user with authID: {}", authId);
     try {
-      return (UserProfile) hibernateTemplate.findByCriteria(
+      return (UserProfile) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(UserProfile.class)
               .add(Restrictions.eq("authId", authId))
           , 0, 1).get(0);
@@ -298,7 +298,7 @@ public class UserServiceImpl extends HibernateServiceImpl implements UserService
 
     //Check to see if a matching savedSearch exists already.
     List<SavedSearchQuery> queryList =
-      hibernateTemplate.findByCriteria(DetachedCriteria.forClass(SavedSearchQuery.class)
+      org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,DetachedCriteria.forClass(SavedSearchQuery.class)
         .add(Restrictions.eq("hash", queryHash))
         .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY));
 
@@ -319,7 +319,7 @@ public class UserServiceImpl extends HibernateServiceImpl implements UserService
   @Transactional(rollbackFor = {Throwable.class})
   public List<SavedSearchView> getSavedSearches(Long userProfileId) {
     UserProfile userProfile = (UserProfile) DataAccessUtils.uniqueResult(
-      hibernateTemplate.findByCriteria(
+      org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(UserProfile.class)
           .add(Restrictions.eq("ID", userProfileId))
           .setFetchMode("savedSearches", FetchMode.JOIN)
@@ -343,7 +343,7 @@ public class UserServiceImpl extends HibernateServiceImpl implements UserService
   public void deleteSavedSearch(Long userProfileId, Long savedSearchId) {
 
     UserProfile userProfile = (UserProfile) DataAccessUtils.uniqueResult(
-        hibernateTemplate.findByCriteria(
+        org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(UserProfile.class)
                 .add(Restrictions.eq("ID", userProfileId))
                 .setFetchMode("savedSearches", FetchMode.JOIN)
@@ -410,7 +410,7 @@ public class UserServiceImpl extends HibernateServiceImpl implements UserService
   @Transactional
   public void saveUserOrcid(Long userProfileId, OrcidAuthorization orcidAuthorization) throws DuplicateOrcidException {
     UserOrcid userOrcid = (UserOrcid) DataAccessUtils.uniqueResult(
-      hibernateTemplate.findByCriteria(
+      org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(UserOrcid.class)
           .add(Restrictions.eq("orcid", orcidAuthorization.getOrcid()))
           .add(Restrictions.ne("ID", userProfileId))
@@ -422,7 +422,7 @@ public class UserServiceImpl extends HibernateServiceImpl implements UserService
     }
 
     userOrcid = (UserOrcid) DataAccessUtils.uniqueResult(
-      hibernateTemplate.findByCriteria(
+      org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(UserOrcid.class)
           .add(Restrictions.eq("ID", userProfileId))
           .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
@@ -462,7 +462,7 @@ public class UserServiceImpl extends HibernateServiceImpl implements UserService
   @Transactional
   public void removeUserOrcid(Long userProfileId) {
     UserOrcid userOrcid = (UserOrcid) DataAccessUtils.uniqueResult(
-      hibernateTemplate.findByCriteria(
+      org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(UserOrcid.class)
           .add(Restrictions.eq("ID", userProfileId))
           .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
@@ -480,7 +480,7 @@ public class UserServiceImpl extends HibernateServiceImpl implements UserService
   @Transactional
   public UserOrcid getUserOrcid(Long userProfileId) {
     UserOrcid userOrcid = (UserOrcid) DataAccessUtils.uniqueResult(
-      hibernateTemplate.findByCriteria(
+      org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(UserOrcid.class)
           .add(Restrictions.eq("ID", userProfileId))
           .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)

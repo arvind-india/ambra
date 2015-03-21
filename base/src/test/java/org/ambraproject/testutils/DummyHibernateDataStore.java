@@ -113,53 +113,53 @@ public class DummyHibernateDataStore implements DummyDataStore {
   private Serializable getStoredId(Object object) {
     try {
       if (object instanceof Article) {
-        return (Serializable) hibernateTemplate.findByCriteria(
+        return (Serializable) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(Article.class)
                 .add(Restrictions.eq("doi", ((Article) object).getDoi()))
                 .setProjection(Projections.id())
         ).get(0);
       } else if (object instanceof ArticleAsset) {
-        return (Serializable) hibernateTemplate.findByCriteria(
+        return (Serializable) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(ArticleAsset.class)
                 .add(Restrictions.eq("doi", ((ArticleAsset) object).getDoi()))
                 .add(Restrictions.eq("extension", ((ArticleAsset) object).getExtension()))
                 .setProjection(Projections.id())
         ).get(0);
       } else if (object instanceof Category) {
-        return (Serializable) hibernateTemplate.findByCriteria(
+        return (Serializable) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(ArticleAsset.class)
                 .add(Restrictions.eq("mainCategory", ((Category) object).getMainCategory()))
                 .add(Restrictions.eq("subCategory", ((Category) object).getSubCategory()))
                 .setProjection(Projections.id())
         ).get(0);
       } else if (object instanceof UserProfile) {
-        return (Serializable) hibernateTemplate.findByCriteria(
+        return (Serializable) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(UserProfile.class)
                 .add(Restrictions.eq("email", ((UserProfile) object).getEmail()))
                 .add(Restrictions.eq("displayName", ((UserProfile) object).getDisplayName()))
                 .setProjection(Projections.id())
         ).get(0);
       } else if (object instanceof UserRole) {
-        return (Serializable) hibernateTemplate.findByCriteria(
+        return (Serializable) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(UserRole.class)
                 .add(Restrictions.eq("roleName", ((UserRole) object).getRoleName()))
                 .setProjection(Projections.id()))
             .get(0);
       } else if (object instanceof Annotation) {
-        return (Serializable) hibernateTemplate.findByCriteria(
+        return (Serializable) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(Annotation.class)
                 .add(Restrictions.eq("annotationUri", ((Annotation) object).getAnnotationUri()))
                 .setProjection(Projections.id()))
             .get(0);
       } else if (object instanceof Trackback) {
-        return (Serializable) hibernateTemplate.findByCriteria(
+        return (Serializable) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(Trackback.class)
                 .add(Restrictions.eq("articleID", ((Trackback) object).getArticleID()))
                 .add(Restrictions.eq("url", ((Trackback) object).getUrl()))
                 .setProjection(Projections.id()))
             .get(0);
       } else if (object instanceof Journal) {
-        return (Serializable) hibernateTemplate.findByCriteria(
+        return (Serializable) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(Journal.class)
                 .add(Restrictions.or(
                     Restrictions.eq("journalKey", ((Journal) object).getJournalKey()),
@@ -168,19 +168,19 @@ public class DummyHibernateDataStore implements DummyDataStore {
                 .setProjection(Projections.id()))
             .get(0);
       } else if (object instanceof Volume) {
-        return (Serializable) hibernateTemplate.findByCriteria(
+        return (Serializable) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(Volume.class)
                 .add(Restrictions.eq("volumeUri", ((Volume) object).getVolumeUri()))
                 .setProjection(Projections.id()))
             .get(0);
       } else if (object instanceof ArticleList) {
-        return (Serializable) hibernateTemplate.findByCriteria(
+        return (Serializable) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(ArticleList.class)
                 .add(Restrictions.eq("listCode", ((ArticleList) object).getListCode()))
                 .setProjection(Projections.id()))
             .get(0);
       } else if (object instanceof Issue) {
-        return (Serializable) hibernateTemplate.findByCriteria(
+        return (Serializable) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(Issue.class)
                 .add(Restrictions.eq("issueUri", ((Issue) object).getIssueUri()))
                 .setProjection(Projections.id()))
@@ -233,13 +233,13 @@ public class DummyHibernateDataStore implements DummyDataStore {
    */
   @Override
   public List findByCriteria(DetachedCriteria criteria) {
-    return hibernateTemplate.findByCriteria(criteria);
+    return org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,criteria);
   }
 
   @Override
   @SuppressWarnings("unchecked")
   public <T> List<T> getAll(final Class<T> clazz) {
-    List ids = hibernateTemplate.findByCriteria(DetachedCriteria.forClass(clazz).setProjection(Projections.id()));
+    List ids = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,DetachedCriteria.forClass(clazz).setProjection(Projections.id()));
     List<T> results = new ArrayList<T>(ids.size());
     for (Object id : ids) {
       results.add(get(clazz, (Serializable) id));

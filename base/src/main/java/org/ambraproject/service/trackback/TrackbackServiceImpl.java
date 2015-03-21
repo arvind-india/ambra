@@ -139,7 +139,7 @@ public class TrackbackServiceImpl extends LinkbackServiceImpl implements Trackba
           .add(Restrictions.in("ID", results.keySet()))
           .addOrder(Order.desc("created"));
 
-      List<org.ambraproject.models.Trackback> trackbacks = hibernateTemplate.findByCriteria(criteria);
+      List<org.ambraproject.models.Trackback> trackbacks = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,criteria);
       List<LinkbackView> views = new ArrayList<LinkbackView>(trackbacks.size());
 
       for (org.ambraproject.models.Trackback track : trackbacks) {
@@ -166,7 +166,7 @@ public class TrackbackServiceImpl extends LinkbackServiceImpl implements Trackba
 
     Long articleId;
     try {
-      articleId = (Long) hibernateTemplate.findByCriteria(
+      articleId = (Long) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(Article.class)
               .add(Restrictions.eq("doi", articleDoi))
               .setProjection(Projections.id()), 0, 1
@@ -175,7 +175,7 @@ public class TrackbackServiceImpl extends LinkbackServiceImpl implements Trackba
       throw new IllegalArgumentException("DOI: " + articleDoi + " didn't correspond to an article");
     }
 
-    List<Long> existingTrackbacks = hibernateTemplate.findByCriteria(
+    List<Long> existingTrackbacks = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(Trackback.class)
             .add(Restrictions.eq("articleID", articleId))
             .add(Restrictions.eq("url", url))
@@ -202,7 +202,7 @@ public class TrackbackServiceImpl extends LinkbackServiceImpl implements Trackba
     //look up the url for the journal in which the article was published
     String eIssn;
     try {
-      eIssn = (String) hibernateTemplate.findByCriteria(
+      eIssn = (String) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(Article.class)
               .add(Restrictions.eq("doi", articleDoi))
               .setProjection(Projections.property("eIssn")),

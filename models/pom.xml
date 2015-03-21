@@ -21,14 +21,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ambraproject</groupId>
   <artifactId>ambra-models</artifactId>
-  <version>2.10.11</version>
+  <version>3.10.11</version>
   <packaging>jar</packaging>
   <name>Ambra Models</name>
 
   <parent>
     <groupId>org.ambraproject</groupId>
     <artifactId>ambra</artifactId>
-    <version>2.10.11</version>
+    <version>3.10.11</version>
   </parent>
 
   <dependencies>
@@ -95,8 +95,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
 

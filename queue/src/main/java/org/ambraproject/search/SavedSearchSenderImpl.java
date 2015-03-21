@@ -209,7 +209,7 @@ public class SavedSearchSenderImpl extends HibernateServiceImpl implements Saved
       criteria.add(Restrictions.eq("ss.monthly", true));
     }
 
-    return hibernateTemplate.findByCriteria(criteria);
+    return org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,criteria);
   }
 
   @Required

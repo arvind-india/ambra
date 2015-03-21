@@ -50,7 +50,7 @@ public class JournalCreatorImpl extends HibernateServiceImpl implements JournalC
   @Override
   @SuppressWarnings("unchecked")
   public void createJournals() throws ApplicationException {
-    List<String> keys = configuration.getList(JOURNAL_CONFIG_KEY);
+    List<String> keys = (List<String>) (List<?>) configuration.getList(JOURNAL_CONFIG_KEY);
 
     if ((keys == null) || (keys.size() == 0)) {
       log.info("No journals to create");
@@ -70,7 +70,7 @@ public class JournalCreatorImpl extends HibernateServiceImpl implements JournalC
         String title = configuration.getString("ambra.virtualJournals." + key + ".description");
 
       try {
-        List<Journal> journals = hibernateTemplate.findByCriteria(
+        List<Journal> journals = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(Journal.class)
                 .add(Restrictions.eq("journalKey", key)));
 

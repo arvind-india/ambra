@@ -39,6 +39,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 
 /**
  * A singleton that manages the load/unload/re-load of Configuration.<p>
@@ -290,10 +291,10 @@ public class ConfigurationStore {
   public static void addJournalResources(CombinedConfiguration root, CombinedConfiguration defaults, String path)
       throws ConfigurationException {
 
-     Collection<String> journals = root.getList(JOURNALS);
+     List<Object> journals = root.getList(JOURNALS);
      String journalTemplatePath = root.getString(ConfigurationStore.JOURNAL_TEMPLATE_DIR, "/");
 
-    for (String journal : journals) {
+    for (Object journal : journals) {
 
       String resourcePath = journalTemplatePath
           + (journalTemplatePath.endsWith("/") ? "journals/" : "/journals/")

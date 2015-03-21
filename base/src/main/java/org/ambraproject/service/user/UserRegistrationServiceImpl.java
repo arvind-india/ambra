@@ -67,7 +67,7 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
   @Transactional
   public Long registerUser(UserProfile userProfile, String password) throws DuplicateUserException {
     int existingUserCount = DataAccessUtils.intResult(
-        hibernateTemplate.findByCriteria(
+        org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(UserProfile.class)
                 .add(Restrictions.eq("email", userProfile.getEmail()))
                 .setProjection(Projections.count("email")))
@@ -77,7 +77,7 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
     }
 
     existingUserCount = DataAccessUtils.intResult(
-        hibernateTemplate.findByCriteria(
+        org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(UserProfile.class)
                 .add(Restrictions.eq("displayName", userProfile.getDisplayName()))
                 .setProjection(Projections.count("displayName")))
@@ -107,7 +107,7 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
       throw new IllegalArgumentException("Must supply a verification token");
     }
     UserProfile profile = (UserProfile) DataAccessUtils.uniqueResult(
-        hibernateTemplate.findByCriteria(DetachedCriteria.forClass(UserProfile.class)
+        org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,DetachedCriteria.forClass(UserProfile.class)
             .add(Restrictions.eq("email", email)))
     );
     if (profile == null) {
@@ -133,7 +133,7 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
     }
 
     UserProfile profile = (UserProfile) DataAccessUtils.uniqueResult(
-        hibernateTemplate.findByCriteria(
+        org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(UserProfile.class)
                 .add(Restrictions.eq("email", email)))
     );
@@ -163,7 +163,7 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
       throw new IllegalArgumentException("Must supply an email");
     }
     UserProfile profile = (UserProfile) DataAccessUtils.uniqueResult(
-        hibernateTemplate.findByCriteria(
+        org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(UserProfile.class)
                 .add(Restrictions.eq("email", email))
                 .add(Restrictions.eq("verified", true))));
@@ -192,7 +192,7 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
       throw new IllegalArgumentException("Must supplay an verificationToken");
     }
     int count = DataAccessUtils.intResult(
-        hibernateTemplate.findByCriteria(
+        org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(UserProfile.class)
                 .add(Restrictions.eq("email", email))
                 .add(Restrictions.eq("verificationToken", verificationToken))
@@ -214,7 +214,7 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
   @Transactional
   public void removeVerificationToken(String email) {
     UserProfile profile = (UserProfile) DataAccessUtils.uniqueResult(
-      hibernateTemplate.findByCriteria(
+      org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(UserProfile.class)
           .add(Restrictions.eq("email", email))
       )
@@ -246,7 +246,7 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
     }
 
     UserProfile profile = (UserProfile) DataAccessUtils.uniqueResult(
-        hibernateTemplate.findByCriteria(
+        org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(UserProfile.class)
                 .add(Restrictions.eq("email", email)))
     );
@@ -277,7 +277,7 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
     }
 
     UserProfile profile = (UserProfile) DataAccessUtils.uniqueResult(
-        hibernateTemplate.findByCriteria(
+        org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(UserProfile.class)
                 .add(Restrictions.eq("email", oldEmail))
         )
@@ -293,7 +293,7 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
     }
 
     int existingUserCount = DataAccessUtils.intResult(
-      hibernateTemplate.findByCriteria(
+      org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(UserProfile.class)
           .add(Restrictions.eq("email", newEmail).ignoreCase())
           .setProjection(Projections.count("email")))
@@ -325,7 +325,7 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
     }
 
     UserProfile profile = (UserProfile) DataAccessUtils.uniqueResult(
-        hibernateTemplate.findByCriteria(
+        org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(UserProfile.class)
                 .add(Restrictions.eq("email", oldEmail))
         )
@@ -338,7 +338,7 @@ public class UserRegistrationServiceImpl extends HibernateServiceImpl implements
     }
 
     int existingUserCount = DataAccessUtils.intResult(
-      hibernateTemplate.findByCriteria(
+      org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(UserProfile.class)
           .add(Restrictions.eq("email", newEmail).ignoreCase())
           .setProjection(Projections.count("email")))

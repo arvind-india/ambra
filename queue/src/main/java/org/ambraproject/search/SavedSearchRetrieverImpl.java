@@ -36,7 +36,7 @@ public class SavedSearchRetrieverImpl extends HibernateServiceImpl implements Sa
   @SuppressWarnings("unchecked")
   public List<SavedSearchJob> retrieveSearchAlerts(AlertType alertType, Date startTime, Date endTime) {
     List<SavedSearchJob> searchJobs = new ArrayList<SavedSearchJob>();
-    List<Object[]> paramsList = (List<Object[]>)hibernateTemplate.findByCriteria(DetachedCriteria.forClass(SavedSearch.class)
+    List<Object[]> paramsList = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,DetachedCriteria.forClass(SavedSearch.class)
                     .createAlias("searchQuery", "s")
                     .add(alertType.getTypeCriterion())
                     .setFetchMode("searchQuery", FetchMode.JOIN)

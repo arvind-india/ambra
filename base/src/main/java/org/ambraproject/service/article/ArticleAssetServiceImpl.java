@@ -112,7 +112,7 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
     checkPermissions(assetUri, authId);
 
     try {
-      return (ArticleAsset) hibernateTemplate.findByCriteria(
+      return (ArticleAsset) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(ArticleAsset.class)
               .add(Restrictions.eq("doi", assetUri)), 0, 1)
           .get(0);
@@ -136,7 +136,7 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
   public List<ArticleAsset> getArticleXmlAndPdf(final String articleDoi, final String authId)
       throws NoSuchObjectIdException {
     checkPermissions(articleDoi, authId);
-    return hibernateTemplate.findByCriteria(
+    return org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
         DetachedCriteria.forClass(ArticleAsset.class)
             .add(Restrictions.eq("doi", articleDoi)));
   }
@@ -164,7 +164,7 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
     }
     checkPermissions(assetUri, authId);
     try {
-      List<ArticleAsset> asset = hibernateTemplate.findByCriteria(
+      List<ArticleAsset> asset = org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
               DetachedCriteria.forClass(ArticleAsset.class)
                       .add(Restrictions.eq("doi", assetUri))
                       .add(Restrictions.eq("extension", representation)), 0, 1);
@@ -182,7 +182,7 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
   private void checkPermissions(String assetDoi, String authId) throws NoSuchObjectIdException {
     int state;
     try {
-      state = (Integer) hibernateTemplate.findByCriteria(
+      state = (Integer) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(Article.class)
               .setProjection(Projections.property("state"))
               .createCriteria("assets")
@@ -226,12 +226,13 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
 
     // if we get there, we are good
     // get assets
-    List<ArticleAsset> assets = hibernateTemplate.find("select assets from Article article where article.doi = ?", articleDoi);
+    List assets = hibernateTemplate.find("select assets from Article article where article.doi = ?", articleDoi);
 
     //keep track of dois we've added to the list so we don't duplicate assets for the same image
     Map<String, ArticleAssetWrapper> dois = new HashMap<String, ArticleAssetWrapper>(assets.size());
     List<ArticleAssetWrapper> results = new ArrayList<ArticleAssetWrapper>(assets.size());
-    for (ArticleAsset asset : assets) {
+    for (Object obj : assets) {
+      ArticleAsset asset= (ArticleAsset) obj;
       if (FIGURE_AND_TABLE_CONTEXT_ELEMENTS.contains(asset.getContextElement())) {
         ArticleAssetWrapper articleAssetWrapper;
         if (!dois.containsKey(asset.getDoi())) {
@@ -349,7 +350,7 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
       String eIssn;
 
       try {
-        eIssn = (String) hibernateTemplate.findByCriteria(
+        eIssn = (String) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
             DetachedCriteria.forClass(Article.class)
                 .add(Restrictions.eq("doi", articleDoi))
                 .setProjection(Projections.property("eIssn")),0, 1).get(0);
@@ -357,7 +358,7 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
         throw new IllegalArgumentException("Doi " + articleDoi + " didn't correspond to an article");
       }
 
-      String journalName = (String) hibernateTemplate.findByCriteria(
+      String journalName = (String) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(Journal.class)
               .add(Restrictions.eq("eIssn", eIssn))
               .setProjection(Projections.property("journalKey")),0, 1).get(0);

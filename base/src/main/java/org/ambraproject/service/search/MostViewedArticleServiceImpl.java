@@ -206,7 +206,7 @@ public class MostViewedArticleServiceImpl extends HibernateServiceImpl implement
   @Transactional(readOnly = true)
   public ArticleList getArticleList(final String listCode) {
     try {
-      return (ArticleList) hibernateTemplate.findByCriteria(
+      return (ArticleList) org.ambraproject.util.Haxx.findByCriteria(hibernateTemplate,
           DetachedCriteria.forClass(ArticleList.class)
               .add(Restrictions.eq("listCode", listCode))
       ).get(0);

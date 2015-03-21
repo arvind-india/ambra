@@ -128,7 +128,7 @@ public class AnnotationTest extends BaseHibernateTest {
       }
     });
 
-    List<Annotation> results = hibernateTemplate.find(
+    List<Annotation> results = (List<Annotation>) hibernateTemplate.find(
         "from Annotation where annotationUri = ?", "unique-annotation-uri-for-loadTypeFromString");
     assertEquals(results.size(), 1, "didn't store annotation correctly");
     assertEquals(results.get(0).getType(), AnnotationType.COMMENT, "Type wasn't loaded correctly");

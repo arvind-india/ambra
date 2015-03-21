@@ -86,7 +86,7 @@ public class VirtualJournalContextFilter implements Filter {
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 
-    final Collection<String> virtualJournals = configuration.getList(CONF_VIRTUALJOURNALS_JOURNALS);
+    final Collection<String> virtualJournals = (Collection<String>) (Collection<?>) configuration.getList(CONF_VIRTUALJOURNALS_JOURNALS);
 
     String defaultJournal = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT);
 
@@ -161,7 +161,7 @@ public class VirtualJournalContextFilter implements Filter {
     String virtualJournal = null;
 
     // process all <virtualjournal><journals> entries looking for a match
-    final List<String> journals = configuration.getList(CONF_VIRTUALJOURNALS_JOURNALS);
+    final List<String> journals = (List<String>)(List<?>) configuration.getList(CONF_VIRTUALJOURNALS_JOURNALS);
     final Iterator<String> onJournal = journals.iterator();
     while (onJournal.hasNext() && virtualJournal == null) {
       final String journal = onJournal.next();

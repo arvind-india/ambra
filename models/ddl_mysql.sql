@@ -426,16 +426,16 @@
         references userProfile (userProfileID);
 
     alter table annotationFlag 
-        add index FK561A2F3BB123DFCD (annotationID), 
-        add constraint FK561A2F3BB123DFCD 
-        foreign key (annotationID) 
-        references annotation (annotationID);
-
-    alter table annotationFlag 
         add index FK561A2F3B78B0DAE3 (userProfileID), 
         add constraint FK561A2F3B78B0DAE3 
         foreign key (userProfileID) 
         references userProfile (userProfileID);
+
+    alter table annotationFlag 
+        add index FK561A2F3BB123DFCD (annotationID), 
+        add constraint FK561A2F3BB123DFCD 
+        foreign key (annotationID) 
+        references annotation (annotationID);
 
     alter table articleAsset 
         add index FKE6D8D79ADFD5CDF3 (articleID), 
@@ -444,16 +444,16 @@
         references article (articleID);
 
     alter table articleCategoryJoinTable 
-        add index FK5E567710AA9840AB (categoryID), 
-        add constraint FK5E567710AA9840AB 
-        foreign key (categoryID) 
-        references category (categoryID);
-
-    alter table articleCategoryJoinTable 
         add index FK5E567710DFD5CDF3 (articleID), 
         add constraint FK5E567710DFD5CDF3 
         foreign key (articleID) 
         references article (articleID);
+
+    alter table articleCategoryJoinTable 
+        add index FK5E567710AA9840AB (categoryID), 
+        add constraint FK5E567710AA9840AB 
+        foreign key (categoryID) 
+        references category (categoryID);
 
     alter table articleCollaborativeAuthors 
         add index FK204FE589DFD5CDF3 (articleID), 
@@ -480,16 +480,16 @@
         references article (articleID);
 
     alter table articlePublishedJournals 
-        add index FK5D8BADD4DFD5CDF3 (articleID), 
-        add constraint FK5D8BADD4DFD5CDF3 
-        foreign key (articleID) 
-        references article (articleID);
-
-    alter table articlePublishedJournals 
         add index FK5D8BADD4FA7E0635 (journalID), 
         add constraint FK5D8BADD4FA7E0635 
         foreign key (journalID) 
         references journal (journalID);
+
+    alter table articlePublishedJournals 
+        add index FK5D8BADD4DFD5CDF3 (articleID), 
+        add constraint FK5D8BADD4DFD5CDF3 
+        foreign key (articleID) 
+        references article (articleID);
 
     alter table articleRelationship 
         add index FKA59ED64EAFD8E489 (parentArticleID), 
@@ -540,16 +540,16 @@
         references issue (issueID);
 
     alter table savedSearch 
-        add index FK3407F0F78B0DAE3 (userProfileID), 
-        add constraint FK3407F0F78B0DAE3 
-        foreign key (userProfileID) 
-        references userProfile (userProfileID);
-
-    alter table savedSearch 
         add index FK3407F0F78328E21 (savedSearchQueryID), 
         add constraint FK3407F0F78328E21 
         foreign key (savedSearchQueryID) 
         references savedSearchQuery (savedSearchQueryID);
+
+    alter table savedSearch 
+        add index FK3407F0F78B0DAE3 (userProfileID), 
+        add constraint FK3407F0F78B0DAE3 
+        foreign key (userProfileID) 
+        references userProfile (userProfileID);
 
     alter table userProfileRoleJoinTable 
         add index FK57F48A3078B0DAE3 (userProfileID), 

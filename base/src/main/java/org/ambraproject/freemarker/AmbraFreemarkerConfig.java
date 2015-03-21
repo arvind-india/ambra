@@ -300,7 +300,7 @@ public class AmbraFreemarkerConfig {
         }
 
         if (!jc.getCssFiles().containsKey(pageName)) {
-          List<String> list = configuration.getList(page + ".css.file");
+          List<String> list = (List<String>) (List<?>) configuration.getList(page + ".css.file");
           String[] cssArray = new String[list.size()];
           int j = 0;
           for (String fileName : list) {
@@ -313,7 +313,7 @@ public class AmbraFreemarkerConfig {
         }
 
         if (!jc.getJavaScriptFiles().containsKey(pageName)) {
-          List<String> list = configuration.getList(page + ".javascript.file");
+          List<String> list = (List<String>) (List<?>) configuration.getList(page + ".javascript.file");
           String[] javaScriptArray = new String[list.size()];
           int j = 0;
           for (String fileName : list) {
@@ -347,7 +347,7 @@ public class AmbraFreemarkerConfig {
 
   private void processVirtualJournalConfig(Configuration configuration) {
     final Collection<String> virtualJournals =
-        configuration.getList(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_JOURNALS);
+        (Collection<String>) (Collection<?>) configuration.getList(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_JOURNALS);
     String defaultVirtualJournal =
         configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_DEFAULT +
             ".journal");

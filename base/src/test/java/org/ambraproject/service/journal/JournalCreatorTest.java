@@ -46,7 +46,7 @@ public class JournalCreatorTest extends BaseTest {
   @SuppressWarnings("unchecked")
   public void testCreateJournals() throws ApplicationException {
     //there should be journals configured, otherwise we'll have nothing to do
-    List<String> configuredJournalKeys = configuration.getList(JournalCreator.JOURNAL_CONFIG_KEY);
+    List<String> configuredJournalKeys = null;//configuration.getList(JournalCreator.JOURNAL_CONFIG_KEY);
     assertTrue(configuredJournalKeys != null && !configuredJournalKeys.isEmpty(),
         "No Journals configured in the test config");
 
@@ -89,7 +89,7 @@ public class JournalCreatorTest extends BaseTest {
     //Journals will have been created now, let's change properties and update them
 
     // get the journals that would have been created by the testCreateJournals function
-    List<String> configuredJournalKeys = configuration.getList(JournalCreator.JOURNAL_CONFIG_KEY);
+    List<String> configuredJournalKeys = null;//configuration.getList(JournalCreator.JOURNAL_CONFIG_KEY);
     List<Journal> storedJournals = dummyDataStore.findByCriteria(
         DetachedCriteria.forClass(Journal.class)
             .add(Restrictions.in("journalKey", configuredJournalKeys)));
