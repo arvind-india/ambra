@@ -1612,6 +1612,7 @@ function onLoadALM() {
 /* Some common display functions for the browse and search results pages */
 
 function setALMSearchWidgets(articles) {
+  articles = articles[0].data;
   for (a = 0; a < articles.length; a++) {
     var article = articles[a];
     var doi = article.doi;
@@ -1641,7 +1642,7 @@ function setALMSearchWidgets(articles) {
       citeulike.metrics.total > 0 ||
       pmc.metrics.total + counter.metrics.total > 0 ||
       mendeley.metrics.total > 0 ||
-      facebook.metrics.shares + twitter.metrics.total > 0) {
+      facebook.metrics.total + twitter.metrics.total > 0) {
       hasData = true;
     }
 
