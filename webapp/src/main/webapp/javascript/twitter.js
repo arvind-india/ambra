@@ -104,10 +104,9 @@ $.fn.twitter = function () {
       }
 
       var dateParts = json.data[0].issued['date-parts'][0];
-      var articlePublishedDate = dateParts[1] + " " + dateParts[2] + ", " + dateParts[0];
       statusMsg = numTweets + " tweet" + pluralization
           + " as recorded by Twitter.  Article published "
-          + articlePublishedDate
+          +  $.datepicker.formatDate("M d, yy", new Date(dateParts[0], dateParts[1], dateParts[2]))
           + ". Tweets updated "
           + $.datepicker.formatDate("M d, yy", new Date(twitterResponse.update_date)) + ".";
     }
