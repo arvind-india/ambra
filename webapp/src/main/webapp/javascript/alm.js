@@ -73,7 +73,7 @@ $.fn.alm = function () {
   this.getMediaReferences = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source_id=articlecoveragecurated&info=event";
+    var request = doi + "&source_id=articlecoveragecurated&info=detail";
     this.getData(request, callBack, errorCallback);
   }
 
