@@ -73,7 +73,7 @@ $.fn.alm = function () {
   this.getMediaReferences = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source=articlecoveragecurated&info=event";
+    var request = doi + "&source_id=articlecoveragecurated&info=event";
     this.getData(request, callBack, errorCallback);
   }
 
@@ -437,12 +437,12 @@ $.fn.alm = function () {
   this.getCitesCrossRefOnly = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source=crossref&info=event";
+    var request = doi + "&source_id=crossref&info=detail";
     this.getData(request, callBack, errorCallback);
   }
   this.setCrossRefLinks = function (response, crossRefID) {
-    var doi = encodeURIComponent(response[0].doi);
-    var crossRefResponse = this.filterSources(response[0].sources, ['crossref'])[0];
+    var doi = encodeURIComponent(response.data[0].doi);
+    var crossRefResponse = this.filterSources(response.data[0].sources, ['crossref'])[0];
     var numCitations = 0;
 
     if (crossRefResponse.metrics.total > 0) {
@@ -517,11 +517,12 @@ $.fn.alm = function () {
         pluralization = "s";
       }
 
+      var dateParts = response.data[0].issued['date-parts'][0];
       html = numCitations + " citation" + pluralization
         + " as recorded by <a href=\"http://www.crossref.org\">CrossRef</a>.  Article published "
-        + $.datepicker.formatDate("M dd, yy", new Date(response[0].publication_date))
+        + $.datepicker.formatDate("M d, yy", new Date(dateParts[0], dateParts[1], dateParts[2]))
         + ". Citations updated on "
-        + $.datepicker.formatDate("M dd, yy", new Date(response[0].update_date))
+        + $.datepicker.formatDate("M dd, yy", new Date(response.data[0].update_date))
         + "."
         + " <ol>" + html + "</ol>";
     }
@@ -982,7 +983,7 @@ $.fn.alm = function () {
         };
 
         doi = this.validateDOI(doi);
-        var request = doi + '&source=pmc,counter,relativemetric,figshare&info=detail';
+        var request = doi + '&source_id=pmc,counter,relativemetric,figshare&info=detail';
         this.getData(request, jQuery.proxy(success, this), almError);
       }
     }
