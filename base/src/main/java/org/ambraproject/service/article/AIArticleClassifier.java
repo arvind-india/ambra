@@ -310,7 +310,7 @@ public class AIArticleClassifier implements ArticleClassifier {
     ps.println("Content to send to taxonomy server:");
     ps.println("\n\n" + classifier.getCategorizationContent(dom) + "\n\n");
 
-    classifier.setServiceUrl("http://tax.plos.org:9080/servlet/dh");
+    classifier.setServiceUrl("https://plos.accessinn.com:9136/servlet/dh");
     classifier.setThesaurus(thesaurus);
     classifier.setHttpClient(new HttpClient(new MultiThreadedHttpConnectionManager()));
 
