@@ -20,8 +20,10 @@
 
 <#assign moodleUser = false>
 <#list currentUser.roles as role>
-  <#if role.roleName = "AE-PLOSONE">
+  <#if role.roleName="AE-PLOSONE" || role.roleName="Editor-BIO" || role.roleName="Editor-CB" || role.roleName="Editor-Gen" || role.roleName="Editor-MED" ||
+       role.roleName="Editor-NTDs" || role.roleName="Editor-Pathog">
     <#assign moodleUser = true>
+    <#break>
   </#if>
 </#list>
 
@@ -53,15 +55,66 @@
       </div>
     </div>
 
-    <!--
     <#if moodleUser = true>
       <div id="edBoardKnowledgeBasePlug">
-        <h4><a href="http://plos.mrooms.net">Editorial Board<br/>Knowledge Base <img src="/images/transparent.gif" height="13" width="13"/></a></h4>
-        <p>Please visit the PLOS ONE Editorial Knowledge Base to learn about our policies and practices, and
-          participate in conversations in our forums.</p>
+
+        <h5> Editorial Board Knowledge Base </h5>
+
+        <p>Learn more about our policies and practices as well as participate in our forums:</p>
+
+        <#assign countRoles = 0>
+
+	<#assign myRoles = []>
+        <#list currentUser.roles as role>
+	  <#assign myRoles = myRoles + [role.roleName]>
+	</#list>
+
+        <#list myRoles?sort as role>
+
+          <#if role = "AE-PLOSONE"> 
+            <p><a href="http://one.editors.plos.org">PLOS ONE<img src="/images/transparent.gif" height="13" width="13"/></a></p>
+            <#assign countRoles = countRoles + 1>
+          </#if>
+
+          <#if role = "Editor-BIO"> 
+            <p><a href="http://biology.editors.plos.org">PLOS Biology<img src="/images/transparent.gif" height="13" width="13"/></a></p>
+            <#assign countRoles = countRoles + 1>
+          </#if>
+
+          <#if role = "Editor-CB"> 
+            <p><a href="http://compbiol.editors.plos.org">PLOS Computational Biology<img src="/images/transparent.gif" height="13" width="13"/></a></p>
+            <#assign countRoles = countRoles + 1>
+          </#if>
+
+          <#if role = "Editor-Gen"> 
+            <p><a href="http://genetics.editors.plos.org">PLOS Genetics<img src="/images/transparent.gif" height="13" width="13"/></a></p>
+            <#assign countRoles = countRoles + 1>
+          </#if>
+
+          <#if role = "Editor-MED"> 
+            <p><a href="http://medicine.editors.plos.org">PLOS Medicine<img src="/images/transparent.gif" height="13" width="13"/></a></p>
+            <#assign countRoles = countRoles + 1>
+          </#if>
+
+          <#if role = "Editor-NTDs"> 
+            <p><a href="http://ntds.editors.plos.org">PLOS NTDs<img src="/images/transparent.gif" height="13" width="13"/></a></p>
+            <#assign countRoles = countRoles + 1>
+          </#if>
+
+          <#if role = "Editor-Pathog"> 
+            <p><a href="http://pathogens.editors.plos.org">PLOS Pathogens<img src="/images/transparent.gif" height="13" width="13"/></a></p>
+            <#assign countRoles = countRoles + 1>
+          </#if>
+
+          <#if countRoles gte 5>
+            <#break>
+          </#if>
+
+        </#list>
+
       </div>
     </#if>
-    -->
+
 
     <div class="clear"></div>
   </div>
