@@ -48,7 +48,7 @@ $.fn.twitter = function () {
     var numTweets = 0;
 
     //assuming here the request was properly formatted to get only twitter in sources[0]
-    var twitterResponse = json[0].sources[0];
+    var twitterResponse = json.data[0].sources[0];
 
     var pageSize = 50;
 
@@ -103,9 +103,10 @@ $.fn.twitter = function () {
         pluralization = "s";
       }
 
+      var dateParts = json.data[0].issued['date-parts'][0];
       statusMsg = numTweets + " tweet" + pluralization
           + " as recorded by Twitter.  Article published "
-          + $.datepicker.formatDate("M d, yy", new Date(json[0].publication_date))
+          +  $.datepicker.formatDate("M d, yy", new Date(dateParts[0], dateParts[1], dateParts[2]))
           + ". Tweets updated "
           + $.datepicker.formatDate("M d, yy", new Date(twitterResponse.update_date)) + ".";
     }
@@ -293,7 +294,7 @@ $.fn.twitter = function () {
     maxDisplayEventCount = 5;
 
     //assuming here the request was properly formatted to get only twitter in sources[0]
-    twitterResponse = json[0].sources[0];
+    twitterResponse = json.data[0].sources[0];
 
     if (twitterResponse && twitterResponse.metrics.total > 0) {
       // just display one

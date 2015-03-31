@@ -66,14 +66,14 @@ $.fn.alm = function () {
   this.getCitesTwitterOnly = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source=twitter&info=event";
+    var request = doi + "&source_id=twitter&info=detail";
     this.getData(request, callBack, errorCallback);
   }
 
   this.getMediaReferences = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source=articlecoveragecurated&info=event";
+    var request = doi + "&source_id=articlecoveragecurated&info=detail";
     this.getData(request, callBack, errorCallback);
   }
 
@@ -437,12 +437,12 @@ $.fn.alm = function () {
   this.getCitesCrossRefOnly = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source=crossref&info=event";
+    var request = doi + "&source_id=crossref&info=detail";
     this.getData(request, callBack, errorCallback);
   }
   this.setCrossRefLinks = function (response, crossRefID) {
-    var doi = encodeURIComponent(response[0].doi);
-    var crossRefResponse = this.filterSources(response[0].sources, ['crossref'])[0];
+    var doi = encodeURIComponent(response.data[0].doi);
+    var crossRefResponse = this.filterSources(response.data[0].sources, ['crossref'])[0];
     var numCitations = 0;
 
     if (crossRefResponse.metrics.total > 0) {
@@ -517,11 +517,12 @@ $.fn.alm = function () {
         pluralization = "s";
       }
 
+      var dateParts = response.data[0].issued['date-parts'][0];
       html = numCitations + " citation" + pluralization
         + " as recorded by <a href=\"http://www.crossref.org\">CrossRef</a>.  Article published "
-        + $.datepicker.formatDate("M dd, yy", new Date(response[0].publication_date))
+        + $.datepicker.formatDate("M d, yy", new Date(dateParts[0], dateParts[1], dateParts[2]))
         + ". Citations updated on "
-        + $.datepicker.formatDate("M dd, yy", new Date(response[0].update_date))
+        + $.datepicker.formatDate("M dd, yy", new Date(response.data[0].update_date))
         + "."
         + " <ol>" + html + "</ol>";
     }
@@ -544,12 +545,12 @@ $.fn.alm = function () {
    *  chartIndex is the  current index of the charts[] array
    *  callback is the method that populates the chart of  "chartIndex"
    *  errorCallback is the method that gets called when:
-   *    --The request fails (Network error, network timeout)
+   *-The request fails (Network error, network timeout)
    *    --The request is "empty" (Server responds, but with nothing)
    *    --The callback method fails
    **/
   this.getData = function (request, callBack, errorCallback) {
-    var url = this.almHost + '?api_key=' + this.almAPIKey + '&ids=' + request;
+    var url = this.almHost + '?api_key=' + this.almAPIKey + '&ids=' + request + "&info=detail";
 
     //I use a third party plugin here for jsonp requests as jQuery doesn't
     //Handle errors well (with jsonp requests)
@@ -601,16 +602,14 @@ $.fn.alm = function () {
               '/images/logo-' + source.name + '.png',
               source.metrics.total);
 
-          var individuals = source.metrics.shares;
-          var groups = source.metrics.groups;
-
+          var individuals = source.events.reader_count;
+          var groups = source.events.group_count;
 
           tooltip = "<div class=\"tileTooltip\"><table class=\"tile_mini\">" +
               "<thead><tr><th>Individuals</th><th>Groups</th></tr>" +
               "</thead><tbody><tr><td class=\"data1\">" + individuals.format(0, '.', ',') + "</td>" +
               "<td class=\"data2\">" + groups.format(0, '.', ',') + "</td></tr>" +
               "</tbody></table></div>";
-
 
         } else if (!source.events_url) {
           sourceMap[source.name] = this.createMetricsTileNoLink(source.display_name,
@@ -714,13 +713,12 @@ $.fn.alm = function () {
               '/images/logo-' + source.name + '.png', source.metrics.total);
 
           //using these vars because source goes out of scope when tooltip handler is called
-          var likes = source.metrics.likes;
-          var shares = source.metrics.shares;
-          var comments = source.metrics.comments;
+          var shares = source.events.share.share_count;
+          var comments = source.events.share.comment_count;
           tooltip = "<div class=\"tileTooltip\"><table class=\"tile_mini\">" +
-              "<thead><tr><th>Likes</th><th>Shares</th><th>Posts</th></tr>" +
-              "</thead><tbody><tr><td class=\"data1\">" + likes.format(0, '.', ',') + "</td>" +
-              "<td class=\"data2\">" + shares.format(0, '.', ',') + "</td><td class=\"data1\">" +
+              "<thead><th>Shares</th><th>Posts</th></tr>" +
+              "</thead><tbody><tr>" +
+              "<td class=\"data1\">" + shares.format(0, '.', ',') + "</td><td class=\"data2\">" +
               comments.format(0, '.', ',') + "</td></tr>" +
               "</tbody></table></div>";
 
@@ -918,7 +916,7 @@ $.fn.alm = function () {
           $("#" + loadingID).fadeOut('slow');
           $usage.css("display", "none");
 
-          var data = this.massageChartData(response[0].sources, publishDatems);
+          var data = this.massageChartData(response.data[0].sources, publishDatems);
 
           var summaryTable = $('<div id="pageViewsSummary"><div id="left"><div class="header">Total Article Views</div>' +
               '<div class="totalCount">' + data.total.format(0, '.', ',') + '</div>' +
@@ -974,7 +972,7 @@ $.fn.alm = function () {
 
           $usage.append($('<p>*Although we update our data on a daily basis, there may be a 48-hour delay before the most recent numbers are available. PMC data is posted on a monthly basis and will be made available once received.</p>'));
 
-          this.addFigshareTile(response[0]);
+          this.addFigshareTile(response.data[0]);
 
           registerVisualElementCallback();
           $usage.show("blind", 500, function () {
@@ -985,7 +983,7 @@ $.fn.alm = function () {
         };
 
         doi = this.validateDOI(doi);
-        var request = doi + '&source=pmc,counter,relativemetric,figshare&info=event';
+        var request = doi + '&source_id=pmc,counter,relativemetric,figshare&info=detail';
         this.getData(request, jQuery.proxy(success, this), almError);
       }
     }
@@ -1295,8 +1293,10 @@ $.fn.alm = function () {
 
         for (i = 0; i < data.secondaryObjects.length; i++) {
           key = data.secondaryObjects[i].doi.replace("info:doi/", "");
-          var link = "<a href=\"" + itemInfoMap[key].link + "\" target=_blank>" + data.secondaryObjects[i].title + "</a>";
-          dialogTable.append("<tr><td>" + link + "</td>" + itemInfoMap[key].stat + "</tr>");
+          if (itemInfoMap[key]) {
+            var link = "<a href=\"" + itemInfoMap[key].link + "\" target=_blank>" + data.secondaryObjects[i].title + "</a>";
+            dialogTable.append("<tr><td>" + link + "</td>" + itemInfoMap[key].stat + "</tr>");
+          }
         }
 
         if (itemInfoMap["SI"]) {
@@ -1351,10 +1351,10 @@ $.fn.alm = function () {
 
     //succeed!
     var success = function(response){
-      this.setCitesSuccess(response, "relatedCites", "relatedCitesSpinner", registerVisualElementCallback, countElementShownCallBack);
-      this.setSavedSuccess(response, "relatedBookmarks", "relatedBookmarksSpinner", registerVisualElementCallback, countElementShownCallBack);
-      this.setDiscussedSuccess(response, "relatedBlogPosts", "relatedBlogPostsSpinner", registerVisualElementCallback, countElementShownCallBack);
-      this.setF1000Success(response, "f1kHeader","f1KSpinner","f1kContent", registerVisualElementCallback, countElementShownCallBack);
+      this.setCitesSuccess(response.data, "relatedCites", "relatedCitesSpinner", registerVisualElementCallback, countElementShownCallBack);
+      this.setSavedSuccess(response.data, "relatedBookmarks", "relatedBookmarksSpinner", registerVisualElementCallback, countElementShownCallBack);
+      this.setDiscussedSuccess(response.data, "relatedBlogPosts", "relatedBlogPostsSpinner", registerVisualElementCallback, countElementShownCallBack);
+      this.setF1000Success(response.data, "f1kHeader","f1KSpinner","f1kContent", registerVisualElementCallback, countElementShownCallBack);
       allTilesRegisteredCallBack();
     }
 
@@ -1433,7 +1433,7 @@ function onReadyALM() {
       var responseObject, sources, source, totalViews;
 
       if (response && response.length > 0) {
-        responseObject = response[0];
+        responseObject = response[0].data[0];
 
         //distinguish sources
         var counter, pmc, scopus, facebook, twitter, mendeley, citeulike, crossref, articleCoverageCurated, doiLink;
@@ -1612,6 +1612,7 @@ function onLoadALM() {
 /* Some common display functions for the browse and search results pages */
 
 function setALMSearchWidgets(articles) {
+  articles = articles[0].data;
   for (a = 0; a < articles.length; a++) {
     var article = articles[a];
     var doi = article.doi;
@@ -1641,7 +1642,7 @@ function setALMSearchWidgets(articles) {
       citeulike.metrics.total > 0 ||
       pmc.metrics.total + counter.metrics.total > 0 ||
       mendeley.metrics.total > 0 ||
-      facebook.metrics.shares + twitter.metrics.total > 0) {
+      facebook.metrics.total + twitter.metrics.total > 0) {
       hasData = true;
     }
 
