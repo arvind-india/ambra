@@ -36,6 +36,13 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.12</h2>
+  <p>Released April 7th, 2015</p>
+  <h3>Features Implemented in Ambra 2.10.12</h3>
+  <ul>
+      <li>Addition of direct links from a user's profile page to Knowledge Base websites</li>
+  </ul>
+
   <h2>Ambra 2.10.11</h2>
   <p>Released January 20th, 2015</p>
   <h3>Features Implemented in Ambra 2.10.11</h3>
