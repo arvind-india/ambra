@@ -66,14 +66,14 @@ $.fn.alm = function () {
   this.getCitesTwitterOnly = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source_id=twitter&info=detail";
+    var request = doi + "&source=twitter&info=detail";
     this.getData(request, callBack, errorCallback);
   }
 
   this.getMediaReferences = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source_id=articlecoveragecurated&info=detail";
+    var request = doi + "&source=articlecoveragecurated&info=detail";
     this.getData(request, callBack, errorCallback);
   }
 
@@ -437,7 +437,7 @@ $.fn.alm = function () {
   this.getCitesCrossRefOnly = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source_id=crossref&info=detail";
+    var request = doi + "&source=crossref&info=detail";
     this.getData(request, callBack, errorCallback);
   }
   this.setCrossRefLinks = function (response, crossRefID) {
@@ -713,15 +713,17 @@ $.fn.alm = function () {
               '/images/logo-' + source.name + '.png', source.metrics.total);
 
           //using these vars because source goes out of scope when tooltip handler is called
-          var shares = source.events.share.share_count;
-          var comments = source.events.share.comment_count;
+          var likes = source.events[0].share.likes_count;
+          var shares = source.events[0].share.share_count;
+          var comments = source.events[0].share.comment_count;
           tooltip = "<div class=\"tileTooltip\"><table class=\"tile_mini\">" +
-            "<thead><th>Shares</th><th>Posts</th></tr>" +
-            "</thead><tbody><tr>" +
-            "<td class=\"data1\">" + shares.format(0, '.', ',') + "</td><td class=\"data2\">" +
-            comments.format(0, '.', ',') + "</td></tr>" +
+              "<thead><tr><th>Likes</th><th>Shares</th><th>Posts</th></tr>" +
+              "</thead><tbody><tr>" +
+              "<td class=\"data1\">" + likes.format(0, '.', ',') + "</td>" +
+              "<td class=\"data2\">" + shares.format(0, '.', ',') + "</td>" +
+              "<td class=\"data1\">" + comments.format(0, '.', ',') + "</td>" +
+              "</tr>" +
             "</tbody></table></div>";
-
         } else if (source.name === 'twitter') {
           //use link to our own twitter landing page
           sourceMap[source.name] = this.createMetricsTile(source.display_name,
@@ -983,7 +985,7 @@ $.fn.alm = function () {
         };
 
         doi = this.validateDOI(doi);
-        var request = doi + '&source_id=pmc,counter,relativemetric,figshare&info=detail';
+        var request = doi + '&source=pmc,counter,relativemetric,figshare&info=detail';
         this.getData(request, jQuery.proxy(success, this), almError);
       }
     }
