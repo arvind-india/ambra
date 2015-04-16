@@ -66,14 +66,14 @@ $.fn.alm = function () {
   this.getCitesTwitterOnly = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source=twitter&info=detail";
+    var request = doi + "&source_id=twitter";
     this.getData(request, callBack, errorCallback);
   }
 
   this.getMediaReferences = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source=articlecoveragecurated&info=detail";
+    var request = doi + "&source_id=articlecoveragecurated";
     this.getData(request, callBack, errorCallback);
   }
 
@@ -437,7 +437,7 @@ $.fn.alm = function () {
   this.getCitesCrossRefOnly = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source=crossref&info=detail";
+    var request = doi + "&source_id=crossref";
     this.getData(request, callBack, errorCallback);
   }
   this.setCrossRefLinks = function (response, crossRefID) {
@@ -713,9 +713,9 @@ $.fn.alm = function () {
               '/images/logo-' + source.name + '.png', source.metrics.total);
 
           //using these vars because source goes out of scope when tooltip handler is called
-          var likes = source.events[0].share.likes_count;
-          var shares = source.events[0].share.share_count;
-          var comments = source.events[0].share.comment_count;
+          var likes = source.events[0].like_count;
+          var shares = source.events[0].share_count;
+          var comments = source.events[0].comment_count;
           tooltip = "<div class=\"tileTooltip\"><table class=\"tile_mini\">" +
               "<thead><tr><th>Likes</th><th>Shares</th><th>Posts</th></tr>" +
               "</thead><tbody><tr>" +
@@ -985,7 +985,7 @@ $.fn.alm = function () {
         };
 
         doi = this.validateDOI(doi);
-        var request = doi + '&source=pmc,counter,relativemetric,figshare&info=detail';
+        var request = doi + '&source=pmc,counter,relativemetric,figshare';
         this.getData(request, jQuery.proxy(success, this), almError);
       }
     }
