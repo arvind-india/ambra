@@ -682,7 +682,7 @@ input#search:-moz-placeholder:focus, input#searchOnResult:-moz-placeholder:focus
 }
 
 #nav-main .submenu {
-  /*display: none;*/
+  display: none;
   position: absolute;
   background: #fff;
   z-index: 10;
