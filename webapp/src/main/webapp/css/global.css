@@ -816,7 +816,8 @@ html:not(.js) #nav-main > ul > li:hover .submenu {
   width: 250px;
   text-align: left;
   white-space: nowrap;
-  height: 2.1875rem; }
+  height: 2.1875rem;
+  }
 #nav-main .submenu .mega .calloutcontainer .button-contain a.btn-style {
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -834,7 +835,6 @@ html:not(.js) #nav-main > ul > li:hover .submenu {
   padding: 0px 10px !important;
   position: relative;
   white-space: nowrap;
-  background: #F8AF2D;
   }
 
 #nav-main .submenu .mega .calloutcontainer .button-contain a.button-link {
