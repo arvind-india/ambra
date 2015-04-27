@@ -807,13 +807,13 @@ html:not(.js) #nav-main > ul > li:hover .submenu {
   font-size: 18px;
   line-height: 1.3;
   float: left;
-  width: 660px;
+  width: 780px;
   float:left;
   }
 
 #nav-main .submenu .mega .calloutcontainer .button-contain {
   float: right;
-  width: 250px;
+  width: 100px;
   text-align: left;
   white-space: nowrap;
   height: 2.1875rem;
