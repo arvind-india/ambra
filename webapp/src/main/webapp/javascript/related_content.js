@@ -142,7 +142,7 @@ $(function () {
     //Put results into buckets
 
     //assuming here the request was properly formatted to only get media information
-    var mediaSource = result[0].sources[0]
+    var mediaSource = result.data[0].sources[0];
 
     // don't display anything if there isn't any data
     if (mediaSource.events.length > 0) {

@@ -66,14 +66,14 @@ $.fn.alm = function () {
   this.getCitesTwitterOnly = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source=twitter&info=event";
+    var request = doi + "&source_id=twitter";
     this.getData(request, callBack, errorCallback);
   }
 
   this.getMediaReferences = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source=articlecoveragecurated&info=event";
+    var request = doi + "&source_id=articlecoveragecurated";
     this.getData(request, callBack, errorCallback);
   }
 
@@ -217,7 +217,7 @@ $.fn.alm = function () {
     for (var a = 0; a < counterViews.length; a++) {
       var event = counterViews[a];
       var totalViews = this.parseIntSafe(event.html_views) + this.parseIntSafe(event.xml_views) +
-          this.parseIntSafe(event.pdf_views);
+        this.parseIntSafe(event.pdf_views);
       var yearMonth = this.getYearMonth(event.year, event.month);
 
       result.history[yearMonth] = {};
@@ -334,7 +334,7 @@ $.fn.alm = function () {
         yearMonth = this.getYearMonth(year, month);
 
         if (result.history[yearMonth] != null &&
-            result.history[yearMonth].source["pmcViews"] == null) {
+          result.history[yearMonth].source["pmcViews"] == null) {
           result.history[yearMonth].source["pmcViews"] = {};
 
           result.history[yearMonth].source["pmcViews"].month = month + 1;
@@ -362,13 +362,13 @@ $.fn.alm = function () {
           var prevYearMonthStr = this.getYearMonth(prevYear, prevMonth);
 
           if (result.history[prevYearMonthStr] != null &&
-              result.history[prevYearMonthStr].source["pmcViews"] != null) {
+            result.history[prevYearMonthStr].source["pmcViews"] != null) {
             result.history[yearMonth].source["pmcViews"].cumulativePDF =
-                result.history[prevYearMonthStr].source["pmcViews"].cumulativePDF;
+              result.history[prevYearMonthStr].source["pmcViews"].cumulativePDF;
             result.history[yearMonth].source["pmcViews"].cumulativeHTML =
-                result.history[prevYearMonthStr].source["pmcViews"].cumulativeHTML;
+              result.history[prevYearMonthStr].source["pmcViews"].cumulativeHTML;
             result.history[yearMonth].source["pmcViews"].cumulativeTotal =
-                result.history[prevYearMonthStr].source["pmcViews"].cumulativeTotal;
+              result.history[prevYearMonthStr].source["pmcViews"].cumulativeTotal;
             result.history[yearMonth].source["pmcViews"].totalPDF = 0;
             result.history[yearMonth].source["pmcViews"].totalHTML = 0;
             result.history[yearMonth].source["pmcViews"].total = 0;
@@ -437,12 +437,12 @@ $.fn.alm = function () {
   this.getCitesCrossRefOnly = function (doi, callBack, errorCallback) {
     doi = this.validateDOI(doi);
 
-    var request = doi + "&source=crossref&info=event";
+    var request = doi + "&source_id=crossref";
     this.getData(request, callBack, errorCallback);
   }
   this.setCrossRefLinks = function (response, crossRefID) {
-    var doi = encodeURIComponent(response[0].doi);
-    var crossRefResponse = this.filterSources(response[0].sources, ['crossref'])[0];
+    var doi = encodeURIComponent(response.data[0].doi);
+    var crossRefResponse = this.filterSources(response.data[0].sources, ['crossref'])[0];
     var numCitations = 0;
 
     if (crossRefResponse.metrics.total > 0) {
@@ -517,11 +517,12 @@ $.fn.alm = function () {
         pluralization = "s";
       }
 
+      var dateParts = response.data[0].issued['date-parts'][0];
       html = numCitations + " citation" + pluralization
         + " as recorded by <a href=\"http://www.crossref.org\">CrossRef</a>.  Article published "
-        + $.datepicker.formatDate("M dd, yy", new Date(response[0].publication_date))
+        + $.datepicker.formatDate("M d, yy", new Date(dateParts[0], dateParts[1], dateParts[2]))
         + ". Citations updated on "
-        + $.datepicker.formatDate("M dd, yy", new Date(response[0].update_date))
+        + $.datepicker.formatDate("M dd, yy", new Date(response.data[0].update_date))
         + "."
         + " <ol>" + html + "</ol>";
     }
@@ -544,12 +545,12 @@ $.fn.alm = function () {
    *  chartIndex is the  current index of the charts[] array
    *  callback is the method that populates the chart of  "chartIndex"
    *  errorCallback is the method that gets called when:
-   *    --The request fails (Network error, network timeout)
+   *-The request fails (Network error, network timeout)
    *    --The request is "empty" (Server responds, but with nothing)
    *    --The callback method fails
    **/
   this.getData = function (request, callBack, errorCallback) {
-    var url = this.almHost + '?api_key=' + this.almAPIKey + '&ids=' + request;
+    var url = this.almHost + '?api_key=' + this.almAPIKey + '&ids=' + request + "&info=detail";
 
     //I use a third party plugin here for jsonp requests as jQuery doesn't
     //Handle errors well (with jsonp requests)
@@ -597,31 +598,29 @@ $.fn.alm = function () {
         if (source.name == 'mendeley') {
 
           sourceMap[source.name] = this.createMetricsTile(source.display_name,
-              source.events_url,
+            source.events_url,
               '/images/logo-' + source.name + '.png',
-              source.metrics.total);
+            source.metrics.total);
 
-          var individuals = source.metrics.shares;
-          var groups = source.metrics.groups;
-
+          var individuals = source.events.reader_count;
+          var groups = source.events.group_count;
 
           tooltip = "<div class=\"tileTooltip\"><table class=\"tile_mini\">" +
-              "<thead><tr><th>Individuals</th><th>Groups</th></tr>" +
-              "</thead><tbody><tr><td class=\"data1\">" + individuals.format(0, '.', ',') + "</td>" +
-              "<td class=\"data2\">" + groups.format(0, '.', ',') + "</td></tr>" +
-              "</tbody></table></div>";
-
+            "<thead><tr><th>Individuals</th><th>Groups</th></tr>" +
+            "</thead><tbody><tr><td class=\"data1\">" + individuals.format(0, '.', ',') + "</td>" +
+            "<td class=\"data2\">" + groups.format(0, '.', ',') + "</td></tr>" +
+            "</tbody></table></div>";
 
         } else if (!source.events_url) {
           sourceMap[source.name] = this.createMetricsTileNoLink(source.display_name,
               '/images/logo-' + source.name + '.png',
-              source.metrics.total);
+            source.metrics.total);
 
         } else {
           sourceMap[source.name] = this.createMetricsTile(source.display_name,
-              source.events_url,
+            source.events_url,
               '/images/logo-' + source.name + '.png',
-              source.metrics.total);
+            source.metrics.total);
 
         }
       }
@@ -664,19 +663,19 @@ $.fn.alm = function () {
 
   this.createMetricsTile = function (name, url, imgSrc, linkText) {
     return '<div id="' + name + 'OnArticleMetricsTab" class="metrics_tile">' +
-        '<a href="' + url + '"><img id="' + name + 'ImageOnArticleMetricsTab" src="' + imgSrc + '" alt="' + linkText + ' ' + name + '" class="metrics_tile_image"/></a>' +
-        '<div class="metrics_tile_footer" onclick="location.href=\'' + url + '\';">' +
-        '<a href="' + url + '">' + linkText + '</a>' +
-        '</div>' +
-        '</div>';
+      '<a href="' + url + '"><img id="' + name + 'ImageOnArticleMetricsTab" src="' + imgSrc + '" alt="' + linkText + ' ' + name + '" class="metrics_tile_image"/></a>' +
+      '<div class="metrics_tile_footer" onclick="location.href=\'' + url + '\';">' +
+      '<a href="' + url + '">' + linkText + '</a>' +
+      '</div>' +
+      '</div>';
   };
   this.createMetricsTileNoLink = function (name, imgSrc, linkText) {
     return '<div id="' + name + 'OnArticleMetricsTab" class="metrics_tile_no_link">' +
-        '<img id="' + name + 'ImageOnArticleMetricsTab" src="' + imgSrc + '" alt="' + linkText + ' ' + name + '" class="metrics_tile_image"/>' +
-        '<div class="metrics_tile_footer_no_link">' +
-        linkText +
-        '</div>' +
-        '</div>';
+      '<img id="' + name + 'ImageOnArticleMetricsTab" src="' + imgSrc + '" alt="' + linkText + ' ' + name + '" class="metrics_tile_image"/>' +
+      '<div class="metrics_tile_footer_no_link">' +
+      linkText +
+      '</div>' +
+      '</div>';
   };
 
   this.setDiscussedSuccess = function(response, discussedID, loadingID, registerVisualElementCallback, countElementShownCallback){
@@ -714,21 +713,22 @@ $.fn.alm = function () {
               '/images/logo-' + source.name + '.png', source.metrics.total);
 
           //using these vars because source goes out of scope when tooltip handler is called
-          var likes = source.metrics.likes;
-          var shares = source.metrics.shares;
-          var comments = source.metrics.comments;
+          var likes = source.events[0].like_count;
+          var shares = source.events[0].share_count;
+          var comments = source.events[0].comment_count;
           tooltip = "<div class=\"tileTooltip\"><table class=\"tile_mini\">" +
               "<thead><tr><th>Likes</th><th>Shares</th><th>Posts</th></tr>" +
-              "</thead><tbody><tr><td class=\"data1\">" + likes.format(0, '.', ',') + "</td>" +
-              "<td class=\"data2\">" + shares.format(0, '.', ',') + "</td><td class=\"data1\">" +
-              comments.format(0, '.', ',') + "</td></tr>" +
-              "</tbody></table></div>";
-
+              "</thead><tbody><tr>" +
+              "<td class=\"data1\">" + likes.format(0, '.', ',') + "</td>" +
+              "<td class=\"data2\">" + shares.format(0, '.', ',') + "</td>" +
+              "<td class=\"data1\">" + comments.format(0, '.', ',') + "</td>" +
+              "</tr>" +
+            "</tbody></table></div>";
         } else if (source.name === 'twitter') {
           //use link to our own twitter landing page
           sourceMap[source.name] = this.createMetricsTile(source.display_name,
               '/article/twitter/info:doi/' + doi, '/images/logo-' + source.name + '.png',
-              source.metrics.total);
+            source.metrics.total);
 
         } else {
           if (!source.events_url) {
@@ -753,8 +753,8 @@ $.fn.alm = function () {
 
     var html = this.createMetricsTile("google-blogs",
         "http://blogsearch.google.com/blogsearch?as_q=%22" + articleTitle + "%22",
-        "/images/logo-googleblogs.png",
-        "Search");
+      "/images/logo-googleblogs.png",
+      "Search");
     discussedElement.append(html);
 
     $("#FacebookOnArticleMetricsTab").tooltip({
@@ -777,7 +777,7 @@ $.fn.alm = function () {
 
     var articleTitle = $('meta[name=citation_title]').attr('content');
     var html = 'Search for related blog posts on <a href=\'http://blogsearch.google.com/blogsearch?as_q=%22'
-        + articleTitle + '%22\'>Google Blogs</a><br/><img src=\'/images/icon_error.png\'/>&nbsp;' + message;
+      + articleTitle + '%22\'>Google Blogs</a><br/><img src=\'/images/icon_error.png\'/>&nbsp;' + message;
     discussedElement.html(html);
 
     $("#" + loadingID).fadeOut('slow');
@@ -813,20 +813,20 @@ $.fn.alm = function () {
 
         //  If CrossRef, then compose a URL to our own CrossRef Citations page.
         if (source.name.toLowerCase() == 'crossref') {
-           sourceMap[source.name] = this.createMetricsTile(source.display_name,
+          sourceMap[source.name] = this.createMetricsTile(source.display_name,
               "/article/crossref/info:doi/" + doi,
               "/images/logo-" + source.name + ".png",
-              source.metrics.total);
+            source.metrics.total);
         } else if (source.events_url) {
           //  Only list links that HAVE DEFINED URLS
           sourceMap[source.name] =  this.createMetricsTile(source.display_name,
-              url,
+            url,
               "/images/logo-" + source.name + ".png",
-              source.metrics.total);
+            source.metrics.total);
         } else {
           sourceMap[source.name] = this.createMetricsTileNoLink(source.display_name,
               "/images/logo-" + source.name + ".png",
-              source.metrics.total);
+            source.metrics.total);
         }
       }
     } // end of loop
@@ -836,14 +836,14 @@ $.fn.alm = function () {
       // Google Scholar tile is created if some other citation metrics is available
       sourceMap['google'] =  this.createMetricsTile("GoogleScholar",
           "http://scholar.google.com/scholar?hl=en&lr=&cites=" + docURL,
-          "/images/logo-google-scholar.png",
-          "Search");
+        "/images/logo-google-scholar.png",
+        "Search");
 
-       for (var index = 0; index < sourceOrder.length; index++) {
-         if (sourceOrder[index] in sourceMap) {
-           html = html + sourceMap[sourceOrder[index]];
-         }
-       }
+      for (var index = 0; index < sourceOrder.length; index++) {
+        if (sourceOrder[index] in sourceMap) {
+          html = html + sourceMap[sourceOrder[index]];
+        }
+      }
     } else {
       // Google Scholar link is displayed if no citation metric is available
       html = "No related citations found<br/>Search for citations in <a href=\"http://scholar.google.com/scholar?hl=en&lr=&cites=" + docURL + "\">Google Scholar</a>";
@@ -882,7 +882,7 @@ $.fn.alm = function () {
     $("#" + f1kSpinnerID).fadeOut('slow');
     $('#' + f1kContentID).append(this.createMetricsTile(f1k.display_name,
       f1k.events_url,
-      '/images/logo-' + f1k.name + '.png',
+        '/images/logo-' + f1k.name + '.png',
       f1k.metrics.total)).show("blind", 500, countElementShownCallback);
   }
 
@@ -897,8 +897,8 @@ $.fn.alm = function () {
       //The article is less then 2 days old, and there is no data
       //give the user a good error message
       $("#" + usageID).html('This article was only recently published. ' +
-          'Although we update our data on a daily basis (not in real time), there may be a 48-hour ' +
-          'delay before the most recent numbers are available.<br/><br/>');
+        'Although we update our data on a daily basis (not in real time), there may be a 48-hour ' +
+        'delay before the most recent numbers are available.<br/><br/>');
       registerVisualElementCallback();
       $("#" + usageID).show("blind", 500, countElementShownCallback);
       $("#" + loadingID).fadeOut('slow');
@@ -918,24 +918,24 @@ $.fn.alm = function () {
           $("#" + loadingID).fadeOut('slow');
           $usage.css("display", "none");
 
-          var data = this.massageChartData(response[0].sources, publishDatems);
+          var data = this.massageChartData(response.data[0].sources, publishDatems);
 
           var summaryTable = $('<div id="pageViewsSummary"><div id="left"><div class="header">Total Article Views</div>' +
-              '<div class="totalCount">' + data.total.format(0, '.', ',') + '</div>' +
-              '<div class="pubDates">' + $.datepicker.formatDate('M d, yy', publishDate) + ' (publication date)' +
-              '<br>through ' + $.datepicker.formatDate('M d, yy', new Date()) + '*</div></div><div id="right">' +
-              '<table id="pageViewsTable"><tbody><tr><th></th><th nowrap="">HTML Page Views</th>' +
-              '<th nowrap="">PDF Downloads</th><th nowrap="">XML Downloads</th><th>Totals</th></tr><tr>' +
-              '<td class="source1">PLOS</td><td>' + data.totalCounterHTML.format(0, '.', ',') + '</td>' +
-              '<td>' + data.totalCounterPDF.format(0, '.', ',') + '</td><td>' + data.totalCounterXML.format(0, '.', ',') + '</td>' +
-              '<td class="total">' + data.totalCouterTotal.format(0, '.', ',') + '</td></tr><tr><td class="source2">PMC</td>' +
-              '<td>' + data.totalPMCHTML.format(0, '.', ',') + '</td><td>' + data.totalPMCPDF.format(0, '.', ',') + '</td>' +
-              '<td>n.a.</td><td class="total">' + data.totalPMCTotal.format(0, '.', ',') + '</td></tr><tr><td>Totals</td>' +
-              '<td class="total">' + data.totalHTML.format(0, '.', ',') + '</td><td ' +
-              'class="total">' + data.totalPDF.format(0, '.', ',') + '</td><td class="total">' + data.totalXML.format(0, '.', ',') +
-              '</td><td class="total">' + data.total.format(0, '.', ',') + '</td></tr>' +
-              '<tr class="percent"><td colspan="5"><b>' + ((data.totalPDF / data.totalHTML) * 100).format(2, '.', ',') +
-              '%</b> of article views led to PDF downloads</td></tr></tbody></table></div></div>');
+            '<div class="totalCount">' + data.total.format(0, '.', ',') + '</div>' +
+            '<div class="pubDates">' + $.datepicker.formatDate('M d, yy', publishDate) + ' (publication date)' +
+            '<br>through ' + $.datepicker.formatDate('M d, yy', new Date()) + '*</div></div><div id="right">' +
+            '<table id="pageViewsTable"><tbody><tr><th></th><th nowrap="">HTML Page Views</th>' +
+            '<th nowrap="">PDF Downloads</th><th nowrap="">XML Downloads</th><th>Totals</th></tr><tr>' +
+            '<td class="source1">PLOS</td><td>' + data.totalCounterHTML.format(0, '.', ',') + '</td>' +
+            '<td>' + data.totalCounterPDF.format(0, '.', ',') + '</td><td>' + data.totalCounterXML.format(0, '.', ',') + '</td>' +
+            '<td class="total">' + data.totalCouterTotal.format(0, '.', ',') + '</td></tr><tr><td class="source2">PMC</td>' +
+            '<td>' + data.totalPMCHTML.format(0, '.', ',') + '</td><td>' + data.totalPMCPDF.format(0, '.', ',') + '</td>' +
+            '<td>n.a.</td><td class="total">' + data.totalPMCTotal.format(0, '.', ',') + '</td></tr><tr><td>Totals</td>' +
+            '<td class="total">' + data.totalHTML.format(0, '.', ',') + '</td><td ' +
+            'class="total">' + data.totalPDF.format(0, '.', ',') + '</td><td class="total">' + data.totalXML.format(0, '.', ',') +
+            '</td><td class="total">' + data.total.format(0, '.', ',') + '</td></tr>' +
+            '<tr class="percent"><td colspan="5"><b>' + ((data.totalPDF / data.totalHTML) * 100).format(2, '.', ',') +
+            '%</b> of article views led to PDF downloads</td></tr></tbody></table></div></div>');
 
           // in IE, Object.keys function is supported in IE 9 and onward
           // https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/keys
@@ -961,8 +961,8 @@ $.fn.alm = function () {
             }
 
             $usage.append($('<div id="chart"></div>')
-                .css("width", "600px")
-                .css("height", "200px"));
+              .css("width", "600px")
+              .css("height", "200px"));
 
             //chart is redrawn once upon creation, so need to count this to synch display rendering
             registerVisualElementCallback();
@@ -974,7 +974,7 @@ $.fn.alm = function () {
 
           $usage.append($('<p>*Although we update our data on a daily basis, there may be a 48-hour delay before the most recent numbers are available. PMC data is posted on a monthly basis and will be made available once received.</p>'));
 
-          this.addFigshareTile(response[0]);
+          this.addFigshareTile(response.data[0]);
 
           registerVisualElementCallback();
           $usage.show("blind", 500, function () {
@@ -985,7 +985,7 @@ $.fn.alm = function () {
         };
 
         doi = this.validateDOI(doi);
-        var request = doi + '&source=pmc,counter,relativemetric,figshare&info=event';
+        var request = doi + '&source=pmc,counter,relativemetric,figshare';
         this.getData(request, jQuery.proxy(success, this), almError);
       }
     }
@@ -1082,42 +1082,42 @@ $.fn.alm = function () {
         borderRadius: 0,
         positioner: function (labelHeight, labelWidth, point) {
           var newX = point.plotX + (labelWidth / 2) + 25,
-              newY = point.plotY - (labelHeight / 2) + 25;
+            newY = point.plotY - (labelHeight / 2) + 25;
           return { x: newX, y: newY };
         },
         formatter: function () {
           var key = this.points[0].key,
-              h = data.history;
+            h = data.history;
 
           return '<table id="mini" cellpadding="0" cellspacing="0">'
-              + '<tr><th></td><td colspan="2">Views in '
-              + $.datepicker.formatDate('M yy', new Date(h[key].year, h[key].month - 1, 2))
-              + '</td><td colspan="2">Views through ' + $.datepicker.formatDate('M yy', new Date(h[key].year, h[key].month - 1, 2))
-              + '</td></tr><tr><th>Source</th><th class="header1">PLOS</th><th class="header2">PMC</th>'
-              + '<th class="header1">PLOS</th><th class="header2">PMC</th></tr>'
-              + '<tr><td>HTML</td><td class="data1">' + h[key].source.counterViews.totalHTML + '</td>'
-              + '<td class="data2">' + (h[key].source.hasOwnProperty("pmcViews") ?
-              h[key].source.pmcViews.totalHTML.format(0, '.', ',') : "n.a.") + '</td>'
-              + '<td class="data1">' + h[key].source.counterViews.cumulativeHTML.format(0, '.', ',') + '</td>'
-              + '<td class="data2">' + (h[key].source.hasOwnProperty("pmcViews") ?
-              h[key].source.pmcViews.cumulativeHTML.format(0, '.', ',') : "n.a.") + '</td></tr>'
-              + '<tr><td>PDF</td><td class="data1">' + h[key].source.counterViews.totalPDF + '</td>'
-              + '<td class="data2">' + (h[key].source.hasOwnProperty("pmcViews") ?
-              h[key].source.pmcViews.totalPDF.format(0, '.', ',') : "n.a.") + '</td>'
-              + '<td class="data1">' + h[key].source.counterViews.cumulativePDF.format(0, '.', ',') + '</td>'
-              + '<td class="data2">' + (h[key].source.hasOwnProperty("pmcViews") ?
-              h[key].source.pmcViews.cumulativePDF.format(0, '.', ',') : "n.a.") + '</td></tr>'
-              + '<tr><td>XML</td><td class="data1">' + h[key].source.counterViews.totalXML + '</td>'
-              + '<td class="data2">n.a.</td>'
-              + '<td class="data1">' + h[key].source.counterViews.cumulativeXML.format(0, '.', ',') + '</td>'
-              + '<td class="data2">n.a.</td></tr>'
-              + '<tr><td>Total</td><td class="data1">' + h[key].source.counterViews.total + '</td>'
-              + '<td class="data2">' + (h[key].source.hasOwnProperty("pmcViews") ?
-              h[key].source.pmcViews.total.format(0, '.', ',') : "n.a.") + '</td>'
-              + '<td class="data1">' + h[key].source.counterViews.cumulativeTotal.format(0, '.', ',') + '</td>'
-              + '<td class="data2">' + (h[key].source.hasOwnProperty("pmcViews") ?
-              h[key].source.pmcViews.cumulativeTotal.format(0, '.', ',') : "n.a.") + '</td></tr>'
-              + '</table>';
+            + '<tr><th></td><td colspan="2">Views in '
+            + $.datepicker.formatDate('M yy', new Date(h[key].year, h[key].month - 1, 2))
+            + '</td><td colspan="2">Views through ' + $.datepicker.formatDate('M yy', new Date(h[key].year, h[key].month - 1, 2))
+            + '</td></tr><tr><th>Source</th><th class="header1">PLOS</th><th class="header2">PMC</th>'
+            + '<th class="header1">PLOS</th><th class="header2">PMC</th></tr>'
+            + '<tr><td>HTML</td><td class="data1">' + h[key].source.counterViews.totalHTML + '</td>'
+            + '<td class="data2">' + (h[key].source.hasOwnProperty("pmcViews") ?
+            h[key].source.pmcViews.totalHTML.format(0, '.', ',') : "n.a.") + '</td>'
+            + '<td class="data1">' + h[key].source.counterViews.cumulativeHTML.format(0, '.', ',') + '</td>'
+            + '<td class="data2">' + (h[key].source.hasOwnProperty("pmcViews") ?
+            h[key].source.pmcViews.cumulativeHTML.format(0, '.', ',') : "n.a.") + '</td></tr>'
+            + '<tr><td>PDF</td><td class="data1">' + h[key].source.counterViews.totalPDF + '</td>'
+            + '<td class="data2">' + (h[key].source.hasOwnProperty("pmcViews") ?
+            h[key].source.pmcViews.totalPDF.format(0, '.', ',') : "n.a.") + '</td>'
+            + '<td class="data1">' + h[key].source.counterViews.cumulativePDF.format(0, '.', ',') + '</td>'
+            + '<td class="data2">' + (h[key].source.hasOwnProperty("pmcViews") ?
+            h[key].source.pmcViews.cumulativePDF.format(0, '.', ',') : "n.a.") + '</td></tr>'
+            + '<tr><td>XML</td><td class="data1">' + h[key].source.counterViews.totalXML + '</td>'
+            + '<td class="data2">n.a.</td>'
+            + '<td class="data1">' + h[key].source.counterViews.cumulativeXML.format(0, '.', ',') + '</td>'
+            + '<td class="data2">n.a.</td></tr>'
+            + '<tr><td>Total</td><td class="data1">' + h[key].source.counterViews.total + '</td>'
+            + '<td class="data2">' + (h[key].source.hasOwnProperty("pmcViews") ?
+            h[key].source.pmcViews.total.format(0, '.', ',') : "n.a.") + '</td>'
+            + '<td class="data1">' + h[key].source.counterViews.cumulativeTotal.format(0, '.', ',') + '</td>'
+            + '<td class="data2">' + (h[key].source.hasOwnProperty("pmcViews") ?
+            h[key].source.pmcViews.cumulativeTotal.format(0, '.', ',') : "n.a.") + '</td></tr>'
+            + '</table>';
         }
       }
     };
@@ -1150,19 +1150,19 @@ $.fn.alm = function () {
             // add the data for the given subject area to the chart
             registerVisualElementCallback();
             chart.addSeries({
-                  id: subjectAreaId,
-                  data: subjectAreaData,
-                  type: "line",
-                  color: "#01DF01",
-                  marker: {
-                    enabled: false,
-                    states: {
-                      hover: {
-                        enabled: false
-                      }
+                id: subjectAreaId,
+                data: subjectAreaData,
+                type: "line",
+                color: "#01DF01",
+                marker: {
+                  enabled: false,
+                  states: {
+                    hover: {
+                      enabled: false
                     }
                   }
                 }
+              }
             );
 
             // hide the line
@@ -1220,15 +1220,15 @@ $.fn.alm = function () {
 
           // build the output
           var descriptionDiv = $('<div></div>').html('<span class="colorbox"></span>&nbsp;Compare average usage for articles published in <b>'
-              + new Date(data.relativeMetricData.start_date).getUTCFullYear() + "</b> in the subject area: "
-              + '<a href="/static/almInfo#relativeMetrics" class="ir" title="More information">info</a>');
+            + new Date(data.relativeMetricData.start_date).getUTCFullYear() + "</b> in the subject area: "
+            + '<a href="/static/almInfo#relativeMetrics" class="ir" title="More information">info</a>');
 
           // build the link to the search result reference set
           var linkToRefset = "/search/advanced?pageSize=12&unformattedQuery=(publication_date:[" + data.relativeMetricData.start_date + " TO " + data.relativeMetricData.end_date + "]) AND subject:\"SUBJECT_AREA\"";
 
           var description2Div = $('<div></div>').append(subjectAreasDropdown)
-              .append('&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a id="linkToRefset" href="' + encodeURI(linkToRefset.replace("SUBJECT_AREA", defaultSubjectAreaSelected)) + '" >Show reference set</a>')
-              .append('<input type="hidden" name="refsetLinkValue" value="' + encodeURI(linkToRefset) + '" >');
+            .append('&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a id="linkToRefset" href="' + encodeURI(linkToRefset.replace("SUBJECT_AREA", defaultSubjectAreaSelected)) + '" >Show reference set</a>')
+            .append('<input type="hidden" name="refsetLinkValue" value="' + encodeURI(linkToRefset) + '" >');
 
           var relativeMetricDiv = $('<div id="averageViewsSummary"></div>').append(descriptionDiv).append(description2Div);
 
@@ -1249,7 +1249,7 @@ $.fn.alm = function () {
           var tileName = source.name;
           var tile = this.createMetricsTileNoLink(tileName,
               "/images/logo-" + tileName + ".png",
-              source.metrics.total);
+            source.metrics.total);
 
           $('#views').append(tile);
         } else {
@@ -1271,7 +1271,7 @@ $.fn.alm = function () {
       success:function (data) {
 
         var popup = $('<div id=\"popup\"></div>'), dialogTable = $('<table class=\"tile_mini\"></table>'),
-            item, totalStat, key, itemInfoMap = {};
+          item, totalStat, key, itemInfoMap = {};
 
         // build tooltip
         for (i = 0; i < source.events.length; i++) {
@@ -1295,8 +1295,10 @@ $.fn.alm = function () {
 
         for (i = 0; i < data.secondaryObjects.length; i++) {
           key = data.secondaryObjects[i].doi.replace("info:doi/", "");
-          var link = "<a href=\"" + itemInfoMap[key].link + "\" target=_blank>" + data.secondaryObjects[i].title + "</a>";
-          dialogTable.append("<tr><td>" + link + "</td>" + itemInfoMap[key].stat + "</tr>");
+          if (itemInfoMap[key]) {
+            var link = "<a href=\"" + itemInfoMap[key].link + "\" target=_blank>" + data.secondaryObjects[i].title + "</a>";
+            dialogTable.append("<tr><td>" + link + "</td>" + itemInfoMap[key].stat + "</tr>");
+          }
         }
 
         if (itemInfoMap["SI"]) {
@@ -1351,10 +1353,10 @@ $.fn.alm = function () {
 
     //succeed!
     var success = function(response){
-      this.setCitesSuccess(response, "relatedCites", "relatedCitesSpinner", registerVisualElementCallback, countElementShownCallBack);
-      this.setSavedSuccess(response, "relatedBookmarks", "relatedBookmarksSpinner", registerVisualElementCallback, countElementShownCallBack);
-      this.setDiscussedSuccess(response, "relatedBlogPosts", "relatedBlogPostsSpinner", registerVisualElementCallback, countElementShownCallBack);
-      this.setF1000Success(response, "f1kHeader","f1KSpinner","f1kContent", registerVisualElementCallback, countElementShownCallBack);
+      this.setCitesSuccess(response.data, "relatedCites", "relatedCitesSpinner", registerVisualElementCallback, countElementShownCallBack);
+      this.setSavedSuccess(response.data, "relatedBookmarks", "relatedBookmarksSpinner", registerVisualElementCallback, countElementShownCallBack);
+      this.setDiscussedSuccess(response.data, "relatedBlogPosts", "relatedBlogPostsSpinner", registerVisualElementCallback, countElementShownCallBack);
+      this.setF1000Success(response.data, "f1kHeader","f1KSpinner","f1kContent", registerVisualElementCallback, countElementShownCallBack);
       allTilesRegisteredCallBack();
     }
 
@@ -1396,7 +1398,7 @@ $.fn.alm = function () {
       var index = $.inArray(orderArray[d], sourceNames);
       if (index > -1) {
         orderedSources.push(sources[index]);
-      } 
+      }
     }
     return orderedSources;
   }
@@ -1433,7 +1435,7 @@ function onReadyALM() {
       var responseObject, sources, source, totalViews;
 
       if (response && response.length > 0) {
-        responseObject = response[0];
+        responseObject = response[0].data[0];
 
         //distinguish sources
         var counter, pmc, scopus, facebook, twitter, mendeley, citeulike, crossref, articleCoverageCurated, doiLink;
@@ -1475,7 +1477,7 @@ function onReadyALM() {
         totalViews = counter.metrics.total + pmc.metrics.total;
         if (totalViews > 0) {
           li = almService.makeSignPostLI("VIEWS", counter.metrics.total + pmc.metrics.total,
-              "Sum of PLOS and PubMed Central page views and downloads",
+            "Sum of PLOS and PubMed Central page views and downloads",
               doiLink + "#viewedHeader");
 
           $("#almSignPost").append(li);
@@ -1490,7 +1492,7 @@ function onReadyALM() {
           }
 
           li = almService.makeSignPostLI(text, scopus.metrics.total, "Paper's citation count computed by Scopus",
-            doiLink + "#citedHeader");
+              doiLink + "#citedHeader");
 
           $("#almSignPost").append(li);
         } else {
@@ -1501,7 +1503,7 @@ function onReadyALM() {
             }
 
             li = almService.makeSignPostLI(text, crossref.metrics.total, "Scopus data unavailable. Displaying Crossref citation count",
-              doiLink + "#citedHeader");
+                doiLink + "#citedHeader");
 
             $("#almSignPost").append(li);
           }
@@ -1530,7 +1532,7 @@ function onReadyALM() {
           }
 
           li = almService.makeSignPostLI(text, facebook.metrics.total + twitter.metrics.total, "Sum of Facebook and Twitter activity",
-            doiLink + "#discussedHeader");
+              doiLink + "#discussedHeader");
 
           $("#almSignPost").append(li);
         }
@@ -1612,6 +1614,7 @@ function onLoadALM() {
 /* Some common display functions for the browse and search results pages */
 
 function setALMSearchWidgets(articles) {
+  articles = articles[0].data;
   for (a = 0; a < articles.length; a++) {
     var article = articles[a];
     var doi = article.doi;
@@ -1641,7 +1644,7 @@ function setALMSearchWidgets(articles) {
       citeulike.metrics.total > 0 ||
       pmc.metrics.total + counter.metrics.total > 0 ||
       mendeley.metrics.total > 0 ||
-      facebook.metrics.shares + twitter.metrics.total > 0) {
+      facebook.metrics.total + twitter.metrics.total > 0) {
       hasData = true;
     }
 
@@ -1905,8 +1908,8 @@ function confirmALMDataDisplayed() {
 
 function buildMediaCoverageLink(coverageTotal) {
   var mediaCoverageLink = $("<a></a>")
-      .attr("href", "/article/related/info:doi/" + $('meta[name=citation_doi]').attr("content"))
-      .text("Media Coverage (" + coverageTotal + ")");
+    .attr("href", "/article/related/info:doi/" + $('meta[name=citation_doi]').attr("content"))
+    .text("Media Coverage (" + coverageTotal + ")");
 
   // the media coverage link should be above the "Figures" link
   // if "Figures" link doesn't exist, add it to the bottom of the list
