@@ -36,6 +36,13 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.13</h2>
+  <p>Released May 5th, 2015</p>
+  <h3>Features Implemented in Ambra 2.10.13</h3>
+  <ul>      
+      <li>Site menus update</li>
+  </ul>
+
   <h2>Ambra 2.10.12</h2>
   <p>Released April 7th, 2015</p>
   <h3>Features Implemented in Ambra 2.10.12</h3>
