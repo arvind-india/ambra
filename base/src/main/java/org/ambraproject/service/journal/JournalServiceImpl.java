@@ -64,7 +64,7 @@ public class JournalServiceImpl extends HibernateServiceImpl implements JournalS
   @Transactional(readOnly = true)
   @SuppressWarnings("unchecked")
   public Journal getJournal(final String journalKey) {
-    List<Journal> journals = hibernateTemplate.findByCriteria(
+    List<Journal> journals = (List<Journal>) hibernateTemplate.findByCriteria(
         DetachedCriteria.forClass(Journal.class)
             .add(Restrictions.eq("journalKey", journalKey))
             .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
@@ -85,7 +85,7 @@ public class JournalServiceImpl extends HibernateServiceImpl implements JournalS
   @Transactional(readOnly = true)
   @SuppressWarnings("unchecked")
   public synchronized Journal getJournalByEissn(final String eIssn) {
-    List<Journal> journals = hibernateTemplate.findByCriteria(
+    List<Journal> journals = (List<Journal>) hibernateTemplate.findByCriteria(
       DetachedCriteria.forClass(Journal.class)
         .add(Restrictions.eq("eIssn", eIssn)),0, 1);
 
@@ -144,7 +144,7 @@ public class JournalServiceImpl extends HibernateServiceImpl implements JournalS
     Set<Journal> journals = new HashSet<Journal>(2); //probably only going to be one journal
 
     //Is there a more efficient way to do this without using inline SQL?
-    List<Article> articles = hibernateTemplate.findByCriteria(
+    List<Article> articles = (List<Article>) hibernateTemplate.findByCriteria(
       DetachedCriteria.forClass(Article.class)
         .add(Restrictions.eq("doi", doi)));
 

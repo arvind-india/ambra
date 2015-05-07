@@ -154,7 +154,7 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
           .addOrder(Order.desc("created"))
           .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
-      List<Annotation> annotations = hibernateTemplate.findByCriteria(criteria);
+      List<Annotation> annotations = (List<Annotation>) hibernateTemplate.findByCriteria(criteria);
       List<AnnotationView> views = new ArrayList<AnnotationView>(annotations.size());
 
       for (Annotation ann : annotations) {
@@ -439,7 +439,7 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
   @SuppressWarnings("unchecked")
   private Map<Long, List<Annotation>> buildReplyMap(Long articleId) {
     Map<Long, List<Annotation>> fullReplyMap = new HashMap<Long, List<Annotation>>();
-    List<Annotation> allReplies = hibernateTemplate.findByCriteria(
+    List<Annotation> allReplies = (List<Annotation>) hibernateTemplate.findByCriteria(
         DetachedCriteria.forClass(Annotation.class)
             .add(Restrictions.eq("articleID", articleId))
             .add(Restrictions.eq("type", AnnotationType.REPLY))

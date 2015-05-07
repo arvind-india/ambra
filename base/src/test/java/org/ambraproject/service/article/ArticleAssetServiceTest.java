@@ -149,7 +149,7 @@ public class ArticleAssetServiceTest extends BaseTest {
 
   @Test(dataProvider = "articleXmlAndPdf")
   public void testGetArticleXmlAndPdf(String doi, ArticleAsset xml, ArticleAsset pdf) throws NoSuchObjectIdException {
-    List<ArticleAsset> articleXmlAndPdf = articleAssetService.getArticleXmlAndPdf(doi, DEFAULT_ADMIN_AUTHID);
+    List<ArticleAsset> articleXmlAndPdf = (List<ArticleAsset>) articleAssetService.getArticleXmlAndPdf(doi, DEFAULT_ADMIN_AUTHID);
     assertNotNull(articleXmlAndPdf, "returned null list for xml and pdf");
     assertEquals(articleXmlAndPdf.size(), 2, "returned incorrect number of assets");
 

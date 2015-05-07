@@ -298,9 +298,9 @@ public class UserServiceImpl extends HibernateServiceImpl implements UserService
 
     //Check to see if a matching savedSearch exists already.
     List<SavedSearchQuery> queryList =
-      hibernateTemplate.findByCriteria(DetachedCriteria.forClass(SavedSearchQuery.class)
-        .add(Restrictions.eq("hash", queryHash))
-        .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY));
+        (List<SavedSearchQuery>) hibernateTemplate.findByCriteria(DetachedCriteria.forClass(SavedSearchQuery.class)
+          .add(Restrictions.eq("hash", queryHash))
+          .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY));
 
     if(queryList.size() == 0) {
       query = new SavedSearchQuery(searchParametersString, queryHash);

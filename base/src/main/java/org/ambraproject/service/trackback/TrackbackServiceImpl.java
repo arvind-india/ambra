@@ -139,7 +139,7 @@ public class TrackbackServiceImpl extends LinkbackServiceImpl implements Trackba
           .add(Restrictions.in("ID", results.keySet()))
           .addOrder(Order.desc("created"));
 
-      List<org.ambraproject.models.Trackback> trackbacks = hibernateTemplate.findByCriteria(criteria);
+      List<org.ambraproject.models.Trackback> trackbacks = (List<Trackback>) hibernateTemplate.findByCriteria(criteria);
       List<LinkbackView> views = new ArrayList<LinkbackView>(trackbacks.size());
 
       for (org.ambraproject.models.Trackback track : trackbacks) {
@@ -175,7 +175,7 @@ public class TrackbackServiceImpl extends LinkbackServiceImpl implements Trackba
       throw new IllegalArgumentException("DOI: " + articleDoi + " didn't correspond to an article");
     }
 
-    List<Long> existingTrackbacks = hibernateTemplate.findByCriteria(
+    List<Long> existingTrackbacks = (List<Long>) hibernateTemplate.findByCriteria(
         DetachedCriteria.forClass(Trackback.class)
             .add(Restrictions.eq("articleID", articleId))
             .add(Restrictions.eq("url", url))
