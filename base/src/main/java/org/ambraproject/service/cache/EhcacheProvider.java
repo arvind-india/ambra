@@ -86,7 +86,7 @@ public class EhcacheProvider implements Cache {
    */
   public <T, E extends Exception> T get(final Object key, final Lookup<T, E> lookup)
                                  throws E {
-    return get(key, (int) cache.getTimeToLiveSeconds(), lookup);
+    return get(key, (int) cache.getCacheConfiguration().getTimeToLiveSeconds(), lookup);
   }
   
   /*

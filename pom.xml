@@ -22,7 +22,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ambraproject</groupId>
   <artifactId>ambra</artifactId>
-  <version>2.10.13</version>
+  <version>2.11.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Ambra application</name>
 
@@ -54,7 +54,7 @@
     <struts.version>2.3.16.3</struts.version>
     <freemarker.version>2.3.19</freemarker.version>
     <slf4j.version>1.6.1</slf4j.version>
-    <ehcache.version>1.5.0</ehcache.version>
+    <ehcache.version>2.7.0</ehcache.version>
     <xbean-spring.version>3.5</xbean-spring.version>
     <xerces.version>2.9.1</xerces.version>
     <easymock.version>3.2</easymock.version>
@@ -300,7 +300,7 @@
           </exclusion>
           <exclusion>
             <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <artifactId>servlet-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
