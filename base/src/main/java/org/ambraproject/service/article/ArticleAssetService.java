@@ -41,7 +41,7 @@ public interface ArticleAssetService {
    * @return the object-info of the object
    * @throws NoSuchObjectIdException NoSuchObjectIdException
    */
-  public List<?> getArticleXmlAndPdf(final String articleDoi, final String authId) throws NoSuchObjectIdException;
+  public List<ArticleAsset> getArticleXmlAndPdf(final String articleDoi, final String authId) throws NoSuchObjectIdException;
 
   /**
    * Get the Article Asset by URI. This returns a random asset with a matching doi, and there is almost always more than one (e.g, for each image, there is
