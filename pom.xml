@@ -50,11 +50,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- aggregate some documentation - javadocs & jxr -->
     <aggregate>true</aggregate>
-    <spring.version>3.2.2.RELEASE</spring.version>
+    <spring.version>4.1.6.RELEASE</spring.version>
     <struts.version>2.3.16.3</struts.version>
     <freemarker.version>2.3.19</freemarker.version>
     <slf4j.version>1.6.1</slf4j.version>
-    <ehcache.version>1.5.0</ehcache.version>
+    <ehcache.version>2.7.0</ehcache.version>
     <xbean-spring.version>3.5</xbean-spring.version>
     <xerces.version>2.9.1</xerces.version>
     <easymock.version>3.2</easymock.version>
@@ -213,8 +213,8 @@
     <dependencies>
       <dependency>
         <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.4</version>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>3.1.0</version>
         <scope>provided</scope>
       </dependency>
 

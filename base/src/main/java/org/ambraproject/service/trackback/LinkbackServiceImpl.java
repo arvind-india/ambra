@@ -137,7 +137,7 @@ public abstract class LinkbackServiceImpl extends HibernateServiceImpl implement
     }
     log.debug("loading up linkbacks for article {}", articleDoi);
 
-    List<? extends Linkback> linkbacks = hibernateTemplate.findByCriteria(
+    List<? extends Linkback> linkbacks = (List<? extends Linkback>) hibernateTemplate.findByCriteria(
         DetachedCriteria.forClass(type)
             .add(Restrictions.eq("articleID", articleId))
             .addOrder(Order.desc("created"))
@@ -173,7 +173,7 @@ public abstract class LinkbackServiceImpl extends HibernateServiceImpl implement
     }
 
     // Get a list of row counts, one for each subtype. Return their sum.
-    List<? extends Number> counts = hibernateTemplate.findByCriteria(
+    List<? extends Number> counts = (List<? extends Number>) hibernateTemplate.findByCriteria(
         DetachedCriteria.forClass(type)
             .add(Restrictions.eq("articleID", articleId))
             .setProjection(Projections.rowCount())

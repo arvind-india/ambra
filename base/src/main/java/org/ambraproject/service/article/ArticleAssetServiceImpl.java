@@ -136,7 +136,7 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
   public List<ArticleAsset> getArticleXmlAndPdf(final String articleDoi, final String authId)
       throws NoSuchObjectIdException {
     checkPermissions(articleDoi, authId);
-    return hibernateTemplate.findByCriteria(
+    return (List<ArticleAsset>) hibernateTemplate.findByCriteria(
         DetachedCriteria.forClass(ArticleAsset.class)
             .add(Restrictions.eq("doi", articleDoi)));
   }
@@ -164,7 +164,7 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
     }
     checkPermissions(assetUri, authId);
     try {
-      List<ArticleAsset> asset = hibernateTemplate.findByCriteria(
+      List<ArticleAsset> asset = (List<ArticleAsset>) hibernateTemplate.findByCriteria(
               DetachedCriteria.forClass(ArticleAsset.class)
                       .add(Restrictions.eq("doi", assetUri))
                       .add(Restrictions.eq("extension", representation)), 0, 1);
@@ -226,7 +226,7 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
 
     // if we get there, we are good
     // get assets
-    List<ArticleAsset> assets = hibernateTemplate.find("select assets from Article article where article.doi = ?", articleDoi);
+    List<ArticleAsset> assets = (List<ArticleAsset>) hibernateTemplate.find("select assets from Article article where article.doi = ?", articleDoi);
 
     //keep track of dois we've added to the list so we don't duplicate assets for the same image
     Map<String, ArticleAssetWrapper> dois = new HashMap<String, ArticleAssetWrapper>(assets.size());

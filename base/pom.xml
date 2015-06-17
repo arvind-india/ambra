@@ -33,6 +33,13 @@
   </parent>
 
   <dependencies>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+    </dependency>
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>ambra-models</artifactId>
@@ -101,6 +108,17 @@
     <dependency>
       <groupId>cas</groupId>
       <artifactId>casclient</artifactId>
+      <version>2.1.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -123,11 +141,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>entity-resolver</artifactId>
       <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
     </dependency>
 
     <dependency>
@@ -200,8 +213,8 @@
 
     <dependency>
       <groupId>net.sf.saxon</groupId>
-      <artifactId>saxon</artifactId>
-      <version>9.3</version>
+      <artifactId>Saxon-HE</artifactId>
+      <version>9.6.0-4</version>
     </dependency>
 
     <dependency>

@@ -532,7 +532,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     if (articleDoi == null)
       throw new IllegalArgumentException("articleDoi == null");
 
-    List<Article> articles = hibernateTemplate.findByCriteria(
+    List<Article> articles = (List<Article>) hibernateTemplate.findByCriteria(
         DetachedCriteria.forClass(Article.class)
             .add(Restrictions.eq("doi", articleDoi)));
 
@@ -568,7 +568,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   public void checkArticleState(final String articleDoi, final String authId) throws NoSuchArticleIdException {
     //If the article is unpublished, it should not be returned if the user is not an admin
 
-    List<Integer> results = hibernateTemplate.findByCriteria(DetachedCriteria.forClass(Article.class)
+    List<Integer> results = (List<Integer>) hibernateTemplate.findByCriteria(DetachedCriteria.forClass(Article.class)
         .add(Restrictions.eq("doi", articleDoi))
         .setProjection(Projections.projectionList()
             .add(Projections.property("state")))
@@ -613,7 +613,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
 
     List<Article> articles = new ArrayList<Article>();
     if(!articleDois.isEmpty()) {
-      articles = hibernateTemplate.findByCriteria(
+      articles = (List<Article>) hibernateTemplate.findByCriteria(
       DetachedCriteria.forClass(Article.class)
         .add(Restrictions.in("doi", articleDois)));
     }
@@ -1122,11 +1122,11 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
 
       results = (Object[]) hibernateTemplate.findByCriteria(dc,0,1).get(0);
 
-      authors = hibernateTemplate.find("from ArticleAuthor where articleID = ?", results[0]);
+      authors = (List<ArticleAuthor>) hibernateTemplate.find("from ArticleAuthor where articleID = ?", results[0]);
 
-      collabAuthors = hibernateTemplate.find("select elements(article.collaborativeAuthors) from Article as article where id = ?", results[0]);
+      collabAuthors = (List<String>) hibernateTemplate.find("select elements(article.collaborativeAuthors) from Article as article where id = ?", results[0]);
 
-      articleTypes = hibernateTemplate.find("select elements(article.types) from Article as article where id = ?", results[0]);
+      articleTypes = (List<String>) hibernateTemplate.find("select elements(article.types) from Article as article where id = ?", results[0]);
 
 
     } catch (IndexOutOfBoundsException e) {
@@ -1408,7 +1408,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     if (articleDoi == null)
       throw new IllegalArgumentException("articleDoi = null");
     // TODO: order the amendments by date
-    List<ArticleRelationship> result = hibernateTemplate.find("select distinct relatedArticles from Article as art " +
+    List<ArticleRelationship> result = (List<ArticleRelationship>) hibernateTemplate.find("select distinct relatedArticles from Article as art " +
             "inner join art.relatedArticles as relatedArticles where art.doi = ? " +
             "and relatedArticles.type in ('expressed-concern' , 'retraction', 'correction-forward')" , articleDoi);
     return result;

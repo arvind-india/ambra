@@ -307,7 +307,7 @@ public class BrowseServiceImpl extends HibernateServiceImpl implements BrowseSer
   public IssueInfo createIssueInfo(Issue issue) {
     Volume parentVolume = null;
 
-    List<Long> results = hibernateTemplate.findByCriteria(
+    List<Long> results = (List<Long>) hibernateTemplate.findByCriteria(
       DetachedCriteria.forClass(Volume.class)
         .createAlias("issues","i")
         .add(Restrictions.eq("i.id", issue.getID()))
@@ -368,9 +368,9 @@ public class BrowseServiceImpl extends HibernateServiceImpl implements BrowseSer
   {
     // get the Issue
     final java.util.List<Issue> issues =
-      hibernateTemplate.findByCriteria(DetachedCriteria.forClass(Issue.class)
-        .add(Restrictions.eq("issueUri", issueUri))
-        .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY));
+        (List<Issue>) hibernateTemplate.findByCriteria(DetachedCriteria.forClass(Issue.class)
+          .add(Restrictions.eq("issueUri", issueUri))
+          .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY));
 
     if (issues.size() == 0) {
       return null;
@@ -631,7 +631,7 @@ public class BrowseServiceImpl extends HibernateServiceImpl implements BrowseSer
   @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
   private Volume getVolume(String volumeUri) {
-    List<Volume> volumes = hibernateTemplate.findByCriteria(
+    List<Volume> volumes = (List<Volume>) hibernateTemplate.findByCriteria(
       DetachedCriteria.forClass(Volume.class)
         .add(Restrictions.eq("volumeUri", volumeUri)
         ) ,0,1);

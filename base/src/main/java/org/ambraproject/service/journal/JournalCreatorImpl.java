@@ -70,7 +70,7 @@ public class JournalCreatorImpl extends HibernateServiceImpl implements JournalC
         String title = configuration.getString("ambra.virtualJournals." + key + ".description");
 
       try {
-        List<Journal> journals = hibernateTemplate.findByCriteria(
+        List<Journal> journals = (List<Journal>) hibernateTemplate.findByCriteria(
             DetachedCriteria.forClass(Journal.class)
                 .add(Restrictions.eq("journalKey", key)));
 

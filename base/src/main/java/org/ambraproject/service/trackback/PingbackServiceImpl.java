@@ -140,7 +140,7 @@ public class PingbackServiceImpl extends LinkbackServiceImpl implements Pingback
     }
 
     // Look up the article referenced by that DOI, if any
-    List<Article> queryResults = hibernateTemplate.findByCriteria(
+    List<Article> queryResults = (List<Article>) hibernateTemplate.findByCriteria(
         DetachedCriteria.forClass(Article.class)
             .add(Restrictions.eq("doi", doi))
             .setFetchMode("journals", FetchMode.JOIN)

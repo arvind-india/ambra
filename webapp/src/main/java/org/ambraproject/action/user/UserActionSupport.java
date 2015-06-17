@@ -20,7 +20,6 @@
 
 package org.ambraproject.action.user;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import org.ambraproject.models.UserProfile;
 import org.ambraproject.service.journal.JournalService;
 import org.ambraproject.service.user.UserAlert;
@@ -35,6 +34,7 @@ import org.ambraproject.service.user.UserService;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;

@@ -103,11 +103,11 @@ public class PermissionsServiceImpl extends HibernateServiceImpl implements Perm
       new Cache.SynchronizedLookup<Set<UserRole>, SecurityException>(lock) {
         public Set<UserRole> lookup() throws SecurityException {
           List<UserProfile> userProfiles =
-            hibernateTemplate.findByCriteria(DetachedCriteria.forClass(UserProfile.class)
-              .add(Restrictions.eq("authId", authId))
-              .setFetchMode("roles", FetchMode.JOIN)
-              .setFetchMode("permissions", FetchMode.JOIN)
-              .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY));
+              (List<UserProfile>) hibernateTemplate.findByCriteria(DetachedCriteria.forClass(UserProfile.class)
+                .add(Restrictions.eq("authId", authId))
+                .setFetchMode("roles", FetchMode.JOIN)
+                .setFetchMode("permissions", FetchMode.JOIN)
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY));
 
           if(userProfiles.size() == 0) {
             throw new SecurityException("No user found for authID: '" + authId + "'");
