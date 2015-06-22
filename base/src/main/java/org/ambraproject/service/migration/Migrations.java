@@ -51,7 +51,8 @@ class Migrations {
       new ScriptMigration(1002, "migrate_ambra_1002.sql"),
       new ScriptMigration(1003, "migrate_ambra_1003.sql"),
       new ScriptMigration(1004, "migrate_ambra_1004.sql"),
-      new ScriptMigration(1005, "migrate_ambra_1005.sql")
+      new ScriptMigration(1005, "migrate_ambra_1005.sql"),
+      new ScriptMigration(1006, "migrate_ambra_1006.sql"),
   });
 
   /**
