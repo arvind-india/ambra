@@ -40,7 +40,7 @@
   <p>Released June 30th, 2015</p>
   <h3>Features Implemented in Ambra 2.10.14</h3>
   <ul>
-      <li>Udpate to use of ALM API v5</li>
+      <li>Update to use of ALM API v5</li>
   </ul>
 
   <h2>Ambra 2.10.13</h2>
