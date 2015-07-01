@@ -156,8 +156,8 @@ var FigViewerInit = function(doi, ref, state, external_page) {
         // them again from the server.
         if (typeof selected_tab != "undefined" && selected_tab == "article") {
           $FVPending = false;
-          FVBuildAbs(doi, $(".article .abstract"), $(".article .articleinfo"));
-          FVBuildRefs($(".article .references"));
+          FVBuildAbs(doi, $(".article-text .abstract"), $(".article-text .articleinfo"));
+          FVBuildRefs($(".article-text .references"));
           displayModal();
           rerunMathjax();
         }
@@ -167,8 +167,8 @@ var FigViewerInit = function(doi, ref, state, external_page) {
           $.ajax({url: articleUrl, success: function(fullArticleHtml) {
             $FVPending = false;
             var article = $(fullArticleHtml);
-            FVBuildAbs(doi, article.find(".article .abstract"), article.find(".article .articleinfo"));
-            FVBuildRefs(article.find(".article .references"));
+            FVBuildAbs(doi, article.find(".article-text .abstract"), article.find(".article-text .articleinfo"));
+            FVBuildRefs(article.find(".article-text .references"));
             displayModal();
             rerunMathjax();
           }, error: function() {
