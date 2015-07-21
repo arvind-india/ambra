@@ -36,6 +36,13 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.15</h2>
+  <p>Released July 28th, 2015</p>
+  <h3>Features Implemented in Ambra 2.10.15</h3>
+  <ul>
+      <li>PLOS ONE Figure Viewer update</li>
+  </ul>
+
   <h2>Ambra 2.10.14</h2>
   <p>Released June 30th, 2015</p>
   <h3>Features Implemented in Ambra 2.10.14</h3>
