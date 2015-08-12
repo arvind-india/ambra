@@ -36,6 +36,20 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.17</h2>
+  <p>Released August 18th, 2015</p>
+  <h3>Features Implemented in Ambra 2.10.17</h3>
+  <ul>
+      <li>Site content updates</li>
+  </ul>
+
+  <h2>Ambra 2.10.16</h2>
+  <p>Released August 4th, 2015</p>
+  <h3>Features Implemented in Ambra 2.10.16</h3>
+  <ul>
+      <li>Extend database schema to support future development</li>
+  </ul>
+
   <h2>Ambra 2.10.15</h2>
   <p>Released July 28th, 2015</p>
   <h3>Features Implemented in Ambra 2.10.15</h3>
