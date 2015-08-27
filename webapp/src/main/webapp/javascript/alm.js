@@ -690,7 +690,7 @@ $.fn.alm = function () {
 
     // the order of tiles
     // research blogging, science seeker, nature blogs, wikipedia, wordpress
-    // twitter, facebook, reddit, comments,  trackbacks, google blogs
+    // twitter, facebook, reddit, comments,  trackbacks
 
     var sourceOrder = ['researchblogging','scienceseeker', 'nature', 'wordpress', 'wikipedia', 'twitter', 'facebook', 'reddit'];
     // filter
@@ -751,12 +751,6 @@ $.fn.alm = function () {
     $('#notesAndCommentsOnArticleMetricsTab').appendTo(discussedElement);
     $('#trackbackOnArticleMetricsTab').appendTo(discussedElement);
 
-    var html = this.createMetricsTile("google-blogs",
-        "http://blogsearch.google.com/blogsearch?as_q=%22" + articleTitle + "%22",
-      "/images/logo-googleblogs.png",
-      "Search");
-    discussedElement.append(html);
-
     $("#FacebookOnArticleMetricsTab").tooltip({
       delay: 250,
       fade: 250,
@@ -774,11 +768,6 @@ $.fn.alm = function () {
 
     var discussedElement = $('#' + discussedID);
     discussedElement.css('display', 'none');
-
-    var articleTitle = $('meta[name=citation_title]').attr('content');
-    var html = 'Search for related blog posts on <a href=\'http://blogsearch.google.com/blogsearch?as_q=%22'
-      + articleTitle + '%22\'>Google Blogs</a><br/><img src=\'/images/icon_error.png\'/>&nbsp;' + message;
-    discussedElement.html(html);
 
     $("#" + loadingID).fadeOut('slow');
     registerVisualElementCallback();
