@@ -769,6 +769,9 @@ $.fn.alm = function () {
     var discussedElement = $('#' + discussedID);
     discussedElement.css('display', 'none');
 
+    var html = '<img src=\'/images/icon_error.png\'/>&nbsp;' + message;
+    discussedElement.html(html);
+
     $("#" + loadingID).fadeOut('slow');
     registerVisualElementCallback();
     discussedElement.show('blind', 500, countElementShownCallback);
