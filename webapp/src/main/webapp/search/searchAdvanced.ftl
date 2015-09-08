@@ -218,16 +218,18 @@
                   <ul>
                     <#if journals??>
                       <#list journals as journal>
-                        <li>
-                          <span class="checkboxWrapper" >
-                            <input id="filterJournals_${journal.name}" name="filterJournals" value="${journal.name}"
-                                 type="checkbox" <#if (filterJournals?seq_contains(journal.name)) > checked</#if>
-                                 title="Select ${freemarker_config.getDisplayName(journal.name)}"
-                                 alt="Select Journal ${freemarker_config.getDisplayName(journal.name)} Check Box"/>&nbsp;
-                            <div onclick="enableCheckboxes('filterJournals_${journal.name}','journalsOpt_slct' )" class="checkboxOverlay"></div>
-                          </span>
-                          <label for="filterJournals_${journal.name}">${freemarker_config.getDisplayName(journal.name)}</label>
-                        </li>
+                        <#if !journal.name?contains("PLoSCollections")>
+                          <li>
+                            <span class="checkboxWrapper" >
+                              <input id="filterJournals_${journal.name}" name="filterJournals" value="${journal.name}"
+                                   type="checkbox" <#if (filterJournals?seq_contains(journal.name)) > checked</#if>
+                                   title="Select ${freemarker_config.getDisplayName(journal.name)}"
+                                   alt="Select Journal ${freemarker_config.getDisplayName(journal.name)} Check Box"/>&nbsp;
+                              <div onclick="enableCheckboxes('filterJournals_${journal.name}','journalsOpt_slct' )" class="checkboxOverlay"></div>
+                            </span>
+                            <label for="filterJournals_${journal.name}">${freemarker_config.getDisplayName(journal.name)}</label>
+                          </li>
+                        </#if>
                       </#list>
                     <#else>
                       <br/>
