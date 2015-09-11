@@ -106,6 +106,13 @@ var $FV = {};
 var $FVPending = false;
 
 var FigViewerInit = function(doi, ref, state, external_page) {
+  // for browse issue, open the article doi in a new tab.
+  if (window.location.pathname.search(/\/article\/browse\/issue/) == 0) {
+    var url = "/article/" + encodeURIComponent(doi);
+    window.open(url);
+    return;
+  }
+
   // allow only one instance of FigViewerInit to be pending.
   if ($FVPending) {
     return;
