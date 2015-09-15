@@ -36,6 +36,14 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.18</h2>
+  <p>Released September 22nd, 2015</p>
+  <h3>Features Implemented in Ambra 2.10.18</h3>
+  <ul>
+      <li>Metrics and Featured Image display improvements</li>
+      <li>Search filter change</li>
+  </ul>
+
   <h2>Ambra 2.10.17</h2>
   <p>Released August 18th, 2015</p>
   <h3>Features Implemented in Ambra 2.10.17</h3>
