@@ -1,14 +1,15 @@
--- Add the listType column
 ALTER TABLE articleList
-ADD COLUMN listType varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL;
 
--- Replace the global uniqueness constraint on listCodes with (journalID, listType, listCode)
--- (i.e., listCodes will be unique only within their own journal and among the same type)
-ALTER TABLE articleList DROP INDEX listCode;
-ALTER TABLE articleList ADD UNIQUE KEY listIdentity (journalID, listType, listCode);
+  -- Add the listType column
+  ADD COLUMN listType varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
 
--- Article lists are no longer ordered within each journal
-ALTER TABLE articleList DROP COLUMN journalSortOrder;
+  -- Replace the global uniqueness constraint on listCodes with (journalID, listType, listCode)
+  -- (i.e., listCodes will be unique only within their own journal and among the same type)
+  DROP INDEX listCode,
+  ADD UNIQUE KEY listIdentity (journalID, listType, listCode),
+
+  -- Article lists are no longer ordered within each journal
+  DROP COLUMN journalSortOrder;
 
 
 --
@@ -25,8 +26,9 @@ ALTER TABLE articleListJoinTable ADD COLUMN articleID bigint DEFAULT NULL;
 UPDATE articleListJoinTable SET articleID = (SELECT articleID FROM article WHERE article.doi = articleListJoinTable.doi);
 
 -- Step 3: Set up constraints on the now-filled articleID column
-ALTER TABLE articleListJoinTable MODIFY COLUMN articleID bigint NOT NULL;
-ALTER TABLE articleListJoinTable ADD CONSTRAINT FOREIGN KEY (articleID) REFERENCES article (articleID);
+ALTER TABLE articleListJoinTable
+  MODIFY COLUMN articleID bigint NOT NULL,
+  ADD CONSTRAINT FOREIGN KEY (articleID) REFERENCES article (articleID);
 
 -- Step 4: Drop the DOI column
 ALTER TABLE articleListJoinTable DROP COLUMN doi;
