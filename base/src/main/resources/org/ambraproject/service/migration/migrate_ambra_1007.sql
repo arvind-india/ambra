@@ -7,6 +7,9 @@ ADD COLUMN listType varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NUL
 ALTER TABLE articleList DROP INDEX listCode;
 ALTER TABLE articleList ADD UNIQUE KEY listIdentity (journalID, listType, listCode);
 
+-- Article lists are no longer ordered within each journal
+ALTER TABLE articleList DROP COLUMN journalSortOrder;
+
 
 --
 -- Replace raw DOIs with foreign keys of actual article rows. This is a multi-step process.
