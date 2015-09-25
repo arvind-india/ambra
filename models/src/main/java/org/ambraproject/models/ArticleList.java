@@ -15,12 +15,13 @@ package org.ambraproject.models;
 
 import java.util.List;
 
-public class ArticleList extends AmbraEntity{
+public class ArticleList extends AmbraEntity {
 
+  private String listType;
   private String listCode;
   private String displayName;
 
-  private List<String> articleDois;
+  private List<Article> articles;
 
   public ArticleList() {
     super();
@@ -29,6 +30,14 @@ public class ArticleList extends AmbraEntity{
   public ArticleList(String listCode) {
     super();
     this.listCode = listCode;
+  }
+
+  public String getListType() {
+    return listType;
+  }
+
+  public void setListType(String listType) {
+    this.listType = listType;
   }
 
   public String getListCode() {
@@ -47,42 +56,12 @@ public class ArticleList extends AmbraEntity{
     this.displayName = displayName;
   }
 
-  public List<String> getArticleDois() {
-    return articleDois;
+  public List<Article> getArticles() {
+    return articles;
   }
 
-  public void setArticleDois(List<String> articleDois) {
-    this.articleDois = articleDois;
+  public void setArticles(List<Article> articles) {
+    this.articles = articles;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof ArticleList)) return false;
-
-    ArticleList articleList = (ArticleList) o;
-
-    if (getID() != null ? !getID().equals(articleList.getID()) : articleList.getID() != null) return false;
-    if (articleDois != null ? !articleDois.equals(articleList.articleDois) : articleList.articleDois != null) return false;
-    if (listCode != null ? !listCode.equals(articleList.listCode) : articleList.listCode != null) return false;
-
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    int result = getID() != null ? getID().hashCode() : 0;
-    result = 31 * result + (listCode != null ? listCode.hashCode() : 0);
-    result = 31 * result + (articleDois != null ? articleDois.hashCode() : 0);
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    return "ArticleList{" +
-        "id='" + getID() + '\'' +
-        ", listCode='" + listCode + '\'' +
-        ", articleDois=" + articleDois +
-        '}';
-  }
 }
