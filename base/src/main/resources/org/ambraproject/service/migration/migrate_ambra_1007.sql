@@ -22,8 +22,13 @@ ALTER TABLE articleListJoinTable ADD COLUMN articleID bigint DEFAULT NULL;
 -- Step 2: Fill the articleID column by joining existing DOIs from the article table
 -- TODO: Needs error-handling in case articles are not present?
 -- We can check in advance whether this will fail by running the following query by hand:
--- SELECT articleListJoinTable.doi FROM articleListJoinTable LEFT OUTER JOIN article ON articleListJoinTable.doi = article.doi WHERE article.doi IS NULL;
-UPDATE articleListJoinTable SET articleID = (SELECT articleID FROM article WHERE article.doi = articleListJoinTable.doi);
+--   SELECT articleListJoinTable.doi
+--     FROM articleListJoinTable LEFT OUTER JOIN article
+--     ON articleListJoinTable.doi = article.doi
+--     WHERE article.doi IS NULL;
+UPDATE articleListJoinTable INNER JOIN article
+  ON article.doi = articleListJoinTable.doi
+  SET articleListJoinTable.articleID = article.articleID;
 
 -- Step 3: Set up constraints on the now-filled articleID column
 ALTER TABLE articleListJoinTable
