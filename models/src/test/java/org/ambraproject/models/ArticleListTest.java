@@ -24,7 +24,6 @@ import org.testng.annotations.Test;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class ArticleListTest extends BaseHibernateTest {
 
     ArticleList articleList1 = new ArticleList("code:testArticleListToSave");
     articleList1.setDisplayName("News");
-    articleList1.setArticleDois(Arrays.asList("doi1", "doi2", "doi3"));
+    articleList1.setArticles(makeStubArticles("doi1", "doi2", "doi3"));
 
     Serializable id1 = hibernateTemplate.save(articleList1);
 
@@ -57,17 +56,14 @@ public class ArticleListTest extends BaseHibernateTest {
 
     ArticleList articleList = new ArticleList("listCode:testarticleListToUpdate");
     articleList.setDisplayName("Old News Article");
-    List<String> articleDois = new ArrayList<String>(3);
-    articleDois.add("old doi 1");
-    articleDois.add("old doi 2");
-    articleDois.add("old doi 3");
+    List<Article> articles = makeStubArticles("old doi 1", "old doi 2", "old doi 3");
 
-    articleList.setArticleDois(articleDois);
+    articleList.setArticles(articles);
 
     Serializable id = hibernateTemplate.save(articleList);
 
-    articleList.getArticleDois().remove(1);
-    articleList.getArticleDois().add("new doi 4");
+    articleList.getArticles().remove(1);
+    articleList.getArticles().addAll(makeStubArticles("new doi 4"));
     articleList.setDisplayName("New News Articles");
 
     //Artificial delay to make sure created time is in the past
@@ -84,7 +80,7 @@ public class ArticleListTest extends BaseHibernateTest {
     log.debug("Created: {}", storedArticleList.getCreated());
 
     assertTrue(storedArticleList.getLastModified().getTime() > storedArticleList.getCreated().getTime(),
-      "last modified wasn't after created");
+        "last modified wasn't after created");
   }
 }
 

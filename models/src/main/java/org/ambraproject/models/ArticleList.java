@@ -64,4 +64,30 @@ public class ArticleList extends AmbraEntity {
     this.articles = articles;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    ArticleList articleList = (ArticleList) o;
+
+    if (getID() != null ? !getID().equals(articleList.getID()) : articleList.getID() != null) return false;
+    if (articles != null ? !articles.equals(articleList.articles) : articleList.articles != null) return false;
+    if (displayName != null ? !displayName.equals(articleList.displayName) : articleList.displayName != null) return false;
+    if (listCode != null ? !listCode.equals(articleList.listCode) : articleList.listCode != null) return false;
+    if (listType != null ? !listType.equals(articleList.listType) : articleList.listType != null) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = getID() != null ? getID().hashCode() : 0;
+    result = 31 * result + (listType != null ? listType.hashCode() : 0);
+    result = 31 * result + (listCode != null ? listCode.hashCode() : 0);
+    result = 31 * result + (displayName != null ? displayName.hashCode() : 0);
+    result = 31 * result + (articles != null ? articles.hashCode() : 0);
+    return result;
+  }
+
 }
