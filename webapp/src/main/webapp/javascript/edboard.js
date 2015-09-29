@@ -89,8 +89,8 @@ $.fn.edBoard = function () {
         var term = item
             .replace(/.*:/, "")
             .replace(/[^a-zA-Z\- ()]/g, "")//filter out characters that break regex
-            .replace(/\(/, "\\(")
-            .replace(/\)/, "\\)");
+            .replace(/\(/g, "\\(")
+            .replace(/\)/g, "\\)");
         args.queryTerms.push(new RegExp("(" + term + ")", "ig"));
       });
     }
