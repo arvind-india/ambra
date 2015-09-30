@@ -36,6 +36,14 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.19</h2>
+  <p>Released October 6th, 2015</p>
+  <h3>Features Implemented in Ambra 2.10.19</h3>
+  <ul>
+      <li>Updated Publish with PLOS page </li>
+      <li>Fix for Editorial Board search functionality</li>
+  </ul>
+
   <h2>Ambra 2.10.18</h2>
   <p>Released September 22nd, 2015</p>
   <h3>Features Implemented in Ambra 2.10.18</h3>
