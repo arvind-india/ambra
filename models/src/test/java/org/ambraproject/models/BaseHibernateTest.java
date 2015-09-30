@@ -68,7 +68,6 @@ public abstract class BaseHibernateTest {
     for (String doi : dois) {
       Article article = new Article();
       article.setDoi(doi);
-      hibernateTemplate.save(article);
       dummyArticles.add(article);
     }
     return dummyArticles;

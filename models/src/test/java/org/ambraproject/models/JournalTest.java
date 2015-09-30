@@ -15,7 +15,10 @@ package org.ambraproject.models;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.io.Serializable;
@@ -98,19 +101,40 @@ public class JournalTest extends BaseHibernateTest {
     });
   }
 
+  private final List<Article> stubArticles = makeStubArticles("doi1", "doi2", "doi3");
+
+  @BeforeTest
+  public void createStubArticles() {
+    deleteAllArticles();
+    for (Article stubArticle : stubArticles) {
+      hibernateTemplate.save(stubArticle);
+    }
+  }
+
+  /*
+   * Clean up stubs from this and other tests to avoid name collisions, which were observed when running the full test
+   * suite. Really this should be done more generally; putting it here is just a band-aid.
+   */
+  @AfterTest
+  public void deleteAllArticles() {
+    List<Article> articles = (List<Article>) hibernateTemplate.findByCriteria(DetachedCriteria.forClass(Article.class));
+    for (Article article : articles) {
+      hibernateTemplate.delete(article);
+    }
+  }
+
   @Test
   public void testSaveWithArticleList() {
     Journal journal = new Journal("journal key with article list");
 
-    List<Article> articles = makeStubArticles("doi1", "doi2", "doi3");
 
     final ArticleList articleList1 = new ArticleList("testarticleListForJournal1");
     articleList1.setDisplayName("News");
-    articleList1.setArticles(articles);
+    articleList1.setArticles(stubArticles);
 
     final ArticleList articleList2 = new ArticleList("testarticleListForJournal2");
     articleList2.setDisplayName("SPAM");
-    articleList2.setArticles(articles);
+    articleList2.setArticles(stubArticles);
 
     journal.setArticleLists(Arrays.asList(articleList1, articleList2));
 
@@ -163,7 +187,7 @@ public class JournalTest extends BaseHibernateTest {
         assertTrue(savedJournal.getLastModified().getTime() > testStart, "last modified wasn't after test start");
         assertTrue(savedJournal.getLastModified().getTime() > savedJournal.getCreated().getTime(),
             "last modified wasn't after created");
-       return null;
+        return null;
       }
     });
   }

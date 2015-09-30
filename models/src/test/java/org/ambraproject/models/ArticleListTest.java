@@ -20,10 +20,11 @@ package org.ambraproject.models;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -34,12 +35,28 @@ import static org.testng.Assert.assertTrue;
 public class ArticleListTest extends BaseHibernateTest {
   private static final Logger log = LoggerFactory.getLogger(ArticleListTest.class);
 
+  private final List<Article> stubArticles = makeStubArticles("doi1", "doi2", "doi3");
+
+  @BeforeTest
+  public void createStubArticles() {
+    for (Article stubArticle : stubArticles) {
+      hibernateTemplate.save(stubArticle);
+    }
+  }
+
+  @AfterTest
+  public void deleteStubArticles() {
+    for (Article stubArticle : stubArticles) {
+      hibernateTemplate.delete(stubArticle);
+    }
+  }
+
   @Test
   public void testSaveBasicCategory() {
 
     ArticleList articleList1 = new ArticleList("code:testArticleListToSave");
     articleList1.setDisplayName("News");
-    articleList1.setArticles(makeStubArticles("doi1", "doi2", "doi3"));
+    articleList1.setArticles(stubArticles);
 
     Serializable id1 = hibernateTemplate.save(articleList1);
 
