@@ -37,7 +37,7 @@
     <property name="listCode" column="listCode" type="string" not-null="true" />
     <property name="displayName" column="displayName" type="string"/>
 
-    <list name="articles" table="articleListJoinTable" cascade="all-delete-orphan" fetch="join">
+    <list name="articles" table="articleListJoinTable" cascade="all" fetch="join">
       <key column="articleListID"/>
       <index column="sortOrder"/>
       <many-to-many class="Article" column="articleID"/>
