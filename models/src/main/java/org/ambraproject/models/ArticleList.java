@@ -90,4 +90,12 @@ public class ArticleList extends AmbraEntity {
     return result;
   }
 
+  @Override
+  public String toString() {
+    return "ArticleList{" +
+        "id='" + getID() + '\'' +
+        ", listType='" + listType + '\'' +
+        ", listCode='" + listCode + '\'' +
+        '}';
+  }
 }
