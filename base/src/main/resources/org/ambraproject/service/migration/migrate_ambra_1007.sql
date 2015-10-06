@@ -11,6 +11,13 @@ ALTER TABLE articleList
   -- Article lists are no longer ordered within each journal
   DROP COLUMN journalSortOrder;
 
+-- Fill a constant value as the listType for all pre-existing articleLists, then add a non-null constraint.
+-- (We do NOT want to declare "admin" as the default when adding the column. This would have accomplished the same
+-- thing during the backfill, but we want to use "admin" only during the backfill, not as a default for future rows.)
+UPDATE articleList SET listType="admin";
+ALTER TABLE articleList
+  MODIFY COLUMN listType varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;
+
 
 --
 -- Replace raw DOIs with foreign keys of actual article rows. This is a multi-step process.
