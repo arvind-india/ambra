@@ -176,7 +176,7 @@ public class DummyHibernateDataStore implements DummyDataStore {
       } else if (object instanceof ArticleList) {
         return (Serializable) hibernateTemplate.findByCriteria(
             DetachedCriteria.forClass(ArticleList.class)
-                .add(Restrictions.eq("listCode", ((ArticleList) object).getListCode()))
+                .add(Restrictions.eq("listKey", ((ArticleList) object).getListKey()))
                 .setProjection(Projections.id()))
             .get(0);
       } else if (object instanceof Issue) {

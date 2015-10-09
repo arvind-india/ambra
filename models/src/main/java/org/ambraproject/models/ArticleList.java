@@ -18,7 +18,7 @@ import java.util.List;
 public class ArticleList extends AmbraEntity {
 
   private String listType;
-  private String listCode;
+  private String listKey;
   private String displayName;
 
   private List<Article> articles;
@@ -27,9 +27,9 @@ public class ArticleList extends AmbraEntity {
     super();
   }
 
-  public ArticleList(String listCode) {
+  public ArticleList(String listKey) {
     super();
-    this.listCode = listCode;
+    this.listKey = listKey;
   }
 
   public String getListType() {
@@ -40,12 +40,12 @@ public class ArticleList extends AmbraEntity {
     this.listType = listType;
   }
 
-  public String getListCode() {
-    return listCode;
+  public String getListKey() {
+    return listKey;
   }
 
-  public void setListCode(String listCode) {
-    this.listCode = listCode;
+  public void setListKey(String listKey) {
+    this.listKey = listKey;
   }
 
   public String getDisplayName() {
@@ -74,7 +74,7 @@ public class ArticleList extends AmbraEntity {
     if (getID() != null ? !getID().equals(articleList.getID()) : articleList.getID() != null) return false;
     if (articles != null ? !articles.equals(articleList.articles) : articleList.articles != null) return false;
     if (displayName != null ? !displayName.equals(articleList.displayName) : articleList.displayName != null) return false;
-    if (listCode != null ? !listCode.equals(articleList.listCode) : articleList.listCode != null) return false;
+    if (listKey != null ? !listKey.equals(articleList.listKey) : articleList.listKey != null) return false;
     if (listType != null ? !listType.equals(articleList.listType) : articleList.listType != null) return false;
 
     return true;
@@ -84,7 +84,7 @@ public class ArticleList extends AmbraEntity {
   public int hashCode() {
     int result = getID() != null ? getID().hashCode() : 0;
     result = 31 * result + (listType != null ? listType.hashCode() : 0);
-    result = 31 * result + (listCode != null ? listCode.hashCode() : 0);
+    result = 31 * result + (listKey != null ? listKey.hashCode() : 0);
     result = 31 * result + (displayName != null ? displayName.hashCode() : 0);
     result = 31 * result + (articles != null ? articles.hashCode() : 0);
     return result;
@@ -95,7 +95,7 @@ public class ArticleList extends AmbraEntity {
     return "ArticleList{" +
         "id='" + getID() + '\'' +
         ", listType='" + listType + '\'' +
-        ", listCode='" + listCode + '\'' +
+        ", listKey='" + listKey + '\'' +
         '}';
   }
 }

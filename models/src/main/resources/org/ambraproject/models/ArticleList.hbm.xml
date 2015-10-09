@@ -34,7 +34,7 @@
     <property name="created" column="created" type="timestamp" not-null="true" update="false"/>
 
     <property name="listType" column="listType" type="string" not-null="false" />
-    <property name="listCode" column="listCode" type="string" not-null="true" />
+    <property name="listKey" column="listKey" type="string" not-null="true" />
     <property name="displayName" column="displayName" type="string"/>
 
     <list name="articles" table="articleListJoinTable" cascade="all" fetch="join">

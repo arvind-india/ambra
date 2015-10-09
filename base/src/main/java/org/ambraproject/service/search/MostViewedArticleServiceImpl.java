@@ -204,11 +204,11 @@ public class MostViewedArticleServiceImpl extends HibernateServiceImpl implement
    * @return String of articleDois
    */
   @Transactional(readOnly = true)
-  public ArticleList getArticleList(final String listCode) {
+  public ArticleList getArticleList(final String listKey) {
     try {
       return (ArticleList) hibernateTemplate.findByCriteria(
           DetachedCriteria.forClass(ArticleList.class)
-              .add(Restrictions.eq("listCode", listCode))
+              .add(Restrictions.eq("listKey", listKey))
       ).get(0);
     } catch (IndexOutOfBoundsException e) {
       return null;
@@ -217,17 +217,17 @@ public class MostViewedArticleServiceImpl extends HibernateServiceImpl implement
 
   @Override
   @SuppressWarnings("unchecked")
-  public List<HomePageArticleInfo> getNewsArticleInfo(final String listCode, String authId) {
+  public List<HomePageArticleInfo> getNewsArticleInfo(final String listKey, String authId) {
     final List<Object[]> tempRes = (List<Object[]>)hibernateTemplate.execute(new HibernateCallback() {
       @Override
       public Object doInHibernate(Session session) throws HibernateException, SQLException {
         String sqlQuery = "select a.articleID, a.doi, a.title, a.strkImgURI, a.description from articleList al " +
           "join articleListJoinTable alj on al.articleListID = alj.articleListID " +
           "join article a on a.doi = alj.doi " +
-          "where al.listCode = :listCode " +
+          "where al.listKey = :listKey " +
           "order by alj.sortOrder asc";
         return session.createSQLQuery(sqlQuery)
-          .setParameter("listCode", listCode)
+          .setParameter("listKey", listKey)
           .list();
       }
     });

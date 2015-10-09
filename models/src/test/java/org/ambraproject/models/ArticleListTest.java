@@ -71,7 +71,7 @@ public class ArticleListTest extends BaseHibernateTest {
   public void testUpdateCategory() throws Exception {
     long testStart = Calendar.getInstance().getTimeInMillis();
 
-    ArticleList articleList = new ArticleList("listCode:testarticleListToUpdate");
+    ArticleList articleList = new ArticleList("listKey:testarticleListToUpdate");
     articleList.setDisplayName("Old News Article");
     List<Article> articles = makeStubArticles("old doi 1", "old doi 2", "old doi 3");
 

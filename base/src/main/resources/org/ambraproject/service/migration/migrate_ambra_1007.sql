@@ -1,12 +1,15 @@
 ALTER TABLE articleList
 
+  -- Rename listKey to listKey
+  CHANGE COLUMN listCode listKey varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+
   -- Add the listType column
   ADD COLUMN listType varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
 
-  -- Replace the global uniqueness constraint on listCodes with (journalID, listType, listCode)
-  -- (i.e., listCodes will be unique only within their own journal and among the same type)
+  -- Replace the global uniqueness constraint on listKeys with (journalID, listType, listKey)
+  -- (i.e., listKeys will be unique only within their own journal and among the same type)
   DROP INDEX listCode,
-  ADD UNIQUE KEY listIdentity (journalID, listType, listCode),
+  ADD UNIQUE KEY listIdentity (journalID, listType, listKey),
 
   -- Article lists are no longer ordered within each journal
   DROP COLUMN journalSortOrder;
