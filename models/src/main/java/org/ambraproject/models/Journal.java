@@ -14,6 +14,7 @@
 package org.ambraproject.models;
 
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -33,7 +34,7 @@ public class Journal extends AmbraEntity {
 
   private List<Volume> volumes;
 
-  private List<ArticleList> articleList;
+  private Collection<ArticleList> articleLists;
 
   public Journal() {
     super();
@@ -100,12 +101,12 @@ public class Journal extends AmbraEntity {
     this.volumes = volumes;
   }
 
-  public List<ArticleList> getArticleList() {
-    return articleList;
+  public Collection<ArticleList> getArticleLists() {
+    return articleLists;
   }
 
-  public void setArticleList(List<ArticleList> articleList) {
-    this.articleList = articleList;
+  public void setArticleLists(Collection<ArticleList> articleLists) {
+    this.articleLists = articleLists;
   }
 
   @Override

@@ -29,6 +29,8 @@ import org.testng.annotations.AfterClass;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base Test for simple model tests (just to see that hibernate mappping files are valid).
@@ -60,4 +62,15 @@ public abstract class BaseHibernateTest {
   public BaseHibernateTest() {
     this.hibernateTemplate = new HibernateTemplate(sessionFactory);
   }
+
+  protected List<Article> makeStubArticles(String... dois) {
+    List<Article> dummyArticles = new ArrayList<Article>(dois.length);
+    for (String doi : dois) {
+      Article article = new Article();
+      article.setDoi(doi);
+      dummyArticles.add(article);
+    }
+    return dummyArticles;
+  }
+
 }

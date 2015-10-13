@@ -33,13 +33,14 @@
     <timestamp name="lastModified" column="lastModified"/>
     <property name="created" column="created" type="timestamp" not-null="true" update="false"/>
 
-    <property name="listCode" column="listCode" type="string" not-null="true" unique="true"/>
+    <property name="listType" column="listType" type="string" not-null="false" />
+    <property name="listKey" column="listKey" type="string" not-null="true" />
     <property name="displayName" column="displayName" type="string"/>
 
-    <list name="articleDois" table="articleListJoinTable" cascade="all-delete-orphan" fetch="join">
+    <list name="articles" table="articleListJoinTable" cascade="all" fetch="join">
       <key column="articleListID"/>
-      <list-index column="sortOrder"/>
-      <element column="doi" type="string"/>
+      <index column="sortOrder"/>
+      <many-to-many class="Article" column="articleID"/>
     </list>
   </class>
 

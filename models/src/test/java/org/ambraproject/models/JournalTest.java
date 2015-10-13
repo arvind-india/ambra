@@ -15,13 +15,17 @@ package org.ambraproject.models;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -97,19 +101,42 @@ public class JournalTest extends BaseHibernateTest {
     });
   }
 
+  private final List<Article> stubArticles = makeStubArticles("doi1", "doi2", "doi3");
+
+  @BeforeTest
+  public void createStubArticles() {
+    deleteAllArticles();
+    for (Article stubArticle : stubArticles) {
+      hibernateTemplate.save(stubArticle);
+    }
+  }
+
+  /*
+   * Clean up stubs from this and other tests to avoid name collisions, which were observed when running the full test
+   * suite. Really this should be done more generally; putting it here is just a band-aid.
+   */
+  @AfterTest
+  public void deleteAllArticles() {
+    List<Article> articles = (List<Article>) hibernateTemplate.findByCriteria(DetachedCriteria.forClass(Article.class));
+    for (Article article : articles) {
+      hibernateTemplate.delete(article);
+    }
+  }
+
   @Test
   public void testSaveWithArticleList() {
     Journal journal = new Journal("journal key with article list");
 
+
     final ArticleList articleList1 = new ArticleList("testarticleListForJournal1");
     articleList1.setDisplayName("News");
-    articleList1.setArticleDois(Arrays.asList("doi1", "doi2", "doi3"));
+    articleList1.setArticles(stubArticles);
 
     final ArticleList articleList2 = new ArticleList("testarticleListForJournal2");
     articleList2.setDisplayName("SPAM");
-    articleList2.setArticleDois(Arrays.asList("doi1", "doi2", "doi3"));
+    articleList2.setArticles(stubArticles);
 
-    journal.setArticleList(Arrays.asList(articleList1, articleList2));
+    journal.setArticleLists(Arrays.asList(articleList1, articleList2));
 
     final Serializable journalId1 = hibernateTemplate.save(journal);
 
@@ -119,9 +146,9 @@ public class JournalTest extends BaseHibernateTest {
       public Object doInHibernate(Session session) throws HibernateException, SQLException {
         Journal savedJournal = (Journal) session.get(Journal.class, journalId1);
         assertNotNull(savedJournal, "didn't save journal");
-        assertEquals(savedJournal.getArticleList().toArray(), new ArticleList[]{articleList1, articleList2},
+        assertEquals(savedJournal.getArticleLists().toArray(), new ArticleList[]{articleList1, articleList2},
             "saved journal had incorrect article list");
-        for (ArticleList ai : savedJournal.getArticleList()) {
+        for (ArticleList ai : savedJournal.getArticleLists()) {
           assertNotNull(ai.getCreated(), "Article List didn't get created date set");
         }
         return null;
@@ -160,7 +187,7 @@ public class JournalTest extends BaseHibernateTest {
         assertTrue(savedJournal.getLastModified().getTime() > testStart, "last modified wasn't after test start");
         assertTrue(savedJournal.getLastModified().getTime() > savedJournal.getCreated().getTime(),
             "last modified wasn't after created");
-       return null;
+        return null;
       }
     });
   }
