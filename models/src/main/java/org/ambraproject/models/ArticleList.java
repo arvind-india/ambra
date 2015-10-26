@@ -15,28 +15,37 @@ package org.ambraproject.models;
 
 import java.util.List;
 
-public class ArticleList extends AmbraEntity{
+public class ArticleList extends AmbraEntity {
 
-  private String listCode;
+  private String listType;
+  private String listKey;
   private String displayName;
 
-  private List<String> articleDois;
+  private List<Article> articles;
 
   public ArticleList() {
     super();
   }
 
-  public ArticleList(String listCode) {
+  public ArticleList(String listKey) {
     super();
-    this.listCode = listCode;
+    this.listKey = listKey;
   }
 
-  public String getListCode() {
-    return listCode;
+  public String getListType() {
+    return listType;
   }
 
-  public void setListCode(String listCode) {
-    this.listCode = listCode;
+  public void setListType(String listType) {
+    this.listType = listType;
+  }
+
+  public String getListKey() {
+    return listKey;
+  }
+
+  public void setListKey(String listKey) {
+    this.listKey = listKey;
   }
 
   public String getDisplayName() {
@@ -47,24 +56,26 @@ public class ArticleList extends AmbraEntity{
     this.displayName = displayName;
   }
 
-  public List<String> getArticleDois() {
-    return articleDois;
+  public List<Article> getArticles() {
+    return articles;
   }
 
-  public void setArticleDois(List<String> articleDois) {
-    this.articleDois = articleDois;
+  public void setArticles(List<Article> articles) {
+    this.articles = articles;
   }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof ArticleList)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
 
     ArticleList articleList = (ArticleList) o;
 
     if (getID() != null ? !getID().equals(articleList.getID()) : articleList.getID() != null) return false;
-    if (articleDois != null ? !articleDois.equals(articleList.articleDois) : articleList.articleDois != null) return false;
-    if (listCode != null ? !listCode.equals(articleList.listCode) : articleList.listCode != null) return false;
+    if (articles != null ? !articles.equals(articleList.articles) : articleList.articles != null) return false;
+    if (displayName != null ? !displayName.equals(articleList.displayName) : articleList.displayName != null) return false;
+    if (listKey != null ? !listKey.equals(articleList.listKey) : articleList.listKey != null) return false;
+    if (listType != null ? !listType.equals(articleList.listType) : articleList.listType != null) return false;
 
     return true;
   }
@@ -72,8 +83,10 @@ public class ArticleList extends AmbraEntity{
   @Override
   public int hashCode() {
     int result = getID() != null ? getID().hashCode() : 0;
-    result = 31 * result + (listCode != null ? listCode.hashCode() : 0);
-    result = 31 * result + (articleDois != null ? articleDois.hashCode() : 0);
+    result = 31 * result + (listType != null ? listType.hashCode() : 0);
+    result = 31 * result + (listKey != null ? listKey.hashCode() : 0);
+    result = 31 * result + (displayName != null ? displayName.hashCode() : 0);
+    result = 31 * result + (articles != null ? articles.hashCode() : 0);
     return result;
   }
 
@@ -81,8 +94,8 @@ public class ArticleList extends AmbraEntity{
   public String toString() {
     return "ArticleList{" +
         "id='" + getID() + '\'' +
-        ", listCode='" + listCode + '\'' +
-        ", articleDois=" + articleDois +
+        ", listType='" + listType + '\'' +
+        ", listKey='" + listKey + '\'' +
         '}';
   }
 }

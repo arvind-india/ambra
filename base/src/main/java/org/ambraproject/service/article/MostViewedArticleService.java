@@ -70,10 +70,10 @@ public interface MostViewedArticleService {
 
   /**
    * Get the articles for "In the News" from database.
-   * @param listCode - the list code of the set of articles, e.g., "plosone_news"
+   * @param listKey - the list code of the set of articles, e.g., "plosone_news"
    * @param authId - the authId of the current user
    * @return - a list of article info that is used to display on the home page.
    */
-  public List<HomePageArticleInfo> getNewsArticleInfo(String listCode, String authId);
+  public List<HomePageArticleInfo> getNewsArticleInfo(String listKey, String authId);
 
 }

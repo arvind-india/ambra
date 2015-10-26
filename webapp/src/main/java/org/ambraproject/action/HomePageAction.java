@@ -193,8 +193,8 @@ public class HomePageAction extends BaseActionSupport {
    * for PLOSONE
    */
   private void initNewsArticleInfo() {
-    String listCode = getCurrentJournal().toLowerCase() + "_news";
-    newsArticleInfo = mostViewedArticleService.getNewsArticleInfo(listCode, getAuthId());
+    String listKey = getCurrentJournal().toLowerCase() + "_news";
+    newsArticleInfo = mostViewedArticleService.getNewsArticleInfo(listKey, getAuthId());
   }
 
   /**
