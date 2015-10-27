@@ -223,7 +223,7 @@ public class MostViewedArticleServiceImpl extends HibernateServiceImpl implement
       public Object doInHibernate(Session session) throws HibernateException, SQLException {
         String sqlQuery = "select a.articleID, a.doi, a.title, a.strkImgURI, a.description from articleList al " +
           "join articleListJoinTable alj on al.articleListID = alj.articleListID " +
-          "join article a on a.doi = alj.doi " +
+          "join article a on a.articleID = alj.articleID " +
           "where al.listKey = :listKey " +
           "order by alj.sortOrder asc";
         return session.createSQLQuery(sqlQuery)
