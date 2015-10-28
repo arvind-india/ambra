@@ -216,7 +216,7 @@ $.fn.edBoard = function () {
         }
 
         entry.append($("<div></div>").addClass("expertise")
-            .html("Expertise: " + editor.ae_subject.join(", ")));
+            .html("Subject Areas: " + editor.ae_subject.join(", ")));
 
       }
 
