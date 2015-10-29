@@ -36,6 +36,13 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.20</h2>
+  <p>Released November 3rd, 2015</p>
+  <h3>Features Implemented in Ambra 2.10.20</h3>
+  <ul>
+      <li>Migrated ArticleList schema to allow more flexible and specific naming</li>
+  </ul>
+
   <h2>Ambra 2.10.19</h2>
   <p>Released October 6th, 2015</p>
   <h3>Features Implemented in Ambra 2.10.19</h3>
