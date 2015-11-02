@@ -26,12 +26,12 @@ ALTER TABLE articleList
 -- Replace raw DOIs with foreign keys of actual article rows. This is a multi-step process.
 --
 
--- Step 1: Add an empty column that will be filled with article keys
+-- Step 1 - Add an empty column that will be filled with article keys
 ALTER TABLE articleListJoinTable ADD COLUMN articleID bigint DEFAULT NULL;
 
--- Step 2: Fill the articleID column by joining existing DOIs from the article table
--- TODO: Needs error-handling in case articles are not present?
--- We can check in advance whether this will fail by running the following query by hand:
+-- Step 2 - Fill the articleID column by joining existing DOIs from the article table
+-- TODO - Needs error-handling in case articles are not present?
+-- We can check in advance whether this will fail by running the following query by hand...
 --   SELECT articleListJoinTable.doi
 --     FROM articleListJoinTable LEFT OUTER JOIN article
 --     ON articleListJoinTable.doi = article.doi
@@ -40,10 +40,10 @@ UPDATE articleListJoinTable INNER JOIN article
   ON article.doi = articleListJoinTable.doi
   SET articleListJoinTable.articleID = article.articleID;
 
--- Step 3: Set up constraints on the now-filled articleID column
+-- Step 3 - Set up constraints on the now-filled articleID column
 ALTER TABLE articleListJoinTable
   MODIFY COLUMN articleID bigint NOT NULL,
   ADD CONSTRAINT FOREIGN KEY (articleID) REFERENCES article (articleID);
 
--- Step 4: Drop the DOI column
+-- Step 4 - Drop the DOI column
 ALTER TABLE articleListJoinTable DROP COLUMN doi;
