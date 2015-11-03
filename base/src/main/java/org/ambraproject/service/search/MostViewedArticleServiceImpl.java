@@ -215,6 +215,8 @@ public class MostViewedArticleServiceImpl extends HibernateServiceImpl implement
     }
   }
 
+  private static final String ARTICLE_LIST_TYPE = "admin"; // From migrate_ambra_1007.sql
+
   @Override
   @SuppressWarnings("unchecked")
   public List<HomePageArticleInfo> getNewsArticleInfo(final String listKey, String authId) {
@@ -224,10 +226,11 @@ public class MostViewedArticleServiceImpl extends HibernateServiceImpl implement
         String sqlQuery = "select a.articleID, a.doi, a.title, a.strkImgURI, a.description from articleList al " +
           "join articleListJoinTable alj on al.articleListID = alj.articleListID " +
           "join article a on a.articleID = alj.articleID " +
-          "where al.listKey = :listKey " +
+          "where al.listKey = :listKey and al.listType = :listType " +
           "order by alj.sortOrder asc";
         return session.createSQLQuery(sqlQuery)
           .setParameter("listKey", listKey)
+          .setParameter("listType", ARTICLE_LIST_TYPE)
           .list();
       }
     });
