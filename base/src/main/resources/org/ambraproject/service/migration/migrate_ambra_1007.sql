@@ -43,7 +43,7 @@ UPDATE articleListJoinTable INNER JOIN article
 -- Step 3 - Set up constraints on the now-filled articleID column
 ALTER TABLE articleListJoinTable
   MODIFY COLUMN articleID bigint NOT NULL,
-  ADD CONSTRAINT FOREIGN KEY (articleID) REFERENCES article (articleID);
+  ADD CONSTRAINT `articleListJoinTable_ibfk_2` FOREIGN KEY (articleID) REFERENCES article (articleID);
 
 -- Step 4 - Drop the DOI column
 ALTER TABLE articleListJoinTable DROP COLUMN doi;
