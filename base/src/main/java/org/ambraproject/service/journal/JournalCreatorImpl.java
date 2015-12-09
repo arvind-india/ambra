@@ -101,6 +101,7 @@ public class JournalCreatorImpl extends HibernateServiceImpl implements JournalC
         }
 
       } catch (Exception e) {
+        log.error("cannot create journal", e);
         throw new ApplicationException("Failed to create/update journal with key: " + key, e);
       }
     }
