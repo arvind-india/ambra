@@ -73,6 +73,8 @@ public class AmbraFreemarkerConfig {
   private String defaultJournalName;
   private String orgName;
   private String feedbackEmail;
+  private String nedProfileURL;
+  private String nedRegistrationURL;
   private Date cisStartDate;
   private int cache_storage_strong;
   private int cache_storage_soft;
@@ -113,6 +115,8 @@ public class AmbraFreemarkerConfig {
         DEFAULT_TEMPLATE_UPDATE_DELAY);
     String date = configuration.getString("ambra.platform.cisStartDate");
     freemarkerProperties = configuration.subset("ambra.platform.freemarker");
+    nedProfileURL = configuration.getString("ned.profile");
+    nedRegistrationURL = configuration.getString("ned.registration");
 
     if (date == null) {
       throw new Exception("Could not find the cisStartDate node in the " +
@@ -177,6 +181,8 @@ public class AmbraFreemarkerConfig {
       log.trace("Registration Change EMail URL: " + changeEmailURL);
       log.trace("DOI Resolver URL: " + doiResolverURL);
       log.trace("Default Journal Name: " + defaultJournalName);
+      log.trace("NED Profile URL: " + nedProfileURL);
+      log.trace("NED Registration URL: " + nedRegistrationURL);
     }
     if (log.isDebugEnabled()) {
       log.debug("End FreeMarker Configuration Reading");

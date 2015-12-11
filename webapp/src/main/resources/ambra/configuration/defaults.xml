@@ -327,4 +327,10 @@
     <devMode>false</devMode>
   </struts>
 
+  <ned>
+    <server>https://community.plos.org</server>
+    <profile>${ned.server}/account/edit-profile</profile>
+    <registration>${ned.server}/registration/new</registration>
+  </ned>
+
 </config>
