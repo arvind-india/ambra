@@ -35,11 +35,12 @@
           <li><a href="/">Ambra</a></li>
         <#if Session["AMBRA_USER"]?exists>
           <@s.url id="editProfileURL" includeParams="none" namespace="/user/secure" action="editProfile"/>
-          <li><a href="${editProfileURL}" title="Edit your account profile and alert settings">preferences</a></li>
+          <li><a href="${freemarker_config.nedProfileURL}" title="Edit your account profile and alert
+          settings">preferences</a></li>
           <@s.url id="logoutURL" includeParams="none" namespace="/user/secure" action="secureRedirect" goTo="${freemarker_config.casLogoutURL}?service=${Request[freemarker_config.journalContextAttributeKey].baseUrl}/logout.action"/>
           <li class="btn-style"><a href="${logoutURL}">sign out</a></li>
         <#else>
-          <li><a href="${freemarker_config.registrationURL}">create account</a></li>
+          <li><a href="${freemarker_config.nedRegistrationURL}">create account</a></li>
           <@s.url id="loginURL" includeParams="none" namespace="/user/secure" action="secureRedirect" goTo="${global.thisPage}"/>
           <li class="btn-style"><a
               href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${global.thisPage}">sign in</a>
