@@ -36,6 +36,13 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.21</h2>
+  <p>Released December 8th, 2015</p>
+  <h3>Features Implemented in Ambra 2.10.21</h3>
+  <ul>
+      <li>Added support for a new Meta-Research Article type</li>
+  </ul>
+
   <h2>Ambra 2.10.20</h2>
   <p>Released November 3rd, 2015</p>
   <h3>Features Implemented in Ambra 2.10.20</h3>
