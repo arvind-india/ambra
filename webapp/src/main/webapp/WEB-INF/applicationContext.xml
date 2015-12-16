@@ -70,6 +70,8 @@
            value="${ambra.services.articletransform.default}"/>
     <entry key="3.0"
            value="${ambra.services.articletransform.dtd_3_0}"/>
+    <entry key="1.1d3"
+           value="${ambra.services.articletransform.dtd_3_0}"/>
   </util:map>
 
   <bean id="articleTransformService" class="org.ambraproject.service.xml.XMLServiceImpl" init-method="init">
