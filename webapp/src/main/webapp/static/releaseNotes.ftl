@@ -36,6 +36,13 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
 
+  <h2>Ambra 2.10.22</h2>
+  <p>Released January 5th, 2016</p>
+  <h3>Features Implemented in Ambra 2.10.22</h3>
+  <ul>
+      <li>Addition of JATS DTD support</li>
+  </ul>
+
   <h2>Ambra 2.10.21</h2>
   <p>Released December 8th, 2015</p>
   <h3>Features Implemented in Ambra 2.10.21</h3>
