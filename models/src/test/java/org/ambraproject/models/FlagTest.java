@@ -29,15 +29,10 @@ public class FlagTest extends BaseHibernateTest {
   @Test
   public void testSaveFlag() {
     long testStart = Calendar.getInstance().getTimeInMillis();
-    UserProfile creator = new UserProfile(
-        "email@saveFlag.org",
-        "displayNameForSaveFlag",
-        "pass");
-    hibernateTemplate.save(creator);
-    Annotation annotation = new Annotation(creator, AnnotationType.COMMENT, 123l);
+    Annotation annotation = new Annotation(AnnotationType.COMMENT, 123l);
     hibernateTemplate.save(annotation);
 
-    Flag flag = new Flag(creator, FlagReasonCode.INAPPROPRIATE, annotation);
+    Flag flag = new Flag(FlagReasonCode.INAPPROPRIATE, annotation);
     flag.setComment("Mary Margaret teams up with Leroy, Storybrooke's resident trouble maker, " +
         "to help him sell candles during the Miner's Day Festival. Emma investigates Kathryn's " +
         "sudden disapperance. Meanwhile, in the fairy-tale land that was, the Seven Dwarfs is made " +
@@ -46,8 +41,6 @@ public class FlagTest extends BaseHibernateTest {
 
     Flag storedFlag = (Flag) hibernateTemplate.get(Flag.class, id);
     assertNotNull(storedFlag, "Didn't store flag");
-    assertNotNull(storedFlag.getCreator(), "Didn't associate flag to creator");
-    assertEquals(storedFlag.getCreator().getID(), creator.getID(), "associated flag to incorrect creator");
 
     assertNotNull(storedFlag.getFlaggedAnnotation(), "Didn't associate flag to an annotation");
     assertEquals(storedFlag.getFlaggedAnnotation().getID(), annotation.getID(), "associated flag to an annotation");
@@ -59,57 +52,30 @@ public class FlagTest extends BaseHibernateTest {
   }
 
   @Test(expectedExceptions = {DataIntegrityViolationException.class})
-  public void testSaveWithNullCreator() {
-    UserProfile creator = new UserProfile(
-        "email@saveFlagWithNoCreator.org",
-        "displayNameForSaveFlagWithNoCreator",
-        "pass");
-    hibernateTemplate.save(creator);
-    Annotation annotation = new Annotation(creator, AnnotationType.COMMENT, 123l);
-    hibernateTemplate.save(annotation);
-
-    hibernateTemplate.save(new Flag(null, FlagReasonCode.SPAM, annotation));
-  }
-
-  @Test(expectedExceptions = {DataIntegrityViolationException.class})
   public void testSaveWithNullAnnotation() {
-    UserProfile creator = new UserProfile(
-        "email@saveFlagWithNoAnnotation.org",
-        "displayNameForSaveFlagWithNoAnnotation",
-        "pass");
-    hibernateTemplate.save(creator);
 
-    hibernateTemplate.save(new Flag(creator, FlagReasonCode.SPAM, null));
+    hibernateTemplate.save(new Flag(FlagReasonCode.SPAM, null));
   }
 
   @Test(expectedExceptions = {DataIntegrityViolationException.class})
   public void testSaveWithNullReason() {
-    UserProfile creator = new UserProfile(
-        "email@saveFlagWithNoReason.org",
-        "displayNameForSaveFlagWithNoReason",
-        "pass");
-    hibernateTemplate.save(creator);
-    Annotation annotation = new Annotation(creator, AnnotationType.COMMENT, 123l);
+
+    Annotation annotation = new Annotation(AnnotationType.COMMENT, 123l);
     hibernateTemplate.save(annotation);
 
-    hibernateTemplate.save(new Flag(creator, null, annotation));
+    hibernateTemplate.save(new Flag(null, annotation));
   }
 
   @Test
   public void testDoesNotCascadeDelete() {
-    UserProfile creator = new UserProfile(
-        "email@CascadeDeleteOnFlag.org",
-        "displayNameForCascadeDeleteOnFlag",
-        "pass");
-    Serializable creatorId = hibernateTemplate.save(creator);
-    Annotation annotation = new Annotation(creator, AnnotationType.COMMENT, 23l);
+
+    Annotation annotation = new Annotation(AnnotationType.COMMENT, 23l);
     Serializable annotationId = hibernateTemplate.save(annotation);
 
-    Flag flag = new Flag(creator, FlagReasonCode.INAPPROPRIATE, annotation);
+    Flag flag = new Flag(FlagReasonCode.INAPPROPRIATE, annotation);
     hibernateTemplate.save(flag);
     hibernateTemplate.delete(flag);
     assertNotNull(hibernateTemplate.get(Annotation.class, annotationId), "Flag deleted annotation");
-    assertNotNull(hibernateTemplate.get(UserProfile.class, creatorId), "Flag deleted creator");
   }
 
 }

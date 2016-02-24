@@ -19,7 +19,6 @@ package org.ambraproject.models;
 public class Flag extends AmbraEntity {
 
   private String comment;
-  private UserProfile creator;
   private FlagReasonCode reason;
   private Annotation flaggedAnnotation;
 
@@ -28,9 +27,8 @@ public class Flag extends AmbraEntity {
     this.reason = FlagReasonCode.OTHER;
   }
 
-  public Flag(UserProfile creator, FlagReasonCode reason, Annotation flaggedAnnotation) {
+  public Flag(FlagReasonCode reason, Annotation flaggedAnnotation) {
     super();
-    this.creator = creator;
     this.reason = reason;
     this.flaggedAnnotation = flaggedAnnotation;
   }
@@ -41,14 +39,6 @@ public class Flag extends AmbraEntity {
 
   public void setComment(String comment) {
     this.comment = comment;
-  }
-
-  public UserProfile getCreator() {
-    return creator;
-  }
-
-  public void setCreator(UserProfile creator) {
-    this.creator = creator;
   }
 
   public FlagReasonCode getReason() {

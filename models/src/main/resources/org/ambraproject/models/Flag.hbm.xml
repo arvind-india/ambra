@@ -34,9 +34,6 @@
       </type>
     </property>
 
-    <!--Don't cascade to creator-->
-    <many-to-one name="creator" class="UserProfile" column="userProfileID" not-null="true" cascade="none"/>
-
     <many-to-one name="flaggedAnnotation" class="Annotation" column="annotationID" cascade="none" not-null="true"/>
 
     <property name="comment" type="text" column="comment"/>
