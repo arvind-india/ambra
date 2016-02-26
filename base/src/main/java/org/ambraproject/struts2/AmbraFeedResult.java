@@ -577,7 +577,7 @@ public class AmbraFeedResult extends Feed implements Result {
       relLink = newArticleLink(view.getArticleDoi(), view.getArticleTitle(), xmlBase);
 
       Person person = new Person();
-      person.setName(view.getCreatorFormattedName());
+      person.setName(String.valueOf(view.getCreatorID()));
       authors.add(person);
 
       annotationType = view.getType().toString();

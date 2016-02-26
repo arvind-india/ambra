@@ -15,7 +15,6 @@ package org.ambraproject.views;
 
 import org.ambraproject.models.Annotation;
 import org.ambraproject.models.AnnotationType;
-import org.ambraproject.models.UserProfile;
 import org.ambraproject.util.TextUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -56,8 +55,6 @@ public class AnnotationView {
   private final String annotationUri;
   private final Long ID;
   private final Long creatorID;
-  private final String creatorDisplayName;
-  private final String creatorFormattedName;
   private final Long articleID;
   private final Long parentID;
   private final String articleDoi;
@@ -124,9 +121,7 @@ public class AnnotationView {
       this.truncatedCompetingInterestStatement = TextUtils.truncateText(TextUtils.escapeHtml(annotation.getCompetingInterestBody()), TRUNCATED_COMMENT_LENGTH);
     }
 
-    this.creatorID = annotation.getCreator().getID();
-    this.creatorDisplayName = annotation.getCreator().getDisplayName();
-    this.creatorFormattedName = createFormattedName(annotation.getCreator());
+    this.creatorID = annotation.getUserProfileID();
     this.articleID = annotation.getArticleID();
     this.parentID = annotation.getParentID();
     this.type = annotation.getType();
@@ -197,10 +192,6 @@ public class AnnotationView {
     if (competingInterestStatement != null ? !competingInterestStatement.equals(that.competingInterestStatement) : that.competingInterestStatement != null)
       return false;
     if (creatorID != null ? !creatorID.equals(that.creatorID) : that.creatorID != null) return false;
-    if (creatorDisplayName != null ? !creatorDisplayName.equals(that.creatorDisplayName) : that.creatorDisplayName != null)
-      return false;
-    if (creatorFormattedName != null ? !creatorFormattedName.equals(that.creatorFormattedName) : that.creatorFormattedName != null)
-      return false;
     if (title != null ? !title.equals(that.title) : that.title != null) return false;
     if (type != that.type) return false;
 
@@ -215,8 +206,6 @@ public class AnnotationView {
     result = 31 * result + (annotationUri != null ? annotationUri.hashCode() : 0);
     result = 31 * result + (ID != null ? ID.hashCode() : 0);
     result = 31 * result + (creatorID != null ? creatorID.hashCode() : 0);
-    result = 31 * result + (creatorDisplayName != null ? creatorDisplayName.hashCode() : 0);
-    result = 31 * result + (creatorFormattedName != null ? creatorFormattedName.hashCode() : 0);
     result = 31 * result + (articleID != null ? articleID.hashCode() : 0);
     result = 31 * result + (parentID != null ? parentID.hashCode() : 0);
     result = 31 * result + (articleDoi != null ? articleDoi.hashCode() : 0);
@@ -233,7 +222,6 @@ public class AnnotationView {
         ", competingInterestStatement='" + competingInterestStatement + '\'' +
         ", annotationUri='" + annotationUri + '\'' +
         ", creatorID=" + creatorID +
-        ", creatorDisplayName='" + creatorDisplayName + '\'' +
         ", articleID=" + articleID +
         ", parentID=" + parentID +
         ", articleDoi='" + articleDoi + '\'' +
@@ -244,27 +232,6 @@ public class AnnotationView {
 
   public String getTitle() {
     return title;
-  }
-
-  private String createFormattedName(UserProfile up) {
-    StringBuilder name = new StringBuilder();
-
-    if (up.getGivenNames() != null && !up.getGivenNames().equals("")) {
-      name.append(up.getGivenNames());
-    }
-
-    if (up.getSurname() != null && !up.getSurname().equals("")) {
-      if (name.length() > 0) {
-        name.append(' ');
-      }
-
-      name.append(up.getSurname());
-    }
-
-    if (name.length() == 0)
-      name.append(up.getDisplayName());
-
-    return name.toString();
   }
 
   public String getBody() {
@@ -305,14 +272,6 @@ public class AnnotationView {
 
   public Long getCreatorID() {
     return creatorID;
-  }
-
-  public String getCreatorDisplayName() {
-    return creatorDisplayName;
-  }
-
-  public String getCreatorFormattedName() {
-    return creatorFormattedName;
   }
 
   public Long getArticleID() {

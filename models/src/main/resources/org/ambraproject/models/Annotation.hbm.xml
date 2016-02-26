@@ -33,6 +33,7 @@
       </type>
     </property>
 
+    <property name="userProfileID" type="long" column="userProfileID" not-null="true"/>
     <property name="articleID" type="long" column="articleID" not-null="true"/>
     <property name="annotationUri" type="string" column="annotationURI" unique="true"/>
 

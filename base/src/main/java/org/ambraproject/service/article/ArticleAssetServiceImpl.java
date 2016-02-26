@@ -26,10 +26,8 @@ import org.ambraproject.filestore.FileStoreException;
 import org.ambraproject.filestore.FileStoreService;
 import org.ambraproject.models.Article;
 import org.ambraproject.models.ArticleAsset;
-import org.ambraproject.models.UserRole.Permission;
 import org.ambraproject.models.ArticleAuthor;
 import org.ambraproject.models.Journal;
-import org.ambraproject.service.permission.PermissionsService;
 import org.ambraproject.service.hibernate.HibernateServiceImpl;
 import org.ambraproject.service.xml.XMLService;
 import org.apache.poi.hslf.model.Picture;
@@ -79,7 +77,6 @@ import java.util.regex.Pattern;
 public class ArticleAssetServiceImpl extends HibernateServiceImpl implements ArticleAssetService {
 
   private static final Logger log = LoggerFactory.getLogger(ArticleAssetServiceImpl.class);
-  private PermissionsService permissionsService;
   private ArticleService articleService;
   private FileStoreService fileStoreService;
   private XMLService secondaryObjectService;
@@ -190,15 +187,6 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
     } catch (IndexOutOfBoundsException e) {
       //article didn't exist
       throw new NoSuchObjectIdException(assetDoi);
-    }
-
-    //If the article is in an unpublished state, none of the related objects should be returned
-    if (Article.STATE_UNPUBLISHED == state) {
-      try {
-        permissionsService.checkPermission(Permission.VIEW_UNPUBBED_ARTICLES, authId);
-      } catch (SecurityException se) {
-        throw new NoSuchObjectIdException(assetDoi);
-      }
     }
 
     //If the article is disabled don't return the object ever
@@ -598,14 +586,6 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
   @Required
   public void setTemplatesDirectory(String templatesDirectory) {
     this.templatesDirectory = templatesDirectory;
-  }
-
-  /**
-   * @param permissionsService the permissions service to use
-   */
-  @Required
-  public void setPermissionsService(PermissionsService permissionsService) {
-    this.permissionsService = permissionsService;
   }
 
   /**

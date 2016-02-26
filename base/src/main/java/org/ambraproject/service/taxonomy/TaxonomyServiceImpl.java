@@ -19,10 +19,8 @@
 package org.ambraproject.service.taxonomy;
 
 import org.ambraproject.ApplicationException;
-import org.ambraproject.models.UserRole;
 import org.ambraproject.service.cache.Cache;
 import org.ambraproject.service.hibernate.HibernateServiceImpl;
-import org.ambraproject.service.permission.PermissionsService;
 import org.ambraproject.service.search.SearchService;
 import org.ambraproject.util.CategoryUtils;
 import org.ambraproject.views.CategoryView;
@@ -53,7 +51,6 @@ public class TaxonomyServiceImpl extends HibernateServiceImpl implements Taxonom
   private static final int CACHE_TTL = 3600 * 24;  // one day
 
   private SearchService searchService;
-  private PermissionsService permissionsService;
   private Cache cache;
 
   /**
@@ -196,8 +193,6 @@ public class TaxonomyServiceImpl extends HibernateServiceImpl implements Taxonom
    */
   public void deleteFeaturedArticle(final String journalKey, final String subjectArea, final String authID) {
 
-    permissionsService.checkPermission(UserRole.Permission.MANAGE_FEATURED_ARTICLES, authID);
-
     hibernateTemplate.execute(new HibernateCallback() {
       public Object doInHibernate(Session session) throws HibernateException, SQLException {
         return session.createSQLQuery(
@@ -218,8 +213,6 @@ public class TaxonomyServiceImpl extends HibernateServiceImpl implements Taxonom
    */
   public void createFeaturedArticle(final String journalKey, final String subjectArea, final String doi,
       final String authID) {
-
-    permissionsService.checkPermission(UserRole.Permission.MANAGE_FEATURED_ARTICLES, authID);
 
     int result = (Integer)hibernateTemplate.execute(new HibernateCallback() {
       public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -457,10 +450,5 @@ public class TaxonomyServiceImpl extends HibernateServiceImpl implements Taxonom
   @Required
   public void setSearchService(final SearchService searchService) {
     this.searchService = searchService;
-  }
-
-  @Required
-  public void setPermissionsService(final PermissionsService permissionsService) {
-    this.permissionsService = permissionsService;
   }
 }

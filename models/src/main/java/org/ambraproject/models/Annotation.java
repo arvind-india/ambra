@@ -19,6 +19,7 @@ package org.ambraproject.models;
 public class Annotation extends AmbraEntity {
 
   private AnnotationType type;
+  private Long userProfileID;
 
   //ID of the article to which this refers
   private Long articleID;
@@ -37,10 +38,20 @@ public class Annotation extends AmbraEntity {
     super();
   }
 
-  public Annotation(AnnotationType type, Long articleID) {
+  public Annotation(Long userProfileID, AnnotationType type, Long articleID) {
     this();
+
+    this.userProfileID = userProfileID;
     this.type = type;
     this.articleID = articleID;
+  }
+
+  public Long getUserProfileID() {
+    return userProfileID;
+  }
+
+  public void setUserProfileID(Long userProfileID) {
+    this.userProfileID = userProfileID;
   }
 
   public Long getArticleID() {

@@ -36,11 +36,8 @@ import org.ambraproject.models.Category;
 import org.ambraproject.models.CitedArticle;
 import org.ambraproject.models.Issue;
 import org.ambraproject.models.Journal;
-import org.ambraproject.models.UserProfile;
-import org.ambraproject.models.UserRole.Permission;
 import org.ambraproject.models.Volume;
 import org.ambraproject.service.hibernate.HibernateServiceImpl;
-import org.ambraproject.service.permission.PermissionsService;
 import org.ambraproject.views.ArticleCategory;
 import org.ambraproject.views.AssetView;
 import org.ambraproject.views.JournalView;
@@ -83,8 +80,6 @@ import java.util.TreeSet;
  */
 public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleService {
   private static final Logger log = LoggerFactory.getLogger(ArticleServiceImpl.class);
-
-  private PermissionsService permissionsService;
 
   @Override
   public boolean containsResearchType(final Set<String> types) throws ApplicationException {
@@ -243,8 +238,6 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
    */
   @Transactional(rollbackFor = {Throwable.class})
   public void setState(final String articleDoi, final String authId, final int state) throws NoSuchArticleIdException {
-    permissionsService.checkPermission(Permission.INGEST_ARTICLE, authId);
-
     List articles = hibernateTemplate.findByCriteria(DetachedCriteria.forClass(Article.class)
           .add(Restrictions.eq("doi", articleDoi)));
 
@@ -268,13 +261,8 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     if ((state == Article.STATE_UNPUBLISHED ||
           state == Article.STATE_DISABLED)
         && log.isInfoEnabled()) {
-      DetachedCriteria criteria = DetachedCriteria.forClass(UserProfile.class)
-          .setProjection(Projections.property("displayName"))
-          .add(Restrictions.eq("authId",authId));
-      String userName = (String) hibernateTemplate.findByCriteria(criteria, 0, 1).get(0);
-      userName = userName == null ? "UNKNOWN" : userName;
-      log.info("User '{}' {} the article {}",
-          new String[] {userName, state == Article.STATE_DISABLED ?
+      log.info("User {} the article {}",
+          new String[] {state == Article.STATE_DISABLED ?
             "disabled" : "unpublished", articleDoi});
     }
   }
@@ -546,15 +534,6 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   }
 
   private void checkArticleState(Article article, String authId) throws NoSuchArticleIdException {
-    //If the article is unpublished, it should not be returned if the user is not an admin
-    if (article.getState() == Article.STATE_UNPUBLISHED) {
-      try {
-        permissionsService.checkPermission(Permission.VIEW_UNPUBBED_ARTICLES, authId);
-      } catch(SecurityException se) {
-        throw new NoSuchArticleIdException(article.getDoi());
-      }
-    }
-
     //If the article is disabled, don't display it ever
     if (article.getState() == Article.STATE_DISABLED) {
       throw new NoSuchArticleIdException(article.getDoi());
@@ -579,14 +558,6 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     }
 
     Integer articleState = results.get(0);
-
-    if (articleState == Article.STATE_UNPUBLISHED) {
-      try {
-        permissionsService.checkPermission(Permission.VIEW_UNPUBBED_ARTICLES, authId);
-      } catch(SecurityException se) {
-        throw new NoSuchArticleIdException(articleDoi);
-      }
-    }
 
     //If the article is disabled, don't display it ever
     if (articleState == Article.STATE_DISABLED) {
@@ -1340,14 +1311,6 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
 
     }
     return true;
-  }
-
-  /**
-   * @param permissionsService the permissions service to use
-   */
-  @Required
-  public void setPermissionsService(PermissionsService permissionsService) {
-    this.permissionsService = permissionsService;
   }
 
   /**

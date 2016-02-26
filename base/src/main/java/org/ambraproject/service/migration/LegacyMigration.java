@@ -20,7 +20,6 @@
 package org.ambraproject.service.migration;
 
 import com.google.common.base.Preconditions;
-import org.ambraproject.models.SavedSearchQuery;
 import org.ambraproject.models.Version;
 import org.ambraproject.util.TextUtils;
 import org.hibernate.HibernateException;
@@ -117,16 +116,6 @@ enum LegacyMigration implements Migration {
           return v.getID();
         }
       });
-
-      //Now we have to populate a hash used to identify unique searchParameters
-      List<SavedSearchQuery> queries = hibernateTemplate.loadAll(SavedSearchQuery.class);
-
-      for (SavedSearchQuery query : queries) {
-        String hash = TextUtils.createHash(query.getSearchParams());
-        query.setHash(hash);
-
-        hibernateTemplate.update(query);
-      }
 
       hibernateTemplate.execute(new HibernateCallback() {
         @Override
