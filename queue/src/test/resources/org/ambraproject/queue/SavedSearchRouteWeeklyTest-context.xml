@@ -36,8 +36,11 @@
     <constructor-arg index="0" value="ambra-test-config.xml"/>
   </bean>
 
+  <bean id="nedServiceMock" class="org.ambraproject.service.ned.NedServiceMock">
+  </bean>
+
   <bean id="savedSearchRetriever" class="org.ambraproject.search.SavedSearchRetrieverImpl">
-    <property name="sessionFactory" ref="sessionFactory"/>
+    <property name="nedService" ref="nedServiceMock"/>
   </bean>
 
   <bean id="savedSearchRunner" class="org.ambraproject.search.SavedSearchRunnerImpl">
@@ -72,7 +75,7 @@
 
   <bean id="savedSearchSender" class="org.ambraproject.search.SavedSearchSenderImpl">
     <property name="mailer" ref="freeMarkerMailer" />
-    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="nedService" ref="nedServiceMock" />
     <property name="journalService" ref="journalService" />
     <property name="mailFromAddress" value="${ambra.queue.fromEmailAddress}" />
     <property name="imagePath" value="${ambra.queue.image.path}"/>

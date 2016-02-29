@@ -54,8 +54,11 @@
     <property name="fromEmailName" value="${ambra.queue.fromEmailName}" />
   </bean>
 
+  <bean id="nedServiceMock" class="org.ambraproject.service.ned.NedServiceMock">
+  </bean>
+
   <bean id="savedSearchSender" class="org.ambraproject.search.SavedSearchSenderImpl">
-    <property name="sessionFactory" ref="sessionFactory"/>
+    <property name="nedService" ref="nedServiceMock"/>
     <property name="mailer" ref="freeMarkerMailer"/>
     <property name="journalService" ref="journalService" />
     <property name="mailFromAddress" value="${ambra.queue.fromEmailAddress}" />
@@ -82,6 +85,6 @@
   </bean>
 
   <bean id="savedSearchRetriever" class="org.ambraproject.search.SavedSearchRetrieverImpl">
-    <property name="sessionFactory" ref="sessionFactory"/>
+    <property name="nedService" ref="nedServiceMock"/>
   </bean>
 </beans>
