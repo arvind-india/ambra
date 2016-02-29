@@ -35,19 +35,25 @@ import static org.testng.Assert.assertTrue;
 public class AnnotationTest extends BaseHibernateTest {
 
   @Test(expectedExceptions = {DataIntegrityViolationException.class})
+  public void testSaveWithNullCreator() {
+    hibernateTemplate.save(new Annotation(null, AnnotationType.COMMENT, 12l));
+  }
+
+  @Test(expectedExceptions = {DataIntegrityViolationException.class})
   public void testSaveWithNullType() {
-    hibernateTemplate.save(new Annotation(null, 12l));
+    hibernateTemplate.save(new Annotation(5263l, null, 12l));
   }
 
   @Test(expectedExceptions = {DataIntegrityViolationException.class})
   public void testSaveWithNullArticleID() {
-    hibernateTemplate.save(new Annotation(AnnotationType.COMMENT, null));
+    hibernateTemplate.save(new Annotation(5263l, AnnotationType.COMMENT, null));
   }
 
   @Test
   public void testSaveBasicAnnotation() {
     long testStart = Calendar.getInstance().getTimeInMillis();
     Annotation annotation = new Annotation();
+    annotation.setUserProfileID(5263l);
     annotation.setAnnotationUri("fakeAnnotationUriForInsert");
     annotation.setArticleID(1l);
     annotation.setType(AnnotationType.COMMENT);
@@ -67,6 +73,8 @@ public class AnnotationTest extends BaseHibernateTest {
     assertEquals(storedAnnotation.getType(), annotation.getType(), "Didn't store type");
     assertEquals(storedAnnotation.getTitle(), annotation.getTitle(), "Didn't store correct title");
     assertEquals(storedAnnotation.getBody(), annotation.getBody(), "Didn't store correct body");
+    assertNotNull(storedAnnotation.getUserProfileID(), "didn't link to creator");
+    assertEquals(storedAnnotation.getUserProfileID(), annotation.getUserProfileID(), "linked to incorrect creator");
 
     assertNotNull(storedAnnotation.getCreated(), "Annotation didn't get created date set");
     assertTrue(storedAnnotation.getLastModified().getTime() >= testStart, "Created date wasn't after test start");
@@ -75,20 +83,21 @@ public class AnnotationTest extends BaseHibernateTest {
   @Test
   @SuppressWarnings("unchecked")
   public void testLoadTypeFromStringRepresentation() {
-
+    final Long userId = 5263l;
     final Long articleId = (Long) hibernateTemplate.save(new Article("id:doi-for-LoadType"));
 
     hibernateTemplate.execute(new HibernateCallback() {
       @Override
       public Object doInHibernate(Session session) throws HibernateException, SQLException {
         session.createSQLQuery(
-            "insert into annotation (created, lastModified, articleID, type, annotationURI) " +
-                "values (?,?,?,?,?)")
+            "insert into annotation (created, lastModified, userProfileID, articleID, type, annotationURI) " +
+                "values (?,?,?,?,?,?)")
             .setParameter(0, Calendar.getInstance().getTime(), StandardBasicTypes.DATE)
             .setParameter(1, Calendar.getInstance().getTime(), StandardBasicTypes.DATE)
-            .setParameter(2, articleId, StandardBasicTypes.LONG)
-            .setParameter(3, "Comment", StandardBasicTypes.STRING)
-            .setParameter(4, "unique-annotation-uri-for-loadTypeFromString", StandardBasicTypes.STRING)
+            .setParameter(2, userId, StandardBasicTypes.LONG)
+            .setParameter(3, articleId, StandardBasicTypes.LONG)
+            .setParameter(4, "Comment", StandardBasicTypes.STRING)
+            .setParameter(5, "unique-annotation-uri-for-loadTypeFromString", StandardBasicTypes.STRING)
             .executeUpdate();
         return null;
       }

@@ -29,10 +29,10 @@ public class FlagTest extends BaseHibernateTest {
   @Test
   public void testSaveFlag() {
     long testStart = Calendar.getInstance().getTimeInMillis();
-    Annotation annotation = new Annotation(AnnotationType.COMMENT, 123l);
+    Annotation annotation = new Annotation(5263l, AnnotationType.COMMENT, 123l);
     hibernateTemplate.save(annotation);
 
-    Flag flag = new Flag(FlagReasonCode.INAPPROPRIATE, annotation);
+    Flag flag = new Flag(5263l, FlagReasonCode.INAPPROPRIATE, annotation);
     flag.setComment("Mary Margaret teams up with Leroy, Storybrooke's resident trouble maker, " +
         "to help him sell candles during the Miner's Day Festival. Emma investigates Kathryn's " +
         "sudden disapperance. Meanwhile, in the fairy-tale land that was, the Seven Dwarfs is made " +
@@ -41,6 +41,8 @@ public class FlagTest extends BaseHibernateTest {
 
     Flag storedFlag = (Flag) hibernateTemplate.get(Flag.class, id);
     assertNotNull(storedFlag, "Didn't store flag");
+    assertNotNull(storedFlag.getUserProfileID(), "Didn't associate flag to creator");
+    assertEquals(storedFlag.getUserProfileID(), annotation.getUserProfileID(), "associated flag to incorrect creator");
 
     assertNotNull(storedFlag.getFlaggedAnnotation(), "Didn't associate flag to an annotation");
     assertEquals(storedFlag.getFlaggedAnnotation().getID(), annotation.getID(), "associated flag to an annotation");
@@ -52,30 +54,36 @@ public class FlagTest extends BaseHibernateTest {
   }
 
   @Test(expectedExceptions = {DataIntegrityViolationException.class})
-  public void testSaveWithNullAnnotation() {
+  public void testSaveWithNullCreator() {
+    Annotation annotation = new Annotation(5263l, AnnotationType.COMMENT, 123l);
+    hibernateTemplate.save(annotation);
 
-    hibernateTemplate.save(new Flag(FlagReasonCode.SPAM, null));
+    hibernateTemplate.save(new Flag(null, FlagReasonCode.SPAM, annotation));
+  }
+
+  @Test(expectedExceptions = {DataIntegrityViolationException.class})
+  public void testSaveWithNullAnnotation() {
+    hibernateTemplate.save(new Flag(5263l, FlagReasonCode.SPAM, null));
   }
 
   @Test(expectedExceptions = {DataIntegrityViolationException.class})
   public void testSaveWithNullReason() {
-
-    Annotation annotation = new Annotation(AnnotationType.COMMENT, 123l);
+    Annotation annotation = new Annotation(5263l, AnnotationType.COMMENT, 123l);
     hibernateTemplate.save(annotation);
 
-    hibernateTemplate.save(new Flag(null, annotation));
+    hibernateTemplate.save(new Flag(5263l, null, annotation));
   }
 
   @Test
   public void testDoesNotCascadeDelete() {
-
-    Annotation annotation = new Annotation(AnnotationType.COMMENT, 23l);
+    Annotation annotation = new Annotation(5263l, AnnotationType.COMMENT, 23l);
     Serializable annotationId = hibernateTemplate.save(annotation);
 
-    Flag flag = new Flag(FlagReasonCode.INAPPROPRIATE, annotation);
+    Flag flag = new Flag(5263l, FlagReasonCode.INAPPROPRIATE, annotation);
     hibernateTemplate.save(flag);
     hibernateTemplate.delete(flag);
     assertNotNull(hibernateTemplate.get(Annotation.class, annotationId), "Flag deleted annotation");
   }
 
 }
+

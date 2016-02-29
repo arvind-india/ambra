@@ -44,18 +44,18 @@ public class URIGeneratorTest {
   @DataProvider(name = "objects")
   public Object[][] getObjects() {
     return new Object[][]{
-      { new Annotation(AnnotationType.REPLY, null), URIGenerator.getPrefix() + "reply/" }
+        {new Annotation(null, AnnotationType.REPLY, null), URIGenerator.getPrefix() + "reply/"}
     };
   }
 
   @Test(dataProvider = "objects")
   public void testURIs(Object object, String expectedPrefix) {
     Serializable id = URIGenerator.generate(object);
-    
+
     assertNotNull(id, "generated null id");
     assertFalse(id.toString().isEmpty(), "returned empty id");
 
     assertTrue(id.toString().startsWith(expectedPrefix), "Generated id didn't start with correct prefix; expected: "
-      + expectedPrefix + " but found " + id);
+        + expectedPrefix + " but found " + id);
   }
 }
