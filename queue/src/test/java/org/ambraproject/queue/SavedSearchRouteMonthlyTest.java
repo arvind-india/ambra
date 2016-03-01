@@ -54,16 +54,6 @@ public class SavedSearchRouteMonthlyTest extends SavedSearchRouteBaseTest {
         put("Search Alert - monthly-0", new String[] { DOI_2, DOI_3, DOI_4 });
         put("Search Alert - both-0", new String[] { DOI_2, DOI_3, DOI_4 });
       }}
-      },
-      { "savedSearch1@unittestexample.org", 2, new HashMap() {{
-        put("Search Alert - monthly-1", new String[] { DOI_2, DOI_3, DOI_4 });
-        put("Search Alert - both-1", new String[] { DOI_2, DOI_3, DOI_4 });
-      }}
-      },
-      { "savedSearch2@unittestexample.org", 2, new HashMap() {{
-        put("Search Alert - monthly-2", new String[] { DOI_2, DOI_3, DOI_4 });
-        put("Search Alert - both-2", new String[] { DOI_2, DOI_3, DOI_4 });
-      }}
       }
     };
   }

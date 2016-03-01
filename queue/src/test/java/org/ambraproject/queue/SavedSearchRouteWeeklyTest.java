@@ -54,23 +54,13 @@ public class SavedSearchRouteWeeklyTest extends SavedSearchRouteBaseTest {
           put("Search Alert - weekly-0", new String[] { DOI_1 });
           put("Search Alert - both-0", new String[] { DOI_2, DOI_3, DOI_4 });
         }}
-      },
-      { "savedSearch1@unittestexample.org", 2, new HashMap() {{
-          put("Search Alert - weekly-1", new String[] { DOI_1 });
-          put("Search Alert - both-1", new String[] { DOI_2, DOI_3, DOI_4 });
-        }}
-      },
-      { "savedSearch2@unittestexample.org", 2, new HashMap() {{
-          put("Search Alert - weekly-2", new String[] { DOI_1 });
-          put("Search Alert - both-2", new String[] { DOI_2, DOI_3, DOI_4 });
-        }}
       }
     };
   }
 
   @Test(dataProvider = "expectedWeeklyEmails")
   @DirtiesContext
-  public void expectedMonthlyEmails(String email, int expectedEmails, Map emailContents) throws Exception {
+  public void expectedWeeklyEmails(String email, int expectedEmails, Map emailContents) throws Exception {
     checkEmail(email, expectedEmails, emailContents);
   }
 

@@ -179,59 +179,6 @@ public class SavedSearchSenderTest extends BaseTest {
     this.dummyDataStore.deleteAll(SavedSearchQuery.class);
     this.dummyDataStore.deleteAll(UserProfile.class);
 
-    //Create some saved searches and users to execute them.
-    Date searchTime = new Date(0);
-
-    String query1 = "{\"query\":\"\",\"unformattedQuery\":\"everything:testing\",\"volume\":\"\",\"eLocationId\":\"\",\"id\":\"\",\"filterSubjects\":[],\"filterKeyword\":\"\",\"filterArticleType\":[],\"filterJournals\":[\"PLoSMedicine\"],\"sort\":\"Relevance\",\"startPage\":0,\"pageSize\":10}";
-    String query2 = "{\"query\":\"\",\"unformattedQuery\":\"everything:testing\",\"volume\":\"\",\"eLocationId\":\"\",\"id\":\"\",\"filterSubjects\":[],\"filterKeyword\":\"\",\"filterArticleType\":[],\"filterJournals\":[\"PLoSOne\"],\"sort\":\"Relevance\",\"startPage\":0,\"pageSize\":10}";
-    String query3 = "{\"query\":\"\",\"unformattedQuery\":\"everything:debug\",\"volume\":\"\",\"eLocationId\":\"\",\"id\":\"\",\"filterSubjects\":[],\"filterKeyword\":\"\",\"filterArticleType\":[],\"filterJournals\":[\"PLoSMedicine\"],\"sort\":\"Relevance\",\"startPage\":0,\"pageSize\":10}";
-
-    SavedSearchQuery ssq1 = new SavedSearchQuery(query1, TextUtils.createHash(query1));
-    dummyDataStore.store(ssq1);
-
-    SavedSearchQuery ssq2 = new SavedSearchQuery(query2, TextUtils.createHash(query2));
-    dummyDataStore.store(ssq2);
-
-    SavedSearchQuery ssq3 = new SavedSearchQuery(query3, TextUtils.createHash(query3));
-    dummyDataStore.store(ssq3);
-
-    for (int i = 0; i < 3; i++) {
-      UserProfile user = new UserProfile("savedSearchSenderTest" + i + "@example.org", "savedSearchSenderTest-" + i,
-        "savedSearchSenderTest" + i);
-
-      SavedSearch savedSearch1 = new SavedSearch("weekly-savedSearchSenderTest" + i, ssq1);
-      savedSearch1.setWeekly(true);
-      savedSearch1.setMonthly(false);
-      savedSearch1.setSearchType(SavedSearchType.USER_DEFINED);
-      savedSearch1.setLastMonthlySearchTime(searchTime);
-      savedSearch1.setLastWeeklySearchTime(searchTime);
-
-      SavedSearch savedSearch2 = new SavedSearch("monthly-savedSearchSenderTest" + i, ssq2);
-      savedSearch2.setWeekly(false);
-      savedSearch2.setMonthly(true);
-      savedSearch2.setSearchType(SavedSearchType.USER_DEFINED);
-      savedSearch2.setLastMonthlySearchTime(searchTime);
-      savedSearch2.setLastWeeklySearchTime(searchTime);
-
-      //Use same query params for this user
-      SavedSearch savedSearch3 = new SavedSearch("both-savedSearchSenderTest" + i, ssq2);
-      savedSearch3.setWeekly(true);
-      savedSearch3.setMonthly(true);
-      savedSearch3.setSearchType(SavedSearchType.USER_DEFINED);
-      savedSearch3.setLastMonthlySearchTime(searchTime);
-      savedSearch3.setLastWeeklySearchTime(searchTime);
-
-      SavedSearch savedSearch4 = new SavedSearch("both-savedSearchSenderTest" + i, ssq3);
-      savedSearch4.setWeekly(true);
-      savedSearch4.setMonthly(false);
-      savedSearch4.setSearchType(SavedSearchType.USER_DEFINED);
-      savedSearch4.setLastMonthlySearchTime(searchTime);
-      savedSearch4.setLastWeeklySearchTime(searchTime);
-
-      user.setSavedSearches(Arrays.asList(savedSearch1, savedSearch2, savedSearch3, savedSearch4));
-
-      dummyDataStore.store(user);
-    }
   }
 
   @Test
@@ -246,11 +193,12 @@ public class SavedSearchSenderTest extends BaseTest {
       Thread.sleep(2000);
     } catch(InterruptedException ex) {}
 
+    //Execute weekly jobs:
     List<SavedSearchJob> savedSearchJobs = savedSearchRetriever.
       retrieveSearchAlerts(SavedSearchRetriever.AlertType.WEEKLY, null, null);
 
     //There should be three jobs reflecting three distinct weekly searches
-    assertEquals(savedSearchJobs.size(), 3, "Wrong number of saved search jobs returned");
+    assertEquals(savedSearchJobs.size(), 2, "Wrong number of saved search jobs returned");
 
     for(SavedSearchJob savedSearchJob : savedSearchJobs) {
       savedSearchJob = savedSearchRunner.runSavedSearch(savedSearchJob);
@@ -260,33 +208,12 @@ public class SavedSearchSenderTest extends BaseTest {
       assertNotNull(savedSearchJob.getSearchHitList(), "savedSearchRunner failed to populate hitlist");
 
       savedSearchSender.sendSavedSearch(savedSearchJob);
-    }
-
-
-    List<SavedSearch> savedSearches = this.dummyDataStore.getAll(SavedSearch.class);
-
-    //3 users each with 4 search alerts = 12 savedSearches
-    assertEquals(savedSearches.size(), 12, "Saved search count off");
-
-    int totalWeekly = 0;
-    int totalMonthly = 0;
-
-    for(SavedSearch savedSearch : savedSearches) {
-      if(savedSearch.getWeekly()) {
-        //assert that the weekly time was updated
-        assertTrue(savedSearch.getLastWeeklySearchTime().after(runTime));
-        totalWeekly++;
-      } else {
-        assertTrue(savedSearch.getLastWeeklySearchTime().getTime() == (new Date(0)).getTime());
-      }
     }
 
     //Execute monthly jobs:
     savedSearchJobs = savedSearchRetriever.retrieveSearchAlerts(SavedSearchRetriever.AlertType.MONTHLY, null, null);
 
-    //There should be one job reflecting one distinct monthly search query even though
-    //There are two savesSearches
-    assertEquals(savedSearchJobs.size(), 1);
+    assertEquals(savedSearchJobs.size(), 2);
 
     for(SavedSearchJob savedSearchJob : savedSearchJobs) {
       savedSearchJob = savedSearchRunner.runSavedSearch(savedSearchJob);
@@ -298,29 +225,6 @@ public class SavedSearchSenderTest extends BaseTest {
       savedSearchSender.sendSavedSearch(savedSearchJob);
     }
 
-    for(SavedSearchJob savedSearchJob : savedSearchJobs) {
-      savedSearchSender.sendSavedSearch(savedSearchJob);
-    }
-
-    savedSearches = this.dummyDataStore.getAll(SavedSearch.class);
-
-    for(SavedSearch savedSearch : savedSearches) {
-      if(savedSearch.getMonthly()) {
-        //assert that the monthly time was updated
-        assertTrue(savedSearch.getLastMonthlySearchTime().after(runTime));
-        totalMonthly++;
-      } else {
-        assertTrue(savedSearch.getLastMonthlySearchTime().getTime() == (new Date(0)).getTime());
-      }
-    }
-
-    //Make sure counts are correct
-    assertEquals(totalWeekly, 9);
-    assertEquals(totalMonthly, 6);
   }
 
-  @AfterClass
-  public void restoreUserData() {
-    restoreDefaultUsers();
-  }
 }

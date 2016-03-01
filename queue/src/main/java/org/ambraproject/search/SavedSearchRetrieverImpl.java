@@ -13,10 +13,10 @@ package org.ambraproject.search;
 
 import org.ambraproject.models.SavedSearch;
 import org.ambraproject.models.SavedSearchType;
-import org.ambraproject.service.hibernate.HibernateServiceImpl;
-import org.hibernate.FetchMode;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Projections;
+import org.ambraproject.service.ned.NedService;
+import org.plos.ned_client.ApiException;
+import org.plos.ned_client.api.QueriesApi;
+import org.plos.ned_client.model.Alert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
@@ -26,8 +26,13 @@ import java.util.List;
 /**
  * @inheritDoc
  */
-public class SavedSearchRetrieverImpl extends HibernateServiceImpl implements SavedSearchRetriever {
-   private static final Logger log = LoggerFactory.getLogger(SavedSearchRetrieverImpl.class);
+public class SavedSearchRetrieverImpl implements SavedSearchRetriever {
+  private static final Logger log = LoggerFactory.getLogger(SavedSearchRetrieverImpl.class);
+  private NedService nedService;
+
+  public void setNedService(NedService nedService) {
+    this.nedService = nedService;
+  }
 
   /**
    * @inheritDoc
@@ -35,31 +40,40 @@ public class SavedSearchRetrieverImpl extends HibernateServiceImpl implements Sa
   @Override
   @SuppressWarnings("unchecked")
   public List<SavedSearchJob> retrieveSearchAlerts(AlertType alertType, Date startTime, Date endTime) {
-    List<SavedSearchJob> searchJobs = new ArrayList<SavedSearchJob>();
-    List<Object[]> paramsList = (List<Object[]>)hibernateTemplate.findByCriteria(DetachedCriteria.forClass(SavedSearch.class)
-                    .createAlias("searchQuery", "s")
-                    .add(alertType.getTypeCriterion())
-                    .setFetchMode("searchQuery", FetchMode.JOIN)
-                    .setProjection(Projections.distinct(Projections.projectionList()
-                      .add(Projections.property("s.ID"))
-                      .add(Projections.property("s.hash"))
-                      .add(Projections.property("searchType"))
-                      .add(Projections.property("s.searchParams")))));
 
-    for(Object[] obj : paramsList) {
-      searchJobs.add(SavedSearchJob.builder()
-        .setSavedSearchQueryID((Long) obj[0])
-        .setHash((String) obj[1])
-        .setType((SavedSearchType) obj[2])
-        .setSearchString((String) obj[3])
-        .setFrequency(alertType.name())
-        .setStartDate(startTime)
-        .setEndDate(endTime)
-        .build());
+    List<SavedSearchJob> searchJobs = new ArrayList<SavedSearchJob>();
+
+    List<Alert> alertList = nedService.getSearchAlerts(alertType, null);
+
+    if ( (alertList != null) && (alertList.size() > 0) ) {
+      for (Alert alert : alertList) {
+        Long alertId = new Long(alert.getId());
+        Long userProfileId = new Long(alert.getNedid());
+
+        SavedSearchType sst = null;
+        if ( alert.getName().equals("PLoSONE") ) {
+          sst = SavedSearchType.JOURNAL_ALERT;
+        } else {
+          sst = SavedSearchType.USER_DEFINED;
+        }
+
+        searchJobs.add(SavedSearchJob.builder()
+              .setUserProfileID(userProfileId)
+              .setSavedSearchQueryID(alertId)
+              .setSearchName(alert.getName())
+              .setSearchString(alert.getQuery())
+              .setHash(null)
+              .setType(sst)
+              .setFrequency(alert.getFrequency())
+              .setStartDate(startTime)
+              .setEndDate(endTime)
+              .build());
+      }
     }
 
     log.debug("Returning {} saved search(es) for type {}", searchJobs.size(), alertType);
 
     return searchJobs;
   }
+
 }

@@ -97,6 +97,12 @@
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
   </bean>
 
+  <bean id="nedService" class="org.ambraproject.admin.service.impl.NedServiceImpl">
+     <constructor-arg index="0" value="${ambra.services.nedapi.server}"/>
+     <constructor-arg index="1" value="${ambra.services.nedapi.username}"/>
+     <constructor-arg index="2" value="${ambra.services.nedapi.password}"/>
+  </bean>
+
   <!-- Defined in webapp/src/main/resources/ambra/configuration/defaults.xml -->
   <util:map id="xslObjInfoStyleSheetMap">
     <entry key="default"

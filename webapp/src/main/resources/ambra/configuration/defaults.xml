@@ -281,6 +281,12 @@
       </orcid>
     </services>
 
+    <nedapi>
+      <server>http://sfo-namedparty-devbox04.int.plos.org:8080/v1</server>
+      <username>akita</username>
+      <password>akita</password>
+    </nedapi>
+
     <!-- Define defaults for spring - must be redone soon -->
     <spring>
       <server>

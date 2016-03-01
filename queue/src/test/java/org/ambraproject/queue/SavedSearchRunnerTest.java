@@ -163,6 +163,8 @@ public class SavedSearchRunnerTest extends BaseTest {
   public Object[][] savedSearchViewData(){
     SavedSearchJob savedSearchJob = new SavedSearchJob(
       new Long(1),
+      new Long(1),
+      "Ebola",
       "{\"query\":\"test\",\"unformattedQuery\":\"\",\"volume\":\"\",\"eLocationId\":\"\",\"id\":\"\",\"filterSubjects\":[],\"filterKeyword\":\"\",\"filterArticleType\":[],\"filterJournals\":[\"PLoSONE\"],\"sort\":\"Relevance\",\"startPage\":0,\"pageSize\":10}",
       "hash",
       SavedSearchType.USER_DEFINED,
@@ -170,6 +172,8 @@ public class SavedSearchRunnerTest extends BaseTest {
 
     SavedSearchJob savedSearchJob2 = new SavedSearchJob(
       new Long(2),
+      new Long(2),
+      "Zika",
       "{\"query\":\"\",\"unformattedQuery\":\"everything:testjournal\",\"volume\":\"\",\"eLocationId\":\"\",\"id\":\"\",\"filterSubjects\":[],\"filterKeyword\":\"\",\"filterArticleType\":[],\"filterJournals\":[\"PLoSMedicine\"],\"sort\":\"Relevance\",\"startPage\":0,\"pageSize\":10}",
       "hash1",
       SavedSearchType.USER_DEFINED,
@@ -177,6 +181,8 @@ public class SavedSearchRunnerTest extends BaseTest {
 
     SavedSearchJob savedSearchJob3 = new SavedSearchJob(
       new Long(3),
+      new Long(3),
+      "Neanderthal",
       "{\"query\":\"\",\"unformattedQuery\":\"everything:testing\",\"volume\":\"\",\"eLocationId\":\"\",\"id\":\"\",\"filterSubjects\":[],\"filterKeyword\":\"\",\"filterArticleType\":[],\"filterJournals\":[\"PLoSMedicine\",\"PLoSONE\"],\"sort\":\"Relevance\",\"startPage\":0,\"pageSize\":10}",
       "hash3",
       SavedSearchType.USER_DEFINED,
@@ -184,6 +190,8 @@ public class SavedSearchRunnerTest extends BaseTest {
 
     SavedSearchJob savedSearchJob4 = new SavedSearchJob(
       new Long(4),
+      new Long(4),
+      "Birds",
       "{\"query\":\"\",\"unformattedQuery\":\"everything:testing\",\"volume\":\"\",\"eLocationId\":\"\",\"id\":\"\",\"filterSubjects\":[],\"filterKeyword\":\"\",\"filterArticleType\":[],\"filterJournals\":[\"PLoSMedicine\",\"PLoSONE\"],\"sort\":\"Relevance\",\"startPage\":0,\"pageSize\":10}",
       "hash3",
       SavedSearchType.USER_DEFINED,
