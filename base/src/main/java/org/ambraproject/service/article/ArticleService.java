@@ -170,12 +170,11 @@ public interface ArticleService {
    * Change an articles state.
    *
    * @param articleDoi uri
-   * @param authId the authorization ID of the current user
    * @param state   state
    *
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
-  public void setState(final String articleDoi, final String authId, final int state) throws NoSuchArticleIdException;
+  public void setState(final String articleDoi, final int state) throws NoSuchArticleIdException;
 
   /**
    * Get the ids of all articles satisfying the given criteria.
@@ -218,22 +217,20 @@ public interface ArticleService {
    * Get an Article by URI.
    *
    * @param articleDoi URI of Article to get.
-   * @param authId the authorization ID of the current user
    * @return Article with specified URI or null if not found.
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
-  public Article getArticle(final String articleDoi, final String authId)
+  public Article getArticle(final String articleDoi)
     throws NoSuchArticleIdException;
 
   /**
    * Get an Article by ID.
    *
    * @param articleID ID of Article to get.
-   * @param authId the authorization ID of the current user
    * @return Article with specified URI or null if not found.
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
-  public Article getArticle(final Long articleID, final String authId)
+  public Article getArticle(final Long articleID)
       throws NoSuchArticleIdException;
 
   /**
@@ -242,36 +239,34 @@ public interface ArticleService {
    * If an article is requested that the user does not have access to, it will not be returned
    *
    * @param articleDois list of article id's
-   * @param authId the authorization ID of the current user
    * @return <code>List&lt;Article&gt;</code> of articles requested
    */
-  public List<Article> getArticles(final List<String> articleDois, final String authId);
+  public List<Article> getArticles(final List<String> articleDois);
 
   /**
    * Get the articleInfo object for an article
    * @param articleDoi the ID of the article
-   * @param authId the authorization ID of the current user
+   * @param userProfileID the user ID accessing the article.
    * @return articleInfo
    */
-  public ArticleInfo getArticleInfo(final String articleDoi, final String authId) throws NoSuchArticleIdException;
+  public ArticleInfo getArticleInfo(final String articleDoi, final Long userProfileID) throws NoSuchArticleIdException;
 
   /**
    * Get the articleInfo object for an article
    * @param articleID the back-end primary key of the article
-   * @param authId the authorization ID of the current user
+   * @param userProfileID the user ID accessing the article.
    * @return articleInfo
    */
-  public ArticleInfo getArticleInfo(final Long articleID, final String authId) throws NoSuchArticleIdException;
+  public ArticleInfo getArticleInfo(final Long articleID, final Long userProfileID) throws NoSuchArticleIdException;
 
   /**
    * Get a table of Contents style list of articles
    *
    * @param articleDois the list of articles to fetch
-   * @param authId the authorization ID of the current user
    *
    * @return
    */
-  public List<TOCArticle> getArticleTOCEntries(final List<String> articleDois, final String authId);
+  public List<TOCArticle> getArticleTOCEntries(final List<String> articleDois);
 
   /**
    * Get a basic view object for the article with the corresponding id
@@ -317,10 +312,9 @@ public interface ArticleService {
    * to see the article
    *
    * @param articleDoi article doi
-   * @param authId the authorization ID of the current user
    * @throws NoSuchArticleIdException
    */
-  public void checkArticleState(final String articleDoi, final String authId) throws NoSuchArticleIdException;
+  public void checkArticleState(final String articleDoi) throws NoSuchArticleIdException;
 
   /**
    * Returns an article's amendments of type Retraction or Expression of Concern

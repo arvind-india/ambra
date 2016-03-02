@@ -96,17 +96,16 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
    * Get the Article Asset by URI.
    *
    * @param assetUri uri
-   * @param authId   the authorization ID of the current user
    * @return the object-info of the object
    * @throws NoSuchObjectIdException NoSuchObjectIdException
    */
   @Transactional(readOnly = true)
   @Override
-  public ArticleAsset getSuppInfoAsset(final String assetUri, final String authId) throws NoSuchObjectIdException {
+  public ArticleAsset getSuppInfoAsset(final String assetUri) throws NoSuchObjectIdException {
     // sanity check parms
     if (assetUri == null)
       throw new IllegalArgumentException("URI == null");
-    checkPermissions(assetUri, authId);
+    checkPermissions(assetUri);
 
     try {
       return (ArticleAsset) hibernateTemplate.findByCriteria(
@@ -124,15 +123,14 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
    * This probably returns XML and PDF all the time
    *
    * @param articleDoi uri
-   * @param authId     the authorization ID of the current user
    * @return the object-info of the object
    * @throws NoSuchObjectIdException NoSuchObjectIdException
    */
   @Transactional(readOnly = true)
   @SuppressWarnings("unchecked")
-  public List<ArticleAsset> getArticleXmlAndPdf(final String articleDoi, final String authId)
+  public List<ArticleAsset> getArticleXmlAndPdf(final String articleDoi)
       throws NoSuchObjectIdException {
-    checkPermissions(articleDoi, authId);
+    checkPermissions(articleDoi);
     return (List<ArticleAsset>) hibernateTemplate.findByCriteria(
         DetachedCriteria.forClass(ArticleAsset.class)
             .add(Restrictions.eq("doi", articleDoi)));
@@ -143,13 +141,12 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
    *
    * @param assetUri       uri
    * @param representation the representation value (XML/PDF)
-   * @param authId         the authorization ID of the current user
    * @return the object-info of the object
    * @throws NoSuchObjectIdException NoSuchObjectIdException
    */
   @Transactional(readOnly = true)
   @Override
-  public ArticleAsset getArticleAsset(final String assetUri, final String representation, final String authId)
+  public ArticleAsset getArticleAsset(final String assetUri, final String representation)
       throws NoSuchObjectIdException {
 
     // sanity check parms
@@ -159,7 +156,7 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
     if (representation == null) {
       throw new IllegalArgumentException("representation == null");
     }
-    checkPermissions(assetUri, authId);
+    checkPermissions(assetUri);
     try {
       List<ArticleAsset> asset = (List<ArticleAsset>) hibernateTemplate.findByCriteria(
               DetachedCriteria.forClass(ArticleAsset.class)
@@ -176,7 +173,7 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
   }
 
   @SuppressWarnings("unchecked")
-  private void checkPermissions(String assetDoi, String authId) throws NoSuchObjectIdException {
+  private void checkPermissions(String assetDoi) throws NoSuchObjectIdException {
     int state;
     try {
       state = (Integer) hibernateTemplate.findByCriteria(
@@ -199,18 +196,17 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
    * Return a list of Figures and Tables of a DOI.
    *
    * @param articleDoi DOI.
-   * @param authId the authorization ID of the current user
    * @return Figures and Tables for the article in DOI order.
    * @throws NoSuchArticleIdException NoSuchArticleIdException.
    */
   @Transactional(readOnly = true)
   @Override
-  public ArticleAssetWrapper[] listFiguresTables(final String articleDoi, final String authId) throws NoSuchArticleIdException {
+  public ArticleAssetWrapper[] listFiguresTables(final String articleDoi) throws NoSuchArticleIdException {
     //TODO:
     // Can we not do a select distinct instead of getting back a large set of assets
     // and then filtering the list via java code below?
 
-    articleService.checkArticleState(articleDoi, authId);
+    articleService.checkArticleState(articleDoi);
 
     // if we get there, we are good
     // get assets
@@ -262,22 +258,21 @@ public class ArticleAssetServiceImpl extends HibernateServiceImpl implements Art
   /**
    * Get the data for powerpoint
    * @param assetDoi
-   * @param authId
    * @return
    * @throws NoSuchArticleIdException
    */
   @Override
   @Transactional(readOnly = true)
-  public InputStream getPowerPointSlide(String assetDoi, String authId) throws NoSuchArticleIdException, NoSuchObjectIdException, ApplicationException, IOException {
+  public InputStream getPowerPointSlide(String assetDoi) throws NoSuchArticleIdException, NoSuchObjectIdException, ApplicationException, IOException {
     
     long startTime = Calendar.getInstance().getTimeInMillis();
     String title = "";
 
     //get the article
-    Article article = articleService.getArticle(assetDoi.substring(0, assetDoi.lastIndexOf('.')), authId);
+    Article article = articleService.getArticle(assetDoi.substring(0, assetDoi.lastIndexOf('.')));
 
     //get the article asset for "PNG_M"
-    ArticleAsset articleAsset = getArticleAsset(assetDoi, "PNG_M", authId);
+    ArticleAsset articleAsset = getArticleAsset(assetDoi, "PNG_M");
 
     //get the article description
     String desc = getArticleDescription(articleAsset);

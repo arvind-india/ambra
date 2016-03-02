@@ -72,10 +72,6 @@
 
   <!--Service Beans-->
   <!-- Set up XML factories -->
-  <bean id="permissionsService" class="org.ambraproject.service.permission.PermissionsServiceImpl">
-    <property name="sessionFactory" ref="sessionFactory"/>
-    <property name="rolesCache" ref="rolesCache"/>
-  </bean>
 
   <bean id="annotationService" class="org.ambraproject.service.annotation.AnnotationServiceImpl">
     <property name="sessionFactory" ref="sessionFactory"/>
@@ -83,7 +79,6 @@
 
   <bean id="articleAssetService" class="org.ambraproject.service.article.ArticleAssetServiceImpl">
     <property name="sessionFactory" ref="sessionFactory"/>
-    <property name="permissionsService" ref="permissionsService"/>
     <property name="articleService" ref="articleService"/>
     <property name="smallImageRep" value="png_s"/>
     <property name="mediumImageRep" value="png_m"/>
@@ -102,7 +97,6 @@
 
   <bean id="articleService" class="org.ambraproject.service.article.ArticleServiceImpl" depends-on="ambraConfiguration2">
     <property name="sessionFactory" ref="sessionFactory"/>
-    <property name="permissionsService" ref="permissionsService"/>
   </bean>
 
   <bean id="trackbackService" class="org.ambraproject.service.trackback.TrackbackServiceImpl">
@@ -158,11 +152,6 @@
     <constructor-arg index="0" value="topaz-ambra"/>
   </bean>
 
-  <bean id="userService" class="org.ambraproject.service.user.UserServiceImpl">
-    <property name="sessionFactory" ref="sessionFactory"/>
-    <property name="permissionsService" ref="permissionsService"/>
-    <property name="configuration" ref="ambraConfiguration"/>
-  </bean>
 
   <util:map id="xslArticleTransformStyleSheetMap">
     <entry key="default"
@@ -231,20 +220,6 @@
   </bean>
 
   <bean id="passwordDigestService" class="org.ambraproject.service.password.PasswordDigestService">
-  </bean>
-
-  <bean id="userRegistrationService" class="org.ambraproject.service.user.UserRegistrationServiceImpl">
-    <property name="sessionFactory" ref="sessionFactory"/>
-    <property name="ambraMailer" ref="ambraMailer"/>
-    <property name="passwordDigestService" ref="passwordDigestService"/>
-  </bean>
-  <!--Ambra interceptors-->
-  <bean id="ensureRoleInterceptor" class="org.ambraproject.struts2.EnsureRoleInterceptor">
-    <property name="permissionsService" ref="permissionsService"/>
-  </bean>
-
-  <bean id="ensureUserAccountInterceptor" class="org.ambraproject.struts2.EnsureUserAccountInterceptor">
-    <property name="userService" ref="userService"/>
   </bean>
 
   <bean id="profanityCheckingService" class="org.ambraproject.util.ProfanityCheckingServiceImpl">

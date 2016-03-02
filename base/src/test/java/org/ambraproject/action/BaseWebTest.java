@@ -24,7 +24,6 @@ import com.opensymphony.xwork2.inject.Container;
 import com.opensymphony.xwork2.util.ValueStack;
 import com.opensymphony.xwork2.util.ValueStackFactory;
 import org.ambraproject.Constants;
-import org.ambraproject.models.UserProfile;
 import org.ambraproject.web.VirtualJournalContext;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
@@ -82,7 +81,6 @@ public abstract class BaseWebTest extends BaseTest {
    */
   @BeforeMethod
   public void setDefaultRequest() {
-    setupUserContext();
     if (getAction() != null) {
       Map<String, Object> request = getDefaultRequestAttributes();
       doModifyRequest(request);
@@ -135,38 +133,6 @@ public abstract class BaseWebTest extends BaseTest {
    */
   protected final Object getFromSession(String key) {
     return ActionContext.getContext().getSession().get(key);
-  }
-
-  /**
-   * Insert all the session attributes that would indicate the given user is logged in
-   *
-   * @param user
-   */
-  protected final void login(UserProfile user) {
-    putInSession(Constants.AMBRA_USER_KEY, user);
-    putInSession(Constants.AUTH_KEY, user.getAuthId());
-    putInSession(Constants.SINGLE_SIGNON_EMAIL_KEY, user.getEmail());
-  }
-
-  /**
-   * Set up struts container / context with an admin request.  This is for unit tests that need to access attributes
-   * from the session, set up mock action invocations, etc.
-   */
-  protected final void setupAdminContext() {
-    Map<String, Object> sessionAttributes = new HashMap<String, Object>();
-    sessionAttributes.put(Constants.AUTH_KEY, DEFAULT_ADMIN_AUTHID);
-
-    setupContext(sessionAttributes);
-  }
-
-  /**
-   * Set up struts container / context with an admin request.  This is for unit tests that need to access attributes
-   * from the session, set up mock action invocations, etc.
-   */
-  protected final void setupUserContext() {
-    Map<String, Object> sessionAttributes = new HashMap<String, Object>();
-    sessionAttributes.put(Constants.AUTH_KEY, DEFAULT_USER_AUTHID);
-    setupContext(sessionAttributes);
   }
 
   /**

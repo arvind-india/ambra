@@ -550,14 +550,14 @@ public class BrowseServiceImpl extends HibernateServiceImpl implements BrowseSer
    *
    */
   @Override
-  public List<TOCArticleGroup> getArticleGrpList(String issueURI, String authId) {
+  public List<TOCArticleGroup> getArticleGrpList(String issueURI) {
     IssueInfo issueInfo = getIssueInfo(issueURI);
 
     // If the issue does not exist then return an empty list
     if (issueInfo == null)
       return new ArrayList<TOCArticleGroup>();
 
-    return getArticleGrpList(issueInfo, authId);
+    return getArticleGrpList(issueInfo);
   }
 
   /**
@@ -565,7 +565,7 @@ public class BrowseServiceImpl extends HibernateServiceImpl implements BrowseSer
    */
   @Override
   @Transactional(readOnly = true)
-  public List<TOCArticleGroup> getArticleGrpList(IssueInfo issue, String authId){
+  public List<TOCArticleGroup> getArticleGrpList(IssueInfo issue){
     List<TOCArticleGroup> groupList = new ArrayList<TOCArticleGroup>();
 
     for (ArticleType at : ArticleType.getOrderedListForDisplay()) {
@@ -573,20 +573,19 @@ public class BrowseServiceImpl extends HibernateServiceImpl implements BrowseSer
       groupList.add(newArticleGroup);
     }
 
-    return buildArticleGroups(issue, groupList, authId);
+    return buildArticleGroups(issue, groupList);
   }
 
   /**
    *
    */
   @Override
-  public List<TOCArticleGroup> buildArticleGroups(IssueInfo issue, List<TOCArticleGroup> articleGroups,
-                                                  String authId) {
+  public List<TOCArticleGroup> buildArticleGroups(IssueInfo issue, List<TOCArticleGroup> articleGroups) {
 
     //There are some pretty big inefficiencies here.  We load up complete article classes when
     //we only need doi/title/authors.  A new TOCArticle class should probably be created once article lazy
     //loading is working correctly
-    List<TOCArticle> articlesInIssue = articleService.getArticleTOCEntries(issue.getArticleUriList(), authId);
+    List<TOCArticle> articlesInIssue = articleService.getArticleTOCEntries(issue.getArticleUriList());
 
     /*
      * For every article that is of the same ArticleType as a TOCArticleGroup, add it to that group.

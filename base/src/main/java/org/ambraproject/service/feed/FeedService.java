@@ -93,9 +93,8 @@ public interface FeedService {
    * @return List&lt;String&gt; if article Ids.
    * @throws ApplicationException ApplicationException
    * @throws URISyntaxException   URISyntaxException
-   * @parem authId the current user authId
    */
-  public List<TOCArticle> getIssueArticles(final FeedSearchParameters searchParams, String journal, String authId) throws
+  public List<TOCArticle> getIssueArticles(final FeedSearchParameters searchParams, String journal) throws
       URISyntaxException, ApplicationException;
 
   /**

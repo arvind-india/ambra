@@ -37,43 +37,39 @@ public interface ArticleAssetService {
    * This probably returns XML and PDF all the time
    *
    * @param articleDoi the doi of the article
-   * @param authId the authorization ID of the current user
    * @return the object-info of the object
    * @throws NoSuchObjectIdException NoSuchObjectIdException
    */
-  public List<ArticleAsset> getArticleXmlAndPdf(final String articleDoi, final String authId) throws NoSuchObjectIdException;
+  public List<ArticleAsset> getArticleXmlAndPdf(final String articleDoi) throws NoSuchObjectIdException;
 
   /**
    * Get the Article Asset by URI. This returns a random asset with a matching doi, and there is almost always more than one (e.g, for each image, there is
    * PNG_L,PNG_M, etc.).  Hence, this only makes sense to be used for Supplementary Info assets.
    *
    * @param assetUri uri
-   * @param authId the authorization ID of the current user
    * @return the object-info of the object
    * @throws NoSuchObjectIdException NoSuchObjectIdException
    */
-  public ArticleAsset getSuppInfoAsset(final String assetUri, final String authId) throws NoSuchObjectIdException;
+  public ArticleAsset getSuppInfoAsset(final String assetUri) throws NoSuchObjectIdException;
 
   /**
    * Get the Article Asset by URI and type.
    *
    * @param assetUri uri
    * @param representation the representation value (XML/PDF)
-   * @param authId the authorization ID of the current user
    * @return the object-info of the object
    * @throws NoSuchObjectIdException NoSuchObjectIdException
    */
-  public ArticleAsset getArticleAsset(final String assetUri, final String representation, final String authId) throws NoSuchObjectIdException;
+  public ArticleAsset getArticleAsset(final String assetUri, final String representation) throws NoSuchObjectIdException;
 
    /**
    * Return a list of Figures and Tables in DOI order.
    *
    * @param articleDoi DOI.
-   * @param authId the authorization ID of the current user
    * @return Figures and Tables for the article in DOI order.
    * @throws NoSuchArticleIdException NoSuchArticleIdException.
    */
-  public ArticleAssetWrapper[] listFiguresTables(final String articleDoi, final String authId) throws NoSuchArticleIdException;
+  public ArticleAssetWrapper[] listFiguresTables(final String articleDoi) throws NoSuchArticleIdException;
 
   /**
    * Get the Id of the article corresponding to the article asset
@@ -85,10 +81,9 @@ public interface ArticleAssetService {
   /**
    * Get the data for powerpoint
    * @param assetDoi
-   * @param authId
    * @return
    * @throws NoSuchArticleIdException
    */
-  public InputStream getPowerPointSlide(String assetDoi, String authId) throws NoSuchArticleIdException,
+  public InputStream getPowerPointSlide(String assetDoi) throws NoSuchArticleIdException,
       NoSuchObjectIdException, ApplicationException, IOException;
 }

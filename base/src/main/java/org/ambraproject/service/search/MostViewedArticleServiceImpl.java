@@ -239,7 +239,7 @@ public class MostViewedArticleServiceImpl extends HibernateServiceImpl implement
 
     for(final Object row[] : tempRes) {
       try {
-        articleService.checkArticleState((String)row[1], authId);
+        articleService.checkArticleState((String)row[1]);
 
         HomePageArticleInfo articleInfo = new HomePageArticleInfo();
         articleInfo.setDoi((String)row[1]);
