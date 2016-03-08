@@ -22,7 +22,6 @@ package org.ambraproject.util;
 
 import org.ambraproject.models.Annotation;
 import org.ambraproject.models.AnnotationType;
-import org.ambraproject.models.UserProfile;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.ambraproject.configuration.ConfigurationStore;
@@ -45,19 +44,18 @@ public class URIGeneratorTest {
   @DataProvider(name = "objects")
   public Object[][] getObjects() {
     return new Object[][]{
-      { new Annotation(null, AnnotationType.REPLY, null), URIGenerator.getPrefix() + "reply/" },
-      { new UserProfile(), URIGenerator.getPrefix() + "profile/" }
+        {new Annotation(null, AnnotationType.REPLY, null), URIGenerator.getPrefix() + "reply/"}
     };
   }
 
   @Test(dataProvider = "objects")
   public void testURIs(Object object, String expectedPrefix) {
     Serializable id = URIGenerator.generate(object);
-    
+
     assertNotNull(id, "generated null id");
     assertFalse(id.toString().isEmpty(), "returned empty id");
 
     assertTrue(id.toString().startsWith(expectedPrefix), "Generated id didn't start with correct prefix; expected: "
-      + expectedPrefix + " but found " + id);
+        + expectedPrefix + " but found " + id);
   }
 }

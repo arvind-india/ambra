@@ -19,7 +19,7 @@ package org.ambraproject.models;
 public class Annotation extends AmbraEntity {
 
   private AnnotationType type;
-  private UserProfile creator;
+  private Long userProfileID;
 
   //ID of the article to which this refers
   private Long articleID;
@@ -38,20 +38,20 @@ public class Annotation extends AmbraEntity {
     super();
   }
 
-  public Annotation(UserProfile creator, AnnotationType type, Long articleID) {
+  public Annotation(Long userProfileID, AnnotationType type, Long articleID) {
     this();
 
-    this.creator = creator;
+    this.userProfileID = userProfileID;
     this.type = type;
     this.articleID = articleID;
   }
 
-  public UserProfile getCreator() {
-    return creator;
+  public Long getUserProfileID() {
+    return userProfileID;
   }
 
-  public void setCreator(UserProfile creator) {
-    this.creator = creator;
+  public void setUserProfileID(Long userProfileID) {
+    this.userProfileID = userProfileID;
   }
 
   public Long getArticleID() {

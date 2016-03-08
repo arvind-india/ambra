@@ -149,17 +149,17 @@ public interface BrowseService {
   /**
    *
    */
-  public List<TOCArticleGroup> getArticleGrpList(String issueURI, String authId);
+  public List<TOCArticleGroup> getArticleGrpList(String issueURI);
 
   /**
    *
    */
-  public List<TOCArticleGroup> getArticleGrpList(IssueInfo issue, String authId);
+  public List<TOCArticleGroup> getArticleGrpList(IssueInfo issue);
 
   /**
    *
    */
-  public List<TOCArticleGroup> buildArticleGroups(IssueInfo issue, List<TOCArticleGroup> articleGroups, String authId);
+  public List<TOCArticleGroup> buildArticleGroups(IssueInfo issue, List<TOCArticleGroup> articleGroups);
 
   /**
    * Set the configuration class

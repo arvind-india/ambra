@@ -26,7 +26,6 @@ import org.ambraproject.models.AnnotationType;
 import org.ambraproject.models.Article;
 import org.ambraproject.models.Flag;
 import org.ambraproject.models.FlagReasonCode;
-import org.ambraproject.models.UserProfile;
 import org.ambraproject.service.hibernate.HibernateServiceImpl;
 import org.ambraproject.util.URIGenerator;
 import org.ambraproject.views.AnnotationView;
@@ -307,10 +306,10 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
 
   @Override
   @Transactional
-  public Long createComment(UserProfile user, String articleDoi, String title, String body, String ciStatement) {
+  public Long createComment(Long userProfileID, String articleDoi, String title, String body, String ciStatement) {
     if (articleDoi == null) {
       throw new IllegalArgumentException("Attempted to create comment with null article id");
-    } else if (user == null || user.getID() == null) {
+    } else if (userProfileID == null) {
       throw new IllegalArgumentException("Attempted to create comment without a creator");
     } else if (body == null || body.isEmpty()) {
       throw new IllegalArgumentException("Attempted to create comment with no body");
@@ -329,7 +328,7 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
     }
 
     //generate an annotation uri
-    Annotation comment = new Annotation(user, AnnotationType.COMMENT, articleID);
+    Annotation comment = new Annotation(userProfileID, AnnotationType.COMMENT, articleID);
     comment.setAnnotationUri(URIGenerator.generate(comment));
     comment.setTitle(title);
     comment.setBody(body);
@@ -342,7 +341,7 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
 
   @Override
   @Transactional
-  public Long createReply(UserProfile user, Long parentId, String title, String body, @Nullable String ciStatement) {
+  public Long createReply(Long userProfileID, Long parentId, String title, String body, @Nullable String ciStatement) {
     if (parentId == null) {
       throw new IllegalArgumentException("Attempting to create reply with null parent id");
     }
@@ -358,7 +357,7 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
       throw new IllegalArgumentException("Invalid annotation id: " + parentId);
     }
 
-    Annotation reply = new Annotation(user, AnnotationType.REPLY, articleID);
+    Annotation reply = new Annotation(userProfileID, AnnotationType.REPLY, articleID);
     reply.setParentID(parentId);
     reply.setTitle(title);
     reply.setBody(body);
@@ -484,7 +483,7 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
 
   @Override
   @Transactional(rollbackFor = Throwable.class)
-  public Long createFlag(UserProfile user, Long annotationId, FlagReasonCode reasonCode, String body) {
+  public Long createFlag(Long userProfileID, Long annotationId, FlagReasonCode reasonCode, String body) {
     if (annotationId == null) {
       throw new IllegalArgumentException("No annotation id specified");
     }
@@ -494,7 +493,7 @@ public class AnnotationServiceImpl extends HibernateServiceImpl implements Annot
     }
 
     log.debug("Creating flag on annotation: {} with reason code: {}", annotationId, reasonCode);
-    Flag flag = new Flag(user, reasonCode, flaggedAnnotation);
+    Flag flag = new Flag(userProfileID, reasonCode, flaggedAnnotation);
     flag.setComment(body);
     return (Long) hibernateTemplate.save(flag);
   }

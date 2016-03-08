@@ -29,8 +29,6 @@ import org.ambraproject.models.CitedArticle;
 import org.ambraproject.models.CitedArticleAuthor;
 import org.ambraproject.models.CitedArticleEditor;
 import org.ambraproject.models.Journal;
-import org.ambraproject.models.UserProfile;
-import org.ambraproject.models.UserRole;
 import org.ambraproject.testutils.DummyDataStore;
 import org.ambraproject.views.AnnotationView;
 import org.ambraproject.views.ArticleCategory;
@@ -70,9 +68,6 @@ public abstract class BaseTest extends AbstractTestNGSpringContextTests {
    */
   @Autowired
   protected DummyDataStore dummyDataStore;
-  public static final String DEFAULT_ADMIN_AUTHID = "AdminAuthorizationID";
-  public static final String DEFAULT_EDITORIAL_AUTHID = "EditorialAuthorizationID";
-  public static final String DEFAULT_USER_AUTHID = "DummyTestUserAuthorizationID";
 
   public static final Journal defaultJournal = new Journal();
 
@@ -381,8 +376,7 @@ public abstract class BaseTest extends AbstractTestNGSpringContextTests {
         expected.getCompetingInterestBody() == null ? "" : expected.getCompetingInterestBody(),
         "Annotation view had incorrect ci statement");
     assertEquals(result.getAnnotationUri(), expected.getAnnotationUri(), "Annotation view had incorrect annotation uri");
-    assertEquals(result.getCreatorID(), expected.getCreator().getID(), "Annotation view had incorrect creator id");
-    assertEquals(result.getCreatorDisplayName(), expected.getCreator().getDisplayName(), "Annotation view had incorrect creator name");
+    assertEquals(result.getCreatorID(), expected.getUserProfileID(), "Annotation view had incorrect creator id");
   }
 
   protected void setUpArticleForImageFromFilestore() {
@@ -408,64 +402,10 @@ public abstract class BaseTest extends AbstractTestNGSpringContextTests {
   /**
    * Some unit tests delete all users.  This is a way to restore them.
    * This logic is very similar to logic in HibernateTestSessionFactory afterPropertiesSet function
+   *
+   * No longer needed.
    */
   protected void restoreDefaultUsers() {
 
-    try {
-      // Create an admin user to test admin functions
-      UserRole adminRole = new UserRole("admin");
-
-      Set<UserRole.Permission> perms = new HashSet<UserRole.Permission>();
-      perms.add(UserRole.Permission.ACCESS_ADMIN);
-      perms.add(UserRole.Permission.INGEST_ARTICLE);
-      perms.add(UserRole.Permission.MANAGE_FLAGS);
-      perms.add(UserRole.Permission.MANAGE_ANNOTATIONS);
-      perms.add(UserRole.Permission.MANAGE_USERS);
-      perms.add(UserRole.Permission.MANAGE_ROLES);
-      perms.add(UserRole.Permission.MANAGE_JOURNALS);
-      perms.add(UserRole.Permission.MANAGE_SEARCH);
-      perms.add(UserRole.Permission.MANAGE_CACHES);
-      perms.add(UserRole.Permission.CROSS_PUB_ARTICLES);
-      perms.add(UserRole.Permission.DELETE_ARTICLES);
-      perms.add(UserRole.Permission.VIEW_UNPUBBED_ARTICLES);
-
-      adminRole.setPermissions(perms);
-      dummyDataStore.store(adminRole);
-
-      UserProfile admin = new UserProfile();
-      admin.setAuthId(BaseTest.DEFAULT_ADMIN_AUTHID);
-      admin.setEmail("admin@test.org");
-      admin.setDisplayName("testAdmin");
-      admin.setPassword("adminPass");
-      admin.setRoles(new HashSet<UserRole>(1));
-      admin.getRoles().add(adminRole);
-      dummyDataStore.store(admin);
-
-      UserRole editorialRole = new UserRole("editorial");
-      perms = new HashSet<UserRole.Permission>();
-      perms.add(UserRole.Permission.ACCESS_ADMIN);
-      perms.add(UserRole.Permission.VIEW_UNPUBBED_ARTICLES);
-      editorialRole.setPermissions(perms);
-      dummyDataStore.store(editorialRole);
-
-      UserProfile editorial = new UserProfile();
-      editorial.setAuthId(BaseTest.DEFAULT_EDITORIAL_AUTHID);
-      editorial.setEmail("editorial@test.org");
-      editorial.setDisplayName("editorialAdmin");
-      editorial.setPassword("pass");
-      editorial.setRoles(new HashSet<UserRole>(1));
-      editorial.getRoles().add(editorialRole);
-      dummyDataStore.store(editorial);
-
-      UserProfile nonAdmin = new UserProfile();
-      nonAdmin.setAuthId(BaseTest.DEFAULT_USER_AUTHID);
-      nonAdmin.setEmail("nonAdmin@test.org");
-      nonAdmin.setDisplayName("testNonAdmin");
-      nonAdmin.setPassword("nonAdminPass");
-      dummyDataStore.store(nonAdmin);
-
-    } catch (DataAccessException ex) {
-      //must've already inserted the users
-    }
   }
 }

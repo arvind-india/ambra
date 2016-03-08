@@ -62,8 +62,6 @@ public class URIGenerator {
         default:
           objectPrefix = "annotation";
       }
-    } else if(className.equals("UserProfile")) {
-      objectPrefix = "profile";
     } else {
       throw new RuntimeException("Unsupported class of type:" + className);
     }

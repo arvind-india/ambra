@@ -372,7 +372,7 @@ public class FeedServiceImpl extends HibernateServiceImpl implements FeedService
    */
   @Override
   @Transactional(readOnly = true)
-  public List<TOCArticle> getIssueArticles(final FeedSearchParameters searchParameters, String journal, String authId) throws
+  public List<TOCArticle> getIssueArticles(final FeedSearchParameters searchParameters, String journal) throws
       URISyntaxException, ApplicationException {
     List<TOCArticle> articleList = new ArrayList<TOCArticle>();
 
@@ -389,7 +389,7 @@ public class FeedServiceImpl extends HibernateServiceImpl implements FeedService
       issurURI = curJrnl.getCurrentIssue().getIssueUri();
     }
 
-    List<TOCArticleGroup> articleGroups = browseService.getArticleGrpList(issurURI, authId);
+    List<TOCArticleGroup> articleGroups = browseService.getArticleGrpList(issurURI);
 
     for (TOCArticleGroup ag : articleGroups)
       articleList.addAll(ag.articles);

@@ -18,7 +18,6 @@
 
 package org.ambraproject.action;
 
-import org.ambraproject.models.UserProfile;
 import org.apache.struts2.interceptor.SessionAware;
 
 import java.util.LinkedHashMap;
@@ -38,15 +37,6 @@ public class BaseSessionAwareActionSupport extends BaseActionSupport implements 
 
   public void setSession(Map map) {
     session = map;
-  }
-
-  /**
-   * Get currently logged in user
-   *
-   * @return Logged in user object
-   */
-  public UserProfile getCurrentUser() {
-    return (UserProfile) session.get(AMBRA_USER_KEY);
   }
 
   /**

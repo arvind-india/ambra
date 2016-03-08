@@ -36,11 +36,8 @@ import org.ambraproject.models.Category;
 import org.ambraproject.models.CitedArticle;
 import org.ambraproject.models.Issue;
 import org.ambraproject.models.Journal;
-import org.ambraproject.models.UserProfile;
-import org.ambraproject.models.UserRole.Permission;
 import org.ambraproject.models.Volume;
 import org.ambraproject.service.hibernate.HibernateServiceImpl;
-import org.ambraproject.service.permission.PermissionsService;
 import org.ambraproject.views.ArticleCategory;
 import org.ambraproject.views.AssetView;
 import org.ambraproject.views.JournalView;
@@ -83,8 +80,6 @@ import java.util.TreeSet;
  */
 public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleService {
   private static final Logger log = LoggerFactory.getLogger(ArticleServiceImpl.class);
-
-  private PermissionsService permissionsService;
 
   @Override
   public boolean containsResearchType(final Set<String> types) throws ApplicationException {
@@ -236,15 +231,12 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
    * Change an articles state.
    *
    * @param articleDoi uri
-   * @param authId the authorization ID of the current user
    * @param state state
    *
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   @Transactional(rollbackFor = {Throwable.class})
-  public void setState(final String articleDoi, final String authId, final int state) throws NoSuchArticleIdException {
-    permissionsService.checkPermission(Permission.INGEST_ARTICLE, authId);
-
+  public void setState(final String articleDoi, final int state) throws NoSuchArticleIdException {
     List articles = hibernateTemplate.findByCriteria(DetachedCriteria.forClass(Article.class)
           .add(Restrictions.eq("doi", articleDoi)));
 
@@ -268,13 +260,8 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     if ((state == Article.STATE_UNPUBLISHED ||
           state == Article.STATE_DISABLED)
         && log.isInfoEnabled()) {
-      DetachedCriteria criteria = DetachedCriteria.forClass(UserProfile.class)
-          .setProjection(Projections.property("displayName"))
-          .add(Restrictions.eq("authId",authId));
-      String userName = (String) hibernateTemplate.findByCriteria(criteria, 0, 1).get(0);
-      userName = userName == null ? "UNKNOWN" : userName;
-      log.info("User '{}' {} the article {}",
-          new String[] {userName, state == Article.STATE_DISABLED ?
+      log.info("User {} the article {}",
+          new String[] {state == Article.STATE_DISABLED ?
             "disabled" : "unpublished", articleDoi});
     }
   }
@@ -493,12 +480,11 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
    * Get an Article by ID.
    *
    * @param articleID ID of Article to get.
-   * @param authId the authorization ID of the current user
    * @return Article with specified URI or null if not found.
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   @Transactional(readOnly = true, noRollbackFor = {SecurityException.class})
-  public Article getArticle(final Long articleID, final String authId) throws NoSuchArticleIdException
+  public Article getArticle(final Long articleID) throws NoSuchArticleIdException
   {
     // sanity check parms
     if (articleID == null)
@@ -510,7 +496,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
       throw new NoSuchArticleIdException(String.valueOf(articleID));
     }
 
-    checkArticleState(article, authId);
+    checkArticleState(article);
 
     return article;
   }
@@ -520,14 +506,13 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
    * Get an Article by URI.
    *
    * @param articleDoi URI of Article to get.
-   * @param authId the authorization ID of the current user
    * @return Article with specified URI or null if not found.
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   @Override
   @Transactional(readOnly = true, noRollbackFor = {SecurityException.class})
   @SuppressWarnings("unchecked")
-  public Article getArticle(final String articleDoi, final String authId) throws NoSuchArticleIdException {
+  public Article getArticle(final String articleDoi) throws NoSuchArticleIdException {
     // sanity check parms
     if (articleDoi == null)
       throw new IllegalArgumentException("articleDoi == null");
@@ -540,21 +525,12 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
       throw new NoSuchArticleIdException(articleDoi);
     }
 
-    checkArticleState(articles.get(0), authId);
+    checkArticleState(articles.get(0));
 
     return articles.get(0);
   }
 
-  private void checkArticleState(Article article, String authId) throws NoSuchArticleIdException {
-    //If the article is unpublished, it should not be returned if the user is not an admin
-    if (article.getState() == Article.STATE_UNPUBLISHED) {
-      try {
-        permissionsService.checkPermission(Permission.VIEW_UNPUBBED_ARTICLES, authId);
-      } catch(SecurityException se) {
-        throw new NoSuchArticleIdException(article.getDoi());
-      }
-    }
-
+  private void checkArticleState(Article article) throws NoSuchArticleIdException {
     //If the article is disabled, don't display it ever
     if (article.getState() == Article.STATE_DISABLED) {
       throw new NoSuchArticleIdException(article.getDoi());
@@ -565,7 +541,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
    * {@inheritDoc}
    */
   @Transactional(readOnly = true)
-  public void checkArticleState(final String articleDoi, final String authId) throws NoSuchArticleIdException {
+  public void checkArticleState(final String articleDoi) throws NoSuchArticleIdException {
     //If the article is unpublished, it should not be returned if the user is not an admin
 
     List<Integer> results = (List<Integer>) hibernateTemplate.findByCriteria(DetachedCriteria.forClass(Article.class)
@@ -580,14 +556,6 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
 
     Integer articleState = results.get(0);
 
-    if (articleState == Article.STATE_UNPUBLISHED) {
-      try {
-        permissionsService.checkPermission(Permission.VIEW_UNPUBBED_ARTICLES, authId);
-      } catch(SecurityException se) {
-        throw new NoSuchArticleIdException(articleDoi);
-      }
-    }
-
     //If the article is disabled, don't display it ever
     if (articleState == Article.STATE_DISABLED) {
       throw new NoSuchArticleIdException(articleDoi);
@@ -600,13 +568,12 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
    * If an article is requested that the user does not have access to, it will not be returned
    *
    * @param articleDois list of article doi's
-   * @param authId the authorization ID of the current user
    * @return <code>List&lt;Article&gt;</code> of articles requested
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   @Transactional(readOnly = true)
   @SuppressWarnings("unchecked")
-  public List<Article> getArticles(List<String> articleDois, final String authId) {
+  public List<Article> getArticles(List<String> articleDois) {
     // sanity check parms
     if (articleDois == null)
       throw new IllegalArgumentException("articleDois == null");
@@ -620,7 +587,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
 
     for(int a = 0; a < articles.size(); a++) {
       try {
-        checkArticleState(articles.get(a), authId);
+        checkArticleState(articles.get(a));
       } catch(NoSuchArticleIdException ex) {
         articles.remove(a);
       }
@@ -695,18 +662,17 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   /**
    * Get the articleInfo object for an article
    * @param articleDoi the ID of the article
-   * @param authId the authorization ID of the current user
    * @return articleInfo
    */
   @Transactional(readOnly = true)
   @Override
   @SuppressWarnings("unchecked")
-  public ArticleInfo getArticleInfo(final String articleDoi, final String authId) throws NoSuchArticleIdException {
+  public ArticleInfo getArticleInfo(final String articleDoi, final Long userProfileID) throws NoSuchArticleIdException {
     final Article article;
 
-    article = getArticle(articleDoi, authId);
+    article = getArticle(articleDoi);
 
-    return createArticleInfo(article, authId);
+    return createArticleInfo(article, userProfileID);
   }
 
   /**
@@ -714,12 +680,12 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
    */
   @Transactional(readOnly = true)
   @Override
-  public ArticleInfo getArticleInfo(Long articleID, String authId) throws NoSuchArticleIdException {
+  public ArticleInfo getArticleInfo(Long articleID, final Long userProfileID) throws NoSuchArticleIdException {
     Article article = hibernateTemplate.get(Article.class, articleID);
-    return createArticleInfo(article, authId);
+    return createArticleInfo(article, userProfileID);
   }
 
-  private ArticleInfo createArticleInfo(Article article, final String authId) {
+  private ArticleInfo createArticleInfo(Article article, final Long userProfileID) {
     final ArticleInfo articleInfo = new ArticleInfo();
 
     articleInfo.setId(article.getID());
@@ -758,7 +724,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
 
 
     //See if the user flagged any of the existing categories
-    List<Long> flaggedCategories = getFlaggedCategories(article.getID(), authId);
+    List<Long> flaggedCategories = getFlaggedCategories(article.getID(), userProfileID);
 
     for(Category cat : categories.keySet()) {
       catViews.add(
@@ -806,7 +772,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
     //this results in more queries than doing a join, but getArticle() already has security logic built in to it
     //and a very small percentage of articles even have related articles
     List<RelatedArticleInfo> articleInfos = getRelatedArticleInfos(articleInfo.getDoi(), articleInfo.getTypes(),
-      article.getRelatedArticles(), authId);
+      article.getRelatedArticles());
     articleInfo.setRelatedArticles(articleInfos);
 
     log.debug("loaded ArticleInfo: id={}, articleTypes={}, " +
@@ -818,7 +784,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   }
 
   private List<RelatedArticleInfo> getRelatedArticleInfos(final String doi, final Set<String> types,
-      final List<ArticleRelationship> articleRelationships, String authId) {
+      final List<ArticleRelationship> articleRelationships) {
     List<RelatedArticleInfo> results = new ArrayList<RelatedArticleInfo>(articleRelationships.size());
 
     for (ArticleRelationship relationship : articleRelationships) {
@@ -826,7 +792,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
         try {
           // related articles of the article itself
           //Just fetch the related articles for the other article
-          Article otherArticle = getArticle(relationship.getOtherArticleDoi(), authId);
+          Article otherArticle = getArticle(relationship.getOtherArticleDoi());
           RelatedArticleInfo relatedArticleInfo = getRelatedArticleInfo(relationship, otherArticle);
 
           if (!results.contains(relatedArticleInfo)) {
@@ -838,7 +804,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
               if (isEqualOrAmmendment(doi, otherArticleRelationship.getOtherArticleDoi(),
                 otherArticleRelationship.getType()))
               {
-                Article otherRelatedArticle = getArticle(relationship.getOtherArticleDoi(), authId);
+                Article otherRelatedArticle = getArticle(relationship.getOtherArticleDoi());
                 RelatedArticleInfo otherArticleRelatedArticleInfo = getRelatedArticleInfo(otherArticleRelationship, otherRelatedArticle);
 
                 if (!results.contains(otherArticleRelatedArticleInfo)) {
@@ -859,8 +825,8 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
   }
 
   @SuppressWarnings("unchecked")
-  private List<TOCRelatedArticle> getRelatedArticlesForTOC(final String doi, final Set<String> types, String authId) {
-    List<Object[]> relatedArticles = getRelatedArticles(doi, authId);
+  private List<TOCRelatedArticle> getRelatedArticlesForTOC(final String doi, final Set<String> types) {
+    List<Object[]> relatedArticles = getRelatedArticles(doi);
     List<TOCRelatedArticle> results = new ArrayList<TOCRelatedArticle>();
 
     for (Object relationship[] : relatedArticles) {
@@ -878,7 +844,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
           }
 
           if(isDisplayableRelationship(types, relatedType)) {
-            List<Object[]> otherArticleRelationships = getRelatedArticles(relatedDoi, authId);
+            List<Object[]> otherArticleRelationships = getRelatedArticles(relatedDoi);
 
             for (Object[] otherArticleRelationship : otherArticleRelationships) {
               String otherArticleDoi = (String)otherArticleRelationship[0];
@@ -924,10 +890,10 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
 
   @Transactional(readOnly = true)
   @SuppressWarnings("unchecked")
-  public List<TOCArticle> getArticleTOCEntries(final List<String> articleDois, final String authId) {
+  public List<TOCArticle> getArticleTOCEntries(final List<String> articleDois) {
     for(int a = 0; a < articleDois.size(); a++) {
       try {
-        checkArticleState(articleDois.get(a), authId);
+        checkArticleState(articleDois.get(a));
       } catch(NoSuchArticleIdException ex) {
         articleDois.remove(a);
       }
@@ -972,7 +938,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
             .list();
 
           List<TOCRelatedArticle> relatedArticleInfos = getRelatedArticlesForTOC(doi,
-            new HashSet<String>(articleStringTypes), authId);
+            new HashSet<String>(articleStringTypes));
 
           TOCArticle tocArticle = TOCArticle.builder()
             .setDoi((String)article[0])
@@ -997,8 +963,8 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
 
   @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
-  private List<Object[]> getRelatedArticles(final String doi, final String authId) {
-    //Query for rows, take authId into account
+  private List<Object[]> getRelatedArticles(final String doi) {
+    //Query for rows
     List<Object[]> tempRes = (List<Object[]>)hibernateTemplate.execute(new HibernateCallback() {
       @Override
       public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -1022,7 +988,7 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
       Date otherArticleDate = (Date)row[3];
 
       try {
-        checkArticleState(doi, authId);
+        checkArticleState(doi);
         results.add(new Object[] { otherArticleDoi, otherArticleTitle, otherArticleType, otherArticleDate } );
       } catch(NoSuchArticleIdException ex) {
         //Do nothing
@@ -1060,21 +1026,19 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
    * Return a list of categories this user flagged for this article
    *
    * @param articleID an articleID
-   * @param authID the user's authorization ID
    *
    * @return list of category IDs this user flagged for this article
    */
   @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
-  private List<Long> getFlaggedCategories(final long articleID, final String authID) {
-    if(authID != null && authID.length() > 0) {
+  private List<Long> getFlaggedCategories(final long articleID, final Long userProfileID) {
+    if(userProfileID != null) {
       return hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
         public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
           List<BigInteger> categories = session.createSQLQuery(
             "select acf.categoryID from articleCategoryFlagged acf " +
-              "join userProfile up on up.userProfileID = acf.userProfileID " +
-              "where up.authId = :authID and acf.articleID = :articleID")
-            .setString("authID", authID)
+              "where acf.userProfileID = :userProfileID and acf.articleID = :articleID")
+            .setLong("userProfileID", userProfileID)
             .setLong("articleID", articleID)
             .list();
 
@@ -1340,14 +1304,6 @@ public class ArticleServiceImpl extends HibernateServiceImpl implements ArticleS
 
     }
     return true;
-  }
-
-  /**
-   * @param permissionsService the permissions service to use
-   */
-  @Required
-  public void setPermissionsService(PermissionsService permissionsService) {
-    this.permissionsService = permissionsService;
   }
 
   /**

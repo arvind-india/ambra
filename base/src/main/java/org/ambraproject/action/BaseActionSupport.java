@@ -20,8 +20,6 @@ package org.ambraproject.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.ambraproject.Constants;
-import org.ambraproject.models.UserRole;
-import org.ambraproject.service.permission.PermissionsService;
 import org.ambraproject.web.VirtualJournalContext;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
@@ -46,7 +44,6 @@ import java.util.Set;
 public abstract class BaseActionSupport extends ActionSupport implements RequestAware {
   private static final Logger  log  = LoggerFactory.getLogger(BaseActionSupport.class);
 
-  protected PermissionsService permissionsService;
   protected Configuration configuration;
   protected Map requestAttributes;
 
@@ -56,18 +53,6 @@ public abstract class BaseActionSupport extends ActionSupport implements Request
 
   public void setRequest(Map map) {
     requestAttributes = map;
-  }
-
-  public UserRole.Permission[] getPermissions()
-  {
-    String authId = getAuthId();
-
-    if(authId != null) {
-      Set<UserRole.Permission> perms = this.permissionsService.getPermissions(authId);
-      return perms.toArray(new UserRole.Permission[perms.size()]);
-    } else {
-      return new UserRole.Permission[] {};
-    }
   }
 
   /**
@@ -125,16 +110,6 @@ public abstract class BaseActionSupport extends ActionSupport implements Request
   @Required
   public void setAmbraConfiguration(Configuration configuration) {
     this.configuration = configuration;
-  }
-
-  /**
-   * Setter method for the permissions service
-   *
-   * @param permissionsService
-   */
-  @Required
-  public void setPermissionsService(PermissionsService permissionsService) {
-    this.permissionsService = permissionsService;
   }
 
   /**

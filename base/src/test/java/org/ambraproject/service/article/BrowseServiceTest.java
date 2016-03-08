@@ -387,7 +387,7 @@ public class BrowseServiceTest extends BaseTest {
 
   @Test(dataProvider = "articleGroupList")
   public void testGetArticleGroupList(String issueUri, Map<URI, Integer> numExpectedPerGroup) {
-    List<TOCArticleGroup> results = browseService.getArticleGrpList(issueUri, DEFAULT_ADMIN_AUTHID);
+    List<TOCArticleGroup> results = browseService.getArticleGrpList(issueUri);
     assertNotNull(results, "returned null article group list");
     assertEquals(results.size(), numExpectedPerGroup.size(), "returned incorrect number of groups");
     for (TOCArticleGroup articleGroup : results) {
@@ -411,7 +411,7 @@ public class BrowseServiceTest extends BaseTest {
 
   @Test(dataProvider = "articleGroupListWithIssueId")
   public void testGetArticleGroupListByIssueId(String issueUri, Map<URI, Integer> numExpectedPerGroup) {
-    List<TOCArticleGroup> results = browseService.getArticleGrpList(issueUri, DEFAULT_ADMIN_AUTHID);
+    List<TOCArticleGroup> results = browseService.getArticleGrpList(issueUri);
     assertNotNull(results, "returned null article group list");
     assertEquals(results.size(), numExpectedPerGroup.size(), "returned incorrect number of groups");
     for (TOCArticleGroup articleGroup : results) {
@@ -428,9 +428,9 @@ public class BrowseServiceTest extends BaseTest {
       alwaysRun = true, ignoreMissingDependencies = true)
   public void testBuildArticleGroups(String issueUri, Map<URI, Integer> notUsedInThisTest) {
     IssueInfo issueInfo = browseService.getIssueInfo(issueUri);
-    List<TOCArticleGroup> articleGroups = browseService.getArticleGrpList(issueInfo, DEFAULT_ADMIN_AUTHID);
+    List<TOCArticleGroup> articleGroups = browseService.getArticleGrpList(issueInfo);
     List<TOCArticleGroup> builtArticleGroups = browseService.buildArticleGroups(issueInfo,
-      articleGroups, DEFAULT_ADMIN_AUTHID);
+      articleGroups);
 
     assertNotNull(builtArticleGroups, "returned null list of built article groups");
     assertEquals(builtArticleGroups.size(), articleGroups.size(), "returned incorrect number of article groups");
@@ -449,7 +449,7 @@ public class BrowseServiceTest extends BaseTest {
       alwaysRun = true, ignoreMissingDependencies = true)
   public void testGetArticleGrpListToCsv(String issueUri, Map<URI, Integer> notUsedInThisTest) {
     IssueInfo issueInfo = browseService.getIssueInfo(issueUri);
-    List<TOCArticleGroup> articleGroups = browseService.getArticleGrpList(issueInfo, DEFAULT_ADMIN_AUTHID);
+    List<TOCArticleGroup> articleGroups = browseService.getArticleGrpList(issueInfo);
 
     String csv = browseService.articleGrpListToCSV(articleGroups);
     assertNotNull(csv, "returned null csv");

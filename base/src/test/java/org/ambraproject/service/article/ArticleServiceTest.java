@@ -32,7 +32,6 @@ import org.ambraproject.models.CitedArticleAuthor;
 import org.ambraproject.models.CitedArticleEditor;
 import org.ambraproject.models.Issue;
 import org.ambraproject.models.Journal;
-import org.ambraproject.models.UserProfile;
 import org.ambraproject.models.Volume;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -514,7 +513,7 @@ public class ArticleServiceTest extends BaseTest {
   public void testGetArticle(String articleDoi, Article expectedArticle) throws NoSuchArticleIdException {
     log.debug("test-testGetArticle");
 
-    Article article = articleService.getArticle(articleDoi, DEFAULT_ADMIN_AUTHID);
+    Article article = articleService.getArticle(articleDoi);
 
     assertNotNull(article, "returned null article");
     assertEquals(article.getDoi(), articleDoi, "returned article with incorrect DOI.  Expected "
@@ -541,7 +540,7 @@ public class ArticleServiceTest extends BaseTest {
   public void testGetStrikingImage(String imageURI, Article expectedArticle) throws NoSuchArticleIdException {
     log.debug("test-testGetArticle");
 
-    Article article = articleService.getArticle(expectedArticle.getDoi(), DEFAULT_ADMIN_AUTHID);
+    Article article = articleService.getArticle(expectedArticle.getDoi());
 
     assertEquals(article.getStrkImgURI(), imageURI, "returned article with incorrect striking image URI.  Expected "
         + imageURI + " but returned " + article.getStrkImgURI());
@@ -551,7 +550,7 @@ public class ArticleServiceTest extends BaseTest {
   public void testGetArticle(Long articleID, Article expectedArticle) throws NoSuchArticleIdException {
     log.debug("test-testGetArticle");
 
-    Article article = articleService.getArticle(articleID, DEFAULT_ADMIN_AUTHID);
+    Article article = articleService.getArticle(articleID);
 
     assertNotNull(article, "returned null article");
     assertEquals(article.getID(), articleID, "returned article with incorrect ID");
@@ -808,24 +807,15 @@ public class ArticleServiceTest extends BaseTest {
 
     dummyDataStore.store(article);
 
-    UserProfile annotationCreator = new UserProfile(
-        "email@articleServiceTest.org",
-        "displayNameForArticleServiceTest",
-        "pass");
-    dummyDataStore.store(annotationCreator);
-
     return new Object[][]{
-        //admins should see unpubbed article
-        {article.getDoi(), article, DEFAULT_ADMIN_AUTHID, new Article[]{unpubbedArticle, pubbedArticle, eocArticle}},
-        //users should not
-        {article.getDoi(), article, DEFAULT_USER_AUTHID, new Article[]{pubbedArticle, eocArticle}}
+        {article.getDoi(), article, 5368l, new Article[]{unpubbedArticle, pubbedArticle, eocArticle}},
     };
   }
 
   @Test(dataProvider = "articleInfoDataProvider", dependsOnMethods = {"testGetArticle"})
-  public void testGetArticleInfo(String id, Article expectedArticle, String authId,
+  public void testGetArticleInfo(String id, Article expectedArticle, Long userProfileID,
                                  Article[] expectedRelatedArticles) throws NoSuchArticleIdException {
-    ArticleInfo result = articleService.getArticleInfo(id, authId);
+    ArticleInfo result = articleService.getArticleInfo(id, userProfileID);
     assertNotNull(result, "returned null article info");
 
     checkArticleInfo(result,
@@ -914,21 +904,21 @@ public class ArticleServiceTest extends BaseTest {
   @Test
   public void testCheckArticleState() {
     try {
-      articleService.checkArticleState(null, DEFAULT_USER_AUTHID);
+      articleService.checkArticleState(null);
       fail("this article does not exist");
     } catch (NoSuchArticleIdException e) {
       // success
     }
 
     try {
-      articleService.checkArticleState("", DEFAULT_USER_AUTHID);
+      articleService.checkArticleState("");
       fail("this article does not exist");
     } catch (NoSuchArticleIdException e) {
       // success
     }
 
     try {
-      articleService.checkArticleState("garbage", DEFAULT_USER_AUTHID);
+      articleService.checkArticleState("garbage");
       fail("this article does not exist");
     } catch (NoSuchArticleIdException e) {
       // success
@@ -940,7 +930,7 @@ public class ArticleServiceTest extends BaseTest {
     dummyDataStore.store(activeArticle);
 
     try {
-      articleService.checkArticleState(activeArticle.getDoi(), DEFAULT_USER_AUTHID);
+      articleService.checkArticleState(activeArticle.getDoi());
     } catch (NoSuchArticleIdException e) {
       fail("this article does exist");
     }
@@ -950,15 +940,15 @@ public class ArticleServiceTest extends BaseTest {
     unpublishedArticle.setState(Article.STATE_UNPUBLISHED);
     dummyDataStore.store(unpublishedArticle);
 
-    try {
-      articleService.checkArticleState(unpublishedArticle.getDoi(), DEFAULT_USER_AUTHID);
-      fail("this article should not be visible to the default user");
-    } catch (NoSuchArticleIdException e) {
-      // success
-    }
+//    try {
+//      articleService.checkArticleState(unpublishedArticle.getDoi());
+//      fail("this article should not be visible to the default user");
+//    } catch (NoSuchArticleIdException e) {
+//      // success
+//    }
 
     try {
-      articleService.checkArticleState(unpublishedArticle.getDoi(), DEFAULT_ADMIN_AUTHID);
+      articleService.checkArticleState(unpublishedArticle.getDoi());
       // success
     } catch (NoSuchArticleIdException e) {
       fail("this article should be visible to the admin user");
@@ -988,7 +978,7 @@ public class ArticleServiceTest extends BaseTest {
       put("/Biology and life sciences/Anatomy and physiology/Lymphatic system/Lymph nodes", 143);
     }};
 
-    Article article = articleService.getArticle(articleID, DEFAULT_ADMIN_AUTHID);
+    Article article = articleService.getArticle(articleID);
     articleService.setArticleCategories(article, terms);
 
     List<Category> expectedCategories = new ArrayList<Category>(8);
@@ -1026,7 +1016,7 @@ public class ArticleServiceTest extends BaseTest {
       put("server", 15);
     }};
 
-    Article article = articleService.getArticle(articleID, DEFAULT_ADMIN_AUTHID);
+    Article article = articleService.getArticle(articleID);
     articleService.setArticleCategories(article, terms);
   }
 

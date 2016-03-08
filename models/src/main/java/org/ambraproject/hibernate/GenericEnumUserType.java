@@ -19,7 +19,6 @@
 
 package org.ambraproject.hibernate;
 
-import org.ambraproject.models.UserRole;
 import org.hibernate.HibernateException;
 import org.hibernate.type.AbstractSingleColumnStandardBasicType;
 import org.hibernate.type.TypeResolver;

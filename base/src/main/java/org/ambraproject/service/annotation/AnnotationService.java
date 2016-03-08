@@ -21,7 +21,6 @@ package org.ambraproject.service.annotation;
 
 import org.ambraproject.models.AnnotationType;
 import org.ambraproject.models.FlagReasonCode;
-import org.ambraproject.models.UserProfile;
 import org.ambraproject.views.AnnotationView;
 import javax.annotation.Nullable;
 import java.net.URISyntaxException;
@@ -58,26 +57,26 @@ public interface AnnotationService {
   /**
    * Create a comment on an article.
    *
-   * @param user             the user creating the annotation
+   * @param userProfileID             the user creating the annotation
    * @param articleDoi       the doi of the article being annotated
    * @param title            title
    * @param body             body
    * @param ciStatement      competing interesting statement
    * @return the id of the stored annotation
    */
-  public Long createComment(UserProfile user, final String articleDoi, final String title, final String body,
+  public Long createComment(Long userProfileID, final String articleDoi, final String title, final String body,
                             @Nullable final String ciStatement);
 
   /**
    * Create a reply to an annotation
-   * @param user the user creating the reply
+   * @param userProfileID the user creating the reply
    * @param parentId the id of the annotation being replied to
    * @param title the title of the reply
    * @param body the body of the reply
    * @param ciStatement the competing interest statement for the reply
    * @return the generated id of the reply object
    */
-  public Long createReply(UserProfile user, final Long parentId, final String title, final String body, @Nullable final String ciStatement);
+  public Long createReply(Long userProfileID, final Long parentId, final String title, final String body, @Nullable final String ciStatement);
 
   /**
    * Get a view object wrapper around the specified annotation, with all replies loaded up
@@ -110,13 +109,13 @@ public interface AnnotationService {
   /**
    * Create a flag against an annotation or a reply
    *
-   * @param user         Logged in user
+   * @param userProfileID         Logged in user
    * @param annotationId the id of the annotation being flagged
    * @param reasonCode   reasonCode
    * @param body         body
    * @return unique identifier for the newly created flag
    */
-  public Long createFlag(UserProfile user, final Long annotationId, final FlagReasonCode reasonCode,
+  public Long createFlag(Long userProfileID, final Long annotationId, final FlagReasonCode reasonCode,
                          final String body);
 
 

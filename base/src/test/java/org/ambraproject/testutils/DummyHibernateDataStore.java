@@ -29,8 +29,6 @@ import org.ambraproject.models.Category;
 import org.ambraproject.models.Issue;
 import org.ambraproject.models.Journal;
 import org.ambraproject.models.Trackback;
-import org.ambraproject.models.UserProfile;
-import org.ambraproject.models.UserRole;
 import org.ambraproject.models.Volume;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -132,19 +130,6 @@ public class DummyHibernateDataStore implements DummyDataStore {
                 .add(Restrictions.eq("subCategory", ((Category) object).getSubCategory()))
                 .setProjection(Projections.id())
         ).get(0);
-      } else if (object instanceof UserProfile) {
-        return (Serializable) hibernateTemplate.findByCriteria(
-            DetachedCriteria.forClass(UserProfile.class)
-                .add(Restrictions.eq("email", ((UserProfile) object).getEmail()))
-                .add(Restrictions.eq("displayName", ((UserProfile) object).getDisplayName()))
-                .setProjection(Projections.id())
-        ).get(0);
-      } else if (object instanceof UserRole) {
-        return (Serializable) hibernateTemplate.findByCriteria(
-            DetachedCriteria.forClass(UserRole.class)
-                .add(Restrictions.eq("roleName", ((UserRole) object).getRoleName()))
-                .setProjection(Projections.id()))
-            .get(0);
       } else if (object instanceof Annotation) {
         return (Serializable) hibernateTemplate.findByCriteria(
             DetachedCriteria.forClass(Annotation.class)

@@ -51,8 +51,6 @@
     <mapping resource="org/ambraproject/models/Category.hbm.xml" />
     <mapping resource="org/ambraproject/models/Syndication.hbm.xml" />
     <mapping resource="org/ambraproject/models/Version.hbm.xml" />
-    <mapping resource="org/ambraproject/models/UserProfile.hbm.xml" />
-    <mapping resource="org/ambraproject/models/UserRole.hbm.xml" />
     <mapping resource="org/ambraproject/models/UserLogin.hbm.xml" />
     <mapping resource="org/ambraproject/models/ArticleView.hbm.xml" />
     <mapping resource="org/ambraproject/models/UserSearch.hbm.xml" />
@@ -63,10 +61,6 @@
     <mapping resource="org/ambraproject/models/Flag.hbm.xml" />
     <mapping resource="org/ambraproject/models/Trackback.hbm.xml" />
     <mapping resource="org/ambraproject/models/Pingback.hbm.xml"/>
-    <mapping resource="org/ambraproject/models/SavedSearch.hbm.xml"/>
-    <mapping resource="org/ambraproject/models/SavedSearchQuery.hbm.xml"/>
     <mapping resource="org/ambraproject/models/ArticleList.hbm.xml"/>
-    <mapping resource="org/ambraproject/models/UserOrcid.hbm.xml"/>
-    <mapping resource="org/ambraproject/models/UserProfileMetaData.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

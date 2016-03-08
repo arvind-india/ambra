@@ -34,8 +34,7 @@
       </type>
     </property>
 
-    <!--Don't cascade to creator-->
-    <many-to-one name="creator" class="UserProfile" column="userProfileID" not-null="true" cascade="none"/>
+    <property name="userProfileID" type="long" column="userProfileID" not-null="true"/>
 
     <many-to-one name="flaggedAnnotation" class="Annotation" column="annotationID" cascade="none" not-null="true"/>
 

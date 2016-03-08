@@ -73,14 +73,14 @@ public class ArticleAssetServiceTest extends BaseTest {
   //This tests the bad method of getAsset that just returns the first instance of an asset with the given doi
   @Test(dataProvider = "articleAssets")
   public void testGetSingleAsset(String assetUri, String notUsed, ArticleAsset expectedAsset) throws NoSuchObjectIdException {
-    ArticleAsset asset = articleAssetService.getSuppInfoAsset(assetUri, DEFAULT_ADMIN_AUTHID);
+    ArticleAsset asset = articleAssetService.getSuppInfoAsset(assetUri);
     assertNotNull(asset, "returned null article asset");
     compareAssets(asset, expectedAsset);
   }
 
   @Test(dataProvider = "articleAssets")
   public void testGetAsset(String assetUri, String extension, ArticleAsset expectedAsset) throws NoSuchObjectIdException {
-    ArticleAsset asset = articleAssetService.getArticleAsset(assetUri, extension, DEFAULT_ADMIN_AUTHID);
+    ArticleAsset asset = articleAssetService.getArticleAsset(assetUri, extension);
     assertNotNull(asset, "returned null article asset");
     compareAssets(asset, expectedAsset);
   }
@@ -88,16 +88,6 @@ public class ArticleAssetServiceTest extends BaseTest {
 
   @DataProvider(name = "badArticleAssets")
   public Object[][] getBadArticleAssets() {
-    Article notYetPublished = new Article();
-    notYetPublished.setDoi("id:unpubbed-doi-for-assets");
-    notYetPublished.setState(Article.STATE_UNPUBLISHED);
-    notYetPublished.setAssets(new ArrayList<ArticleAsset>(1));
-
-    ArticleAsset asset1 = new ArticleAsset();
-    asset1.setDoi("id:unpubbed-doi-for-assets.t001");
-    asset1.setExtension("foo");
-    notYetPublished.getAssets().add(asset1);
-
     Article deliberatelyUnpublished = new Article();
     deliberatelyUnpublished.setDoi("id:disable-doi-for-assets");
     deliberatelyUnpublished.setState(Article.STATE_DISABLED);
@@ -108,18 +98,15 @@ public class ArticleAssetServiceTest extends BaseTest {
     asset2.setExtension("bar");
     deliberatelyUnpublished.getAssets().add(asset2);
 
-    dummyDataStore.store(notYetPublished); //cascade to the assets
     return new Object[][]{
-        //users shouldn't see unpublished asset
-        {asset1.getDoi(), asset1.getExtension(), DEFAULT_USER_AUTHID},
         //even admins shouldn't see disabled asset
-        {asset2.getDoi(), asset2.getExtension(), DEFAULT_ADMIN_AUTHID}
+        {asset2.getDoi(), asset2.getExtension()}
     };
   }
 
   @Test(dataProvider = "badArticleAssets", expectedExceptions = {NoSuchObjectIdException.class})
-  public void testShouldFailForUnpublishedArticles(String assetUri, String extension, String authId) throws NoSuchObjectIdException {
-    articleAssetService.getArticleAsset(assetUri, extension, authId);
+  public void testShouldFailForUnpublishedArticles(String assetUri, String extension) throws NoSuchObjectIdException {
+    articleAssetService.getArticleAsset(assetUri, extension);
   }
 
   @DataProvider(name = "articleXmlAndPdf")
@@ -149,7 +136,7 @@ public class ArticleAssetServiceTest extends BaseTest {
 
   @Test(dataProvider = "articleXmlAndPdf")
   public void testGetArticleXmlAndPdf(String doi, ArticleAsset xml, ArticleAsset pdf) throws NoSuchObjectIdException {
-    List<ArticleAsset> articleXmlAndPdf = (List<ArticleAsset>) articleAssetService.getArticleXmlAndPdf(doi, DEFAULT_ADMIN_AUTHID);
+    List<ArticleAsset> articleXmlAndPdf = (List<ArticleAsset>) articleAssetService.getArticleXmlAndPdf(doi);
     assertNotNull(articleXmlAndPdf, "returned null list for xml and pdf");
     assertEquals(articleXmlAndPdf.size(), 2, "returned incorrect number of assets");
 
@@ -166,26 +153,20 @@ public class ArticleAssetServiceTest extends BaseTest {
 
   @DataProvider(name = "badXmlAndPdf")
   public Object[][] getUnpubbedArticles() {
-    Article notYetPubbed = new Article();
-    notYetPubbed.setState(Article.STATE_UNPUBLISHED);
-    notYetPubbed.setDoi("id:not-yet-pubbed-for-xmlandpdf");
-
     Article deliberatelyUnpubbed = new Article();
     deliberatelyUnpubbed.setDoi("id:unpubbed-for-xml-and-pdf");
     deliberatelyUnpubbed.setState(Article.STATE_DISABLED);
 
-    dummyDataStore.store(notYetPubbed);
     dummyDataStore.store(deliberatelyUnpubbed);
 
     return new Object[][]{
-        {notYetPubbed.getDoi(), DEFAULT_USER_AUTHID},
-        {deliberatelyUnpubbed.getDoi(), DEFAULT_ADMIN_AUTHID}
+        {deliberatelyUnpubbed.getDoi()}
     };
   }
 
   @Test(dataProvider = "badXmlAndPdf", expectedExceptions = {NoSuchObjectIdException.class})
-  public void testXmlAndPdfFailsForUnpublishedArticles(String doi, String authId) throws NoSuchObjectIdException {
-    articleAssetService.getArticleXmlAndPdf(doi, authId);
+  public void testXmlAndPdfFailsForUnpublishedArticles(String doi) throws NoSuchObjectIdException {
+    articleAssetService.getArticleXmlAndPdf(doi);
   }
 
   @DataProvider(name = "figuresTables")
@@ -243,32 +224,26 @@ public class ArticleAssetServiceTest extends BaseTest {
 
   @Test(dataProvider = "figuresTables")
   public void testListFiguresTables(String articleDoi, ArticleAssetWrapper[] expectedAssets) throws NoSuchArticleIdException {
-    ArticleAssetWrapper[] assetWrappers = articleAssetService.listFiguresTables(articleDoi, DEFAULT_ADMIN_AUTHID);
+    ArticleAssetWrapper[] assetWrappers = articleAssetService.listFiguresTables(articleDoi);
     assertNotNull(assetWrappers, "returned null array of asset wrappers");
     assertEquals(assetWrappers, expectedAssets, "returned incorrect asset wrappers");
   }
 
   @DataProvider(name = "badArticles")
   public Object[][] getBadArticles() {
-    Article unpubbed = new Article();
-    unpubbed.setDoi("id:unpubbedForListFiguresTables");
-    unpubbed.setState(Article.STATE_UNPUBLISHED);
-    dummyDataStore.store(unpubbed);
-
     Article disabled = new Article();
     disabled.setDoi("id:disabledForListFiguresTables");
     disabled.setState(Article.STATE_DISABLED);
     dummyDataStore.store(disabled);
 
     return new Object[][]{
-        {unpubbed.getDoi(), DEFAULT_USER_AUTHID},
-        {disabled.getDoi(), DEFAULT_ADMIN_AUTHID}
+        {disabled.getDoi()}
     };
   }
 
   @Test(dataProvider = "badArticles", expectedExceptions = {NoSuchArticleIdException.class})
-  public void testListFiguresTablesOnUnpubbedArticle(String doi, String authId) throws NoSuchArticleIdException {
-    articleAssetService.listFiguresTables(doi, authId);
+  public void testListFiguresTablesOnUnpubbedArticle(String doi) throws NoSuchArticleIdException {
+    articleAssetService.listFiguresTables(doi);
   }
 
   @Test
@@ -284,6 +259,7 @@ public class ArticleAssetServiceTest extends BaseTest {
     assertEquals(result, articleID, "Article Asset service returned incorrect id");
   }
 
+  //This test is failing with IndexOutOfBoundsException in ArticleAssetServiceImpl.java:346
   //This is a difficult method to have expected results for, but at least we can check that the output is a ppt file
   @Test
   public void testGetPowerpointSlide() throws IOException, NoSuchObjectIdException, NoSuchArticleIdException, ApplicationException {
@@ -293,7 +269,7 @@ public class ArticleAssetServiceTest extends BaseTest {
     InputStream inputStream = null;
     Tika tika = new Tika();
     try {
-      inputStream = articleAssetService.getPowerPointSlide(IMAGE_DOI_IN_FILESTORE, DEFAULT_ADMIN_AUTHID);
+      inputStream = articleAssetService.getPowerPointSlide(IMAGE_DOI_IN_FILESTORE);
       assertNotNull(inputStream, "Returned null input stream");
       //read the content type from the bytes of the input stream
       assertEquals(tika.detect(inputStream), "application/x-tika-msoffice", "powerpoint file had incorrect type");
