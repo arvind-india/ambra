@@ -102,9 +102,9 @@ public class NedServiceImpl implements NedService {
 
     try {
       if (alertType == SavedSearchRetriever.AlertType.WEEKLY) {
-        alertList = queriesApi.getAlerts("weekly", null);
+        alertList = queriesApi.getAlerts("weekly");
       } else if (alertType == SavedSearchRetriever.AlertType.MONTHLY) {
-        alertList = queriesApi.getAlerts("monthly", null);
+        alertList = queriesApi.getAlerts("monthly");
       }
     } catch (ApiException apiEx) {
       log.error("getSearchAlerts() code: " + apiEx.getCode());

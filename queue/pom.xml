@@ -39,7 +39,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <camel.version>2.10.4</camel.version>
     <activemq.version>5.2.0</activemq.version>
-    <ned-java-client.version>1.1.0-SNAPSHOT</ned-java-client.version>
+    <ned-java-client.version>1.1.0</ned-java-client.version>
   </properties>
 
   <dependencies>
