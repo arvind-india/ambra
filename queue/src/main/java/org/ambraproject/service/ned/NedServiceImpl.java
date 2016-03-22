@@ -106,6 +106,7 @@ public class NedServiceImpl implements NedService {
       } else if (alertType == SavedSearchRetriever.AlertType.MONTHLY) {
         alertList = queriesApi.getAlerts("monthly");
       }
+      log.debug("Returning {} saved search(es) for type {}", alertList.size(), alertType);
     } catch (ApiException apiEx) {
       log.error("getSearchAlerts() code: " + apiEx.getCode());
       log.error("getSearchAlerts() responseBody: " + apiEx.getResponseBody());
@@ -113,8 +114,6 @@ public class NedServiceImpl implements NedService {
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
     }
-
-    log.debug("Returning {} saved search(es) for type {}", alertList.size(), alertType);
 
     return alertList;
   }
