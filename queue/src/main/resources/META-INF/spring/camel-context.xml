@@ -71,8 +71,14 @@
     <property name="serverFactory" ref="solrServerFactory"/>
   </bean>
 
+  <bean id="nedService" class="org.ambraproject.service.ned.NedServiceImpl">
+    <constructor-arg index="0" value="${ambra.services.nedapi.server}"/>
+    <constructor-arg index="1" value="${ambra.services.nedapi.username}"/>
+    <constructor-arg index="2" value="${ambra.services.nedapi.password}"/>
+  </bean>
+
   <bean id="savedSearchRetriever" class="org.ambraproject.search.SavedSearchRetrieverImpl">
-    <property name="sessionFactory" ref="hibernateSessionFactory"/>
+    <property name="'nedService" ref="nedService"/>
   </bean>
 
   <bean id="savedSearchRunner" class="org.ambraproject.search.SavedSearchRunnerImpl">
@@ -122,7 +128,7 @@
 
   <bean id="savedSearchSender" class="org.ambraproject.search.SavedSearchSenderImpl">
     <property name="mailer" ref="freeMarkerMailer" />
-    <property name="sessionFactory" ref="sessionFactory" />
+    <property name="nedService" ref="nedService"/>
     <property name="mailFromAddress" value="${ambra.queue.fromEmailAddress}" />
     <property name="imagePath" value="${ambra.queue.image.path}"/>
     <property name="sendMode" value="${ambra.queue.sendmail.sendMode}"/>

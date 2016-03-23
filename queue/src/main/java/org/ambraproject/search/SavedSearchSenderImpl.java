@@ -17,18 +17,25 @@
  */
 package org.ambraproject.search;
 
+import org.ambraproject.service.ned.NedService;
 import org.ambraproject.models.Journal;
 import org.ambraproject.models.SavedSearch;
 import org.ambraproject.models.SavedSearchType;
 import org.ambraproject.models.UserProfile;
 import org.ambraproject.service.hibernate.HibernateServiceImpl;
 import org.ambraproject.service.journal.JournalService;
+import org.ambraproject.service.ned.NedService;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.plos.ned_client.ApiException;
+import org.plos.ned_client.api.IndividualsApi;
+import org.plos.ned_client.model.Email;
+import org.plos.ned_client.model.Alert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.ambraproject.email.TemplateMailer;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -43,8 +50,14 @@ import java.util.Map;
  *
  * @author Joe Osowski
  */
-public class SavedSearchSenderImpl extends HibernateServiceImpl implements SavedSearchSender {
+public class SavedSearchSenderImpl implements SavedSearchSender {
   private static final Logger log = LoggerFactory.getLogger(SavedSearchSenderImpl.class);
+
+  private NedService nedService;
+
+  public void setNedService(NedService nedService) {
+    this.nedService = nedService;
+  }
 
   protected static final String WEEKLY_FREQUENCY = "WEEKLY";
   protected static final String PRODUCTION_MODE = "PRODUCTION";
@@ -82,53 +95,38 @@ public class SavedSearchSenderImpl extends HibernateServiceImpl implements Saved
     //Create message
     Multipart content = createContent(context, searchJob.getType());
 
-    List<Object[]> searchDetails = getSavedSearchDetails(searchJob.getSavedSearchQueryID(), searchJob.getFrequency());
-
     String fromAddress = this.mailFromAddress;
 
-    for(int a = 0; a < searchDetails.size(); a++) {
-      String toAddress = (String)searchDetails.get(a)[1];
-      String subject;
+    String toAddress = getAddressToSend(searchJob.getUserProfileID());
 
-      if(searchJob.getType().equals(SavedSearchType.USER_DEFINED)) {
-        subject = "Search Alert - " + searchDetails.get(a)[2];
+    String subject;
 
-        log.debug("Job result count: {}", searchJob.getSearchHitList().size());
+    if ( searchJob.getType().equals(SavedSearchType.USER_DEFINED) ) {
+      subject = "Search Alert - " + searchJob.getSearchName();
 
-        //We might filter the search hitlist based on publish and the last time the search was run for each user 
-        //here.  We track the last time a search was run in the user's savedSearch table, seemed like overkill to
-        //to me though.
+      log.debug("Job result count: {}", searchJob.getSearchHitList().size());
 
-        //We might group email addresses and send batches of emails to java mail to send.  It's possible we'll
-        //get a performance gain there if needed.  Would take a bit of refactoring to do though... TBD
-
-        if(searchJob.getSearchHitList().size() > 0) {
-
-          log.debug("Sending mail: {}", toAddress);
-
-          mail(toAddress, fromAddress, subject, context, content);
-        } else {
-          log.debug("Not sending mail: {}", toAddress);
-        }
-      } else {
-        String[] journals = searchJob.getSearchParams().getFilterJournals();
-
-        //Each alert can only be for one journal
-        if(journals.length != 1) {
-          throw new RuntimeException("Journal alert defined for multiple journals or journal filter not defined");
-        }
-
-        Journal j = journalService.getJournal(journals[0]);
-        subject = j.getTitle() + " Journal Alert";
-
-        log.debug("Job Result count: {}", searchJob.getSearchHitList().size());
+      if ( searchJob.getSearchHitList().size() > 0 ) {
         log.debug("Sending mail: {}", toAddress);
-
         mail(toAddress, fromAddress, subject, context, content);
+      } else {
+        log.debug("Not sending mail: {}", toAddress);
+      }
+    } else {
+      String[] journals = searchJob.getSearchParams().getFilterJournals();
+
+      //Each alert can only be for one journal
+      if(journals.length != 1) {
+        throw new RuntimeException("Journal alert defined for multiple journals or journal filter not defined");
       }
 
-      //When results are sent update the records to indicate
-      markSearchRun((Long)searchDetails.get(a)[0], searchJob.getFrequency(), searchJob.getEndDate());
+      Journal j = journalService.getJournal(journals[0]);
+      subject = j.getTitle() + " Journal Alert";
+
+      log.debug("Job Result count: {}", searchJob.getSearchHitList().size());
+      log.debug("Sending mail: {}", toAddress);
+
+      mail(toAddress, fromAddress, subject, context, content);
     }
 
     log.debug("Completed thread Name: {}", Thread.currentThread().getName());
@@ -149,29 +147,7 @@ public class SavedSearchSenderImpl extends HibernateServiceImpl implements Saved
         mailer.mail(sendModeQAEMail, fromAddress, "(" + toAddress + ")" + subject, context, content);
         log.debug("Mail sent, mode: {}, address: {}", new Object[] { QA_MODE, sendModeQAEMail});
       }
-
-      //If sendMode does not match "production" or "QA", do nothing
     }
-  }
-
-  @SuppressWarnings("unchecked")
-  protected void markSearchRun(Long savedSearchID, String frequency, Date endDate)
-  {
-    SavedSearch savedSearch = hibernateTemplate.get(SavedSearch.class, savedSearchID);
-
-    if(savedSearch == null) {
-      throw new RuntimeException("Could not find savedSearch: " + savedSearchID);
-    }
-
-    if(frequency.equals(WEEKLY_FREQUENCY)) {
-      savedSearch.setLastWeeklySearchTime(endDate);
-    } else {
-      savedSearch.setLastMonthlySearchTime(endDate);
-    }
-
-    hibernateTemplate.update(savedSearch);
-
-    log.debug("Updated Last {} saved Search time for Saved Search ID: {}", frequency, savedSearchID);
   }
 
   protected Multipart createContent(Map<String, Object> context, SavedSearchType type) {
@@ -189,27 +165,16 @@ public class SavedSearchSenderImpl extends HibernateServiceImpl implements Saved
   }
 
   @SuppressWarnings("unchecked")
-  protected List<Object[]> getSavedSearchDetails(Long savedSearchQueryID, String type) {
-    SavedSearchRetriever.AlertType alertType = SavedSearchRetriever.AlertType.valueOf(type);
-
-    DetachedCriteria criteria = DetachedCriteria.forClass(UserProfile.class)
-      .setProjection(Projections.distinct(Projections.projectionList()
-        .add(Projections.property("ss.ID"))
-        .add(Projections.property("email"))
-        .add(Projections.property("ss.searchName"))))
-      .createAlias("savedSearches", "ss")
-      .createAlias("ss.searchQuery", "q")
-      .add(Restrictions.eq("q.ID", savedSearchQueryID));
-
-    if(alertType == SavedSearchRetriever.AlertType.WEEKLY) {
-      criteria.add(Restrictions.eq("ss.weekly", true));
+  protected String getAddressToSend(Long userProfileID) {
+    String emailAddress = null;
+    List<Email> emails = nedService.getEmailAddresses(userProfileID.intValue());
+    for ( Email email : emails ) {
+      if ( email.getIsactive() ) {
+        emailAddress = email.getEmailaddress();
+        break;
+      }
     }
-
-    if(alertType == SavedSearchRetriever.AlertType.MONTHLY) {
-      criteria.add(Restrictions.eq("ss.monthly", true));
-    }
-
-    return (List<Object[]>) hibernateTemplate.findByCriteria(criteria);
+    return(emailAddress);
   }
 
   @Required

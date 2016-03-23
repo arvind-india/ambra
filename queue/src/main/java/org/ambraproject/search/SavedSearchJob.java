@@ -14,7 +14,9 @@ import java.util.List;
  * @author Joe Osowski
  */
 public class SavedSearchJob {
+  private Long userProfileID;
   private Long savedSearchQueryID;
+  private String searchName;
   private String searchString;
   private String hash;
   private String frequency;
@@ -23,16 +25,26 @@ public class SavedSearchJob {
   private Date endDate;
   private List<SavedSearchHit> searchHitList;
 
-  public SavedSearchJob(Long savedSearchQueryID, String searchString, String hash, SavedSearchType type, String frequency) {
+  public SavedSearchJob(Long userProfileID, Long savedSearchQueryID, String searchName, String searchString,
+                        String hash,
+                        SavedSearchType type,
+                        String frequency) {
+    this.userProfileID = userProfileID;
     this.savedSearchQueryID = savedSearchQueryID;
+    this.searchName = searchName;
     this.searchString = searchString;
     this.hash = hash;
     this.type = type;
     this.frequency = frequency;
   }
 
-  public SavedSearchJob(Long savedSearchQueryID, String searchString, String hash, SavedSearchType type, String frequency, Date startDate, Date endDate, List<SavedSearchHit> searchHitList) {
+  public SavedSearchJob(Long userProfileID, Long savedSearchQueryID, String searchName, String searchString,
+                        String hash,
+                        SavedSearchType type,
+                        String frequency, Date startDate, Date endDate, List<SavedSearchHit> searchHitList) {
+    this.userProfileID = userProfileID;
     this.savedSearchQueryID = savedSearchQueryID;
+    this.searchName = searchName;
     this.searchString = searchString;
     this.hash = hash;
     this.type = type;
@@ -42,12 +54,26 @@ public class SavedSearchJob {
     this.searchHitList = searchHitList;
   }
 
+  public long getUserProfileID() {
+    return userProfileID;
+  }
+
+  public void setUserProfileID(Long userProfileID) { this.userProfileID = userProfileID; }
+
   public Long getSavedSearchQueryID() {
     return savedSearchQueryID;
   }
 
   public void setSavedSearchQueryID(Long savedSearchQueryID) {
     this.savedSearchQueryID = savedSearchQueryID;
+  }
+
+  public String getSearchName() {
+    return searchName;
+  }
+
+  public void setSearchName(String searchName) {
+    this.searchName = searchName;
   }
 
   public String getSearchString() {
@@ -120,7 +146,9 @@ public class SavedSearchJob {
   }
 
   public static class Builder {
+    private Long userProfileID;
     private Long savedSearchQueryID;
+    private String searchName;
     private String searchString;
     private String hash;
     private SavedSearchType type;
@@ -136,7 +164,9 @@ public class SavedSearchJob {
     private Builder(SavedSearchJob job) {
       super();
 
+      this.userProfileID = job.userProfileID;
       this.savedSearchQueryID = job.savedSearchQueryID;
+      this.searchName = job.getSearchName();
       this.searchString = job.getSearchString();
       this.hash = job.getHash();
       this.type = job.getType();
@@ -144,8 +174,18 @@ public class SavedSearchJob {
       this.searchHitList = job.getSearchHitList();
     }
 
+    public Builder setUserProfileID(Long userProfileID) {
+      this.userProfileID = userProfileID;
+      return this;
+    }
+
     public Builder setSavedSearchQueryID(Long savedSearchQueryID) {
       this.savedSearchQueryID = savedSearchQueryID;
+      return this;
+    }
+
+    public Builder setSearchName(String searchName) {
+      this.searchName = searchName;
       return this;
     }
 
@@ -186,7 +226,9 @@ public class SavedSearchJob {
 
     public SavedSearchJob build() {
       return new SavedSearchJob(
+        this.userProfileID,
         this.savedSearchQueryID,
+        this.searchName,
         this.searchString,
         this.hash,
         this.type,
