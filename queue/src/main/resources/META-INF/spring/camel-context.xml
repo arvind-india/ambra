@@ -78,7 +78,7 @@
   </bean>
 
   <bean id="savedSearchRetriever" class="org.ambraproject.search.SavedSearchRetrieverImpl">
-    <property name="'nedService" ref="nedService"/>
+    <property name="nedService" ref="nedService"/>
   </bean>
 
   <bean id="savedSearchRunner" class="org.ambraproject.search.SavedSearchRunnerImpl">
