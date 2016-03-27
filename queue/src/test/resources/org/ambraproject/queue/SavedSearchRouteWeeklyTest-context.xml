@@ -75,7 +75,6 @@
 
   <bean id="savedSearchSender" class="org.ambraproject.search.SavedSearchSenderImpl">
     <property name="mailer" ref="freeMarkerMailer" />
-    <property name="nedService" ref="nedServiceMock" />
     <property name="journalService" ref="journalService" />
     <property name="mailFromAddress" value="${ambra.queue.fromEmailAddress}" />
     <property name="imagePath" value="${ambra.queue.image.path}"/>

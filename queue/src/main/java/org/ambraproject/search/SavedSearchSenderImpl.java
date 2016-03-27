@@ -53,12 +53,6 @@ import java.util.Map;
 public class SavedSearchSenderImpl implements SavedSearchSender {
   private static final Logger log = LoggerFactory.getLogger(SavedSearchSenderImpl.class);
 
-  private NedService nedService;
-
-  public void setNedService(NedService nedService) {
-    this.nedService = nedService;
-  }
-
   protected static final String WEEKLY_FREQUENCY = "WEEKLY";
   protected static final String PRODUCTION_MODE = "PRODUCTION";
   protected static final String QA_MODE = "QA";
