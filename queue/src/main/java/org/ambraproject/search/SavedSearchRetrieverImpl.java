@@ -16,6 +16,7 @@ import org.ambraproject.models.SavedSearchType;
 import org.ambraproject.service.ned.NedService;
 import org.plos.ned_client.ApiException;
 import org.plos.ned_client.api.QueriesApi;
+import org.plos.ned_client.model.Email;
 import org.plos.ned_client.model.Alert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,9 +58,19 @@ public class SavedSearchRetrieverImpl implements SavedSearchRetriever {
           sst = SavedSearchType.USER_DEFINED;
         }
 
+        String emailAddress = null;
+        List<Email> emails = nedService.getEmailAddresses(userProfileId.intValue());
+        for ( Email email : emails ) {
+          if (email.getIsactive()) {
+            emailAddress = email.getEmailaddress();
+            break;
+          }
+        }
+
         searchJobs.add(SavedSearchJob.builder()
               .setUserProfileID(userProfileId)
               .setSavedSearchQueryID(alertId)
+              .setEmailAddress(emailAddress)
               .setSearchName(alert.getName())
               .setSearchString(alert.getQuery())
               .setHash(null)
