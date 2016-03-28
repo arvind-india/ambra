@@ -164,6 +164,7 @@ public class SavedSearchRunnerTest extends BaseTest {
     SavedSearchJob savedSearchJob = new SavedSearchJob(
       new Long(1),
       new Long(1),
+      "kpang@plos.org",
       "Ebola",
       "{\"query\":\"test\",\"unformattedQuery\":\"\",\"volume\":\"\",\"eLocationId\":\"\",\"id\":\"\",\"filterSubjects\":[],\"filterKeyword\":\"\",\"filterArticleType\":[],\"filterJournals\":[\"PLoSONE\"],\"sort\":\"Relevance\",\"startPage\":0,\"pageSize\":10}",
       "hash",
@@ -173,6 +174,7 @@ public class SavedSearchRunnerTest extends BaseTest {
     SavedSearchJob savedSearchJob2 = new SavedSearchJob(
       new Long(2),
       new Long(2),
+      "kpang@plos.org",
       "Zika",
       "{\"query\":\"\",\"unformattedQuery\":\"everything:testjournal\",\"volume\":\"\",\"eLocationId\":\"\",\"id\":\"\",\"filterSubjects\":[],\"filterKeyword\":\"\",\"filterArticleType\":[],\"filterJournals\":[\"PLoSMedicine\"],\"sort\":\"Relevance\",\"startPage\":0,\"pageSize\":10}",
       "hash1",
@@ -182,6 +184,7 @@ public class SavedSearchRunnerTest extends BaseTest {
     SavedSearchJob savedSearchJob3 = new SavedSearchJob(
       new Long(3),
       new Long(3),
+      "kpang@plos.org",
       "Neanderthal",
       "{\"query\":\"\",\"unformattedQuery\":\"everything:testing\",\"volume\":\"\",\"eLocationId\":\"\",\"id\":\"\",\"filterSubjects\":[],\"filterKeyword\":\"\",\"filterArticleType\":[],\"filterJournals\":[\"PLoSMedicine\",\"PLoSONE\"],\"sort\":\"Relevance\",\"startPage\":0,\"pageSize\":10}",
       "hash3",
@@ -191,6 +194,7 @@ public class SavedSearchRunnerTest extends BaseTest {
     SavedSearchJob savedSearchJob4 = new SavedSearchJob(
       new Long(4),
       new Long(4),
+      "kpang@plos.org",
       "Birds",
       "{\"query\":\"\",\"unformattedQuery\":\"everything:testing\",\"volume\":\"\",\"eLocationId\":\"\",\"id\":\"\",\"filterSubjects\":[],\"filterKeyword\":\"\",\"filterArticleType\":[],\"filterJournals\":[\"PLoSMedicine\",\"PLoSONE\"],\"sort\":\"Relevance\",\"startPage\":0,\"pageSize\":10}",
       "hash3",

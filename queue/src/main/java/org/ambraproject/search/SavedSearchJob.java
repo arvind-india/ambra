@@ -16,6 +16,7 @@ import java.util.List;
 public class SavedSearchJob {
   private Long userProfileID;
   private Long savedSearchQueryID;
+  private String emailAddress;
   private String searchName;
   private String searchString;
   private String hash;
@@ -25,12 +26,14 @@ public class SavedSearchJob {
   private Date endDate;
   private List<SavedSearchHit> searchHitList;
 
-  public SavedSearchJob(Long userProfileID, Long savedSearchQueryID, String searchName, String searchString,
+  public SavedSearchJob(Long userProfileID, Long savedSearchQueryID, String emailAddress,
+                        String searchName, String searchString,
                         String hash,
                         SavedSearchType type,
                         String frequency) {
     this.userProfileID = userProfileID;
     this.savedSearchQueryID = savedSearchQueryID;
+    this.emailAddress = emailAddress;
     this.searchName = searchName;
     this.searchString = searchString;
     this.hash = hash;
@@ -38,12 +41,15 @@ public class SavedSearchJob {
     this.frequency = frequency;
   }
 
-  public SavedSearchJob(Long userProfileID, Long savedSearchQueryID, String searchName, String searchString,
+  public SavedSearchJob(Long userProfileID, Long savedSearchQueryID, String emailAddress,
+                        String searchName,
+                        String searchString,
                         String hash,
                         SavedSearchType type,
                         String frequency, Date startDate, Date endDate, List<SavedSearchHit> searchHitList) {
     this.userProfileID = userProfileID;
     this.savedSearchQueryID = savedSearchQueryID;
+    this.emailAddress = emailAddress;
     this.searchName = searchName;
     this.searchString = searchString;
     this.hash = hash;
@@ -67,6 +73,10 @@ public class SavedSearchJob {
   public void setSavedSearchQueryID(Long savedSearchQueryID) {
     this.savedSearchQueryID = savedSearchQueryID;
   }
+
+  public String getEmailAddress() { return emailAddress; }
+
+  public void setEmailAddress(String emailAddress) { this.emailAddress = emailAddress; }
 
   public String getSearchName() {
     return searchName;
@@ -148,6 +158,7 @@ public class SavedSearchJob {
   public static class Builder {
     private Long userProfileID;
     private Long savedSearchQueryID;
+    private String emailAddress;
     private String searchName;
     private String searchString;
     private String hash;
@@ -166,6 +177,7 @@ public class SavedSearchJob {
 
       this.userProfileID = job.userProfileID;
       this.savedSearchQueryID = job.savedSearchQueryID;
+      this.emailAddress = emailAddress;
       this.searchName = job.getSearchName();
       this.searchString = job.getSearchString();
       this.hash = job.getHash();
@@ -181,6 +193,11 @@ public class SavedSearchJob {
 
     public Builder setSavedSearchQueryID(Long savedSearchQueryID) {
       this.savedSearchQueryID = savedSearchQueryID;
+      return this;
+    }
+
+    public Builder setEmailAddress(String emailAddress) {
+      this.emailAddress = emailAddress;
       return this;
     }
 
@@ -228,6 +245,7 @@ public class SavedSearchJob {
       return new SavedSearchJob(
         this.userProfileID,
         this.savedSearchQueryID,
+        this.emailAddress,
         this.searchName,
         this.searchString,
         this.hash,
