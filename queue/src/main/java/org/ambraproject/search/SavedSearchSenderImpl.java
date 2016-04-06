@@ -53,12 +53,6 @@ import java.util.Map;
 public class SavedSearchSenderImpl implements SavedSearchSender {
   private static final Logger log = LoggerFactory.getLogger(SavedSearchSenderImpl.class);
 
-  private NedService nedService;
-
-  public void setNedService(NedService nedService) {
-    this.nedService = nedService;
-  }
-
   protected static final String WEEKLY_FREQUENCY = "WEEKLY";
   protected static final String PRODUCTION_MODE = "PRODUCTION";
   protected static final String QA_MODE = "QA";
@@ -97,7 +91,7 @@ public class SavedSearchSenderImpl implements SavedSearchSender {
 
     String fromAddress = this.mailFromAddress;
 
-    String toAddress = getAddressToSend(searchJob.getUserProfileID());
+    String toAddress = searchJob.getEmailAddress();
 
     String subject;
 
@@ -162,19 +156,6 @@ public class SavedSearchSenderImpl implements SavedSearchSender {
     } catch(MessagingException ex) {
       throw new RuntimeException(ex);
     }
-  }
-
-  @SuppressWarnings("unchecked")
-  protected String getAddressToSend(Long userProfileID) {
-    String emailAddress = null;
-    List<Email> emails = nedService.getEmailAddresses(userProfileID.intValue());
-    for ( Email email : emails ) {
-      if ( email.getIsactive() ) {
-        emailAddress = email.getEmailaddress();
-        break;
-      }
-    }
-    return(emailAddress);
   }
 
   @Required
