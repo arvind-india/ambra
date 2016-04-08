@@ -22,7 +22,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ambraproject</groupId>
   <artifactId>ambra-base</artifactId>
-  <version>2.10.21-NED</version>
+  <version>NED-RHINO</version>
   <packaging>jar</packaging>
   <name>Ambra Base Web Application</name>
 
