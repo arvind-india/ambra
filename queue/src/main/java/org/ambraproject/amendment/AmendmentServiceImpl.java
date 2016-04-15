@@ -41,19 +41,21 @@ public class AmendmentServiceImpl implements AmendmentService {
 
   private static final Logger LOG = LoggerFactory.getLogger(AmendmentServiceImpl.class);
 
-  private String ambraServer;
+  private String rhinoServer;
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public List<ArticleAmendment> fetchAmendmentsFromAmbra(String articleDoi) {
+  public List<ArticleAmendment> fetchAmendmentsFromRhino(String articleDoi) {
     String json = "";
-    if (!articleDoi.startsWith("info:doi/"))
-      articleDoi = "info:doi/" + articleDoi;
+
+    if ("info:doi/".equals(articleDoi.substring(0, 9))) {
+      articleDoi = articleDoi.substring(9);
+    }
 
     try {
-      URL url = new URL(ambraServer + "/article/amendments?articleURI=" + URLEncoder.encode(articleDoi, "UTF-8"));
+      URL url = new URL(rhinoServer + "/articles/" + articleDoi);
       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
       conn.connect();
       InputStream in = conn.getInputStream();
@@ -63,37 +65,30 @@ public class AmendmentServiceImpl implements AmendmentService {
         in.close();
       }
     } catch (IOException e) {
-      LOG.error("Failed to fetch amendments from ambra", e);
+      LOG.error("Failed to fetch amendments from rhino", e);
     }
-    return parseJsonFromAmbra(json);
+    return parseJsonFromRhino(json);
   }
 
-  public List<ArticleAmendment> parseJsonFromAmbra(String json) {
+  public List<ArticleAmendment> parseJsonFromRhino(String json) {
     List<ArticleAmendment>  amendments = new ArrayList<ArticleAmendment>();
-    // uncomment the json received from the ambra action
-    if (json.startsWith("/*")) {
-      json = json.substring(2);
-    }
-    if (json.endsWith("*/")) {
-      json = json.substring(0, json.length() - 2);
-    }
 
     JsonParser parser = new JsonParser();
-    JsonObject obj = parser.parse(json).getAsJsonObject();
-    JsonArray amendmentArr = obj.getAsJsonArray("amendments");
-    for (JsonElement element : amendmentArr) {
-      JsonObject amendment = element.getAsJsonObject();
+    JsonObject article = parser.parse(json).getAsJsonObject();
+    JsonArray relatedAttr = article.getAsJsonArray("relatedArticles");
+    for (JsonElement element : relatedAttr) {
+      JsonObject relatedArticle = element.getAsJsonObject();
       amendments.add(ArticleAmendment
-              .builder()
-              .setParentArticleURI(amendment.get("parentArticleURI").getAsString())
-              .setOtherArticleDoi(amendment.get("otherArticleDoi").getAsString())
-              .setRelationshipType(amendment.get("relationshipType").getAsString())
-              .build());
+          .builder()
+          .setParentArticleURI(article.get("doi").getAsString())
+          .setOtherArticleDoi(relatedArticle.get("doi").getAsString())
+          .setRelationshipType(relatedArticle.get("type").getAsString())
+          .build());
     }
     return amendments;
   }
 
-  public void setAmbraServer(String ambraServer) {
-    this.ambraServer = ambraServer;
+  public void setRhinoServer(String rhinoServer) {
+    this.rhinoServer = rhinoServer;
   }
 }

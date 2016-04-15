@@ -34,7 +34,7 @@ public interface AmendmentService {
    * @param doi
    * @return
    */
-  public List<ArticleAmendment> fetchAmendmentsFromAmbra(String doi);
+  public List<ArticleAmendment> fetchAmendmentsFromRhino(String doi);
 
-  void setAmbraServer(String ambraServer);
+  void setRhinoServer(String rhinoServer);
 }

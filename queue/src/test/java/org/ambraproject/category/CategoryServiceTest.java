@@ -46,7 +46,7 @@ public class CategoryServiceTest {
         "Non-Clinical Medicine/Medical Law",
         "Infectious Diseases");
     CategoryServiceImpl service = new CategoryServiceImpl();
-    assertEquals(expected, service.parseJsonFromAmbra(json, "info:doi/10.1371/journal.ppat.1002020"));
+    assertEquals(expected, service.parseJsonFromRhino(json, "info:doi/10.1371/journal.ppat.1002020"));
   }
 
   @Test
@@ -56,7 +56,7 @@ public class CategoryServiceTest {
         + "\"categories\":null,\"errorMessages\":[],\"errors\":{},\"fieldErrors\":{},\"numFieldErrors\":0} */";
     CategoryServiceImpl service = new CategoryServiceImpl();
     assertEquals(new ArrayList<String>(),
-        service.parseJsonFromAmbra(json, "info:doi/10.1371/journal.ppat.1002020"));
+        service.parseJsonFromRhino(json, "info:doi/10.1371/journal.ppat.1002020"));
   }
 
   @Test
