@@ -26,12 +26,12 @@ import java.util.List;
 public interface CategoryService {
 
   /**
-   * Returns category strings from ambra servers.
+   * Returns category strings from rhino servers.
    *
    * @param doi article DOI
    * @return List of category Strings
    */
-  List<String> fetchCategoriesFromAmbra(String doi);
+  List<String> fetchCategoriesFromRhino(String doi);
 
   /**
    * Returns a list of all unique top-level categories in the supplied input.
@@ -42,5 +42,5 @@ public interface CategoryService {
    */
   List<String> getTopLevelCategories(List<String> categories);
 
-  void setAmbraServer(String ambraServer);
+  void setRhinoServer(String rhinoServer);
 }

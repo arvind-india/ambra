@@ -36,28 +36,19 @@ public class CategoryServiceImpl implements CategoryService {
 
   private static final Logger log = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
-  private String ambraServer;
+  private String rhinoServer;
 
-  public void setAmbraServer(String ambraServer) {
-    this.ambraServer = ambraServer;
+  public void setRhinoServer(String rhinoServer) {
+    this.rhinoServer = rhinoServer;
   }
 
   /**
-   * Extracts the categories from the JSON returned by the ambra server.
+   * Extracts the categories from the JSON returned by the rhino server.
    *
-   * @param json response from the ambra server to a get categories call
+   * @param json response from the rhino server to a get categories call
    * @return List of category Strings
    */
-  List<String> parseJsonFromAmbra(String json, String doi) {
-
-    // The ambra action returns JSON wrapped in javascript comments, but Gson does not
-    // like this.
-    if (json.startsWith("/*")) {
-      json = json.substring(2);
-    }
-    if (json.endsWith("*/")) {
-      json = json.substring(0, json.length() - 2);
-    }
+  List<String> parseJsonFromRhino(String json, String doi) {
 
     JsonParser parser = new JsonParser();
     JsonObject obj = parser.parse(json).getAsJsonObject();
@@ -71,7 +62,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
     List<String> result = new ArrayList<String>(categories.size());
     for (JsonElement category : categories) {
-      result.add(category.getAsString());
+      String path = category.getAsJsonObject().get("path").getAsString();
+      result.add(path);
     }
     return result;
   }
@@ -79,10 +71,15 @@ public class CategoryServiceImpl implements CategoryService {
   /**
    * {@inheritDoc}
    */
-  public List<String> fetchCategoriesFromAmbra(String doi) {
+  public List<String> fetchCategoriesFromRhino(String doi) {
     String json;
+
+    if ("info:doi/".equals(doi.substring(0, 9))) {
+      doi = doi.substring(9);
+    }
+
     try {
-      URL url = new URL(ambraServer + "/article/categories?articleURI=" + URLEncoder.encode(doi));
+      URL url = new URL(rhinoServer + "/articles/" + doi);
       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
       conn.connect();
       InputStream is = conn.getInputStream();
@@ -98,10 +95,10 @@ public class CategoryServiceImpl implements CategoryService {
       // the queue just stops and fails to make forward progress.  Look
       // into our error handling strategy in detail to make sure we're
       // doing the right thing.
-      log.error("Failed to fetch categories from ambra", ioe);
+      log.error("Failed to fetch categories from rhino", ioe);
       return new ArrayList<String>();
     }
-    return parseJsonFromAmbra(json, doi);
+    return parseJsonFromRhino(json, doi);
   }
 
   /**

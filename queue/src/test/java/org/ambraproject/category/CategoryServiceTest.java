@@ -27,14 +27,12 @@ import static org.testng.Assert.assertEquals;
 public class CategoryServiceTest {
 
   @Test
-  public void testParseJsonFromAmbra() throws Exception {
-    String json = "/* {\"actionErrors\":[],\"actionMessages\":[],\"articleURI\":"
-        + "\"info:doi\\/10.1371\\/journal.pmed.0030099\",\"categories\":"
-        + "[\"Virology\",\"Non-Clinical Medicine\\/Bioethics\","
-        + "\"Non-Clinical Medicine\\/Health Economics\",\"Non-Clinical Medicine\\/Health Policy\","
-        + "\"Public Health and Epidemiology\",\"Science Policy\",\"Hematology\","
-        + "\"Non-Clinical Medicine\\/Medical Law\",\"Infectious Diseases\"],"
-        + "\"errorMessages\":[],\"errors\":{},\"fieldErrors\":{},\"numFieldErrors\":0} */";
+  public void testParseJsonFromRhino() throws Exception {
+    String json = "{\"doi\":\"info:doi\\/10.1371\\/journal.pmed.0030099\",\"categories\":"
+        + "[{\"path\":\"Virology\"},{\"path\":\"Non-Clinical Medicine\\/Bioethics\"},"
+        + "{\"path\":\"Non-Clinical Medicine\\/Health Economics\"},{\"path\":\"Non-Clinical Medicine\\/Health Policy\"},"
+        + "{\"path\":\"Public Health and Epidemiology\"},{\"path\":\"Science Policy\"},{\"path\":\"Hematology\"},"
+        + "{\"path\":\"Non-Clinical Medicine\\/Medical Law\"},{\"path\":\"Infectious Diseases\"}]}";
     List<String> expected = Arrays.asList(
         "Virology",
         "Non-Clinical Medicine/Bioethics",
@@ -46,17 +44,16 @@ public class CategoryServiceTest {
         "Non-Clinical Medicine/Medical Law",
         "Infectious Diseases");
     CategoryServiceImpl service = new CategoryServiceImpl();
-    assertEquals(expected, service.parseJsonFromAmbra(json, "info:doi/10.1371/journal.ppat.1002020"));
+    assertEquals(expected, service.parseJsonFromRhino(json, "info:doi/10.1371/journal.ppat.1002020"));
   }
 
   @Test
-  public void testParseJsonFromAmbra_error() throws Exception {
-    String json = "/* {\"actionErrors\":[\"Article info:doi\\/10.1371\\/journal.pmed.1001357 not found\"],"
-        + "\"actionMessages\":[],\"articleURI\":\"info:doi\\/10.1371\\/journal.pmed.1001357\","
-        + "\"categories\":null,\"errorMessages\":[],\"errors\":{},\"fieldErrors\":{},\"numFieldErrors\":0} */";
+  public void testParseJsonFromRhino_error() throws Exception {
+    String json = "{\"doi\":\"info:doi\\/10.1371\\/journal.pmed.1001357\","
+        + "\"categories\":[]}";
     CategoryServiceImpl service = new CategoryServiceImpl();
     assertEquals(new ArrayList<String>(),
-        service.parseJsonFromAmbra(json, "info:doi/10.1371/journal.ppat.1002020"));
+        service.parseJsonFromRhino(json, "info:doi/10.1371/journal.ppat.1002020"));
   }
 
   @Test
