@@ -18,10 +18,12 @@ package org.ambraproject.models;
  */
 public class Flag extends AmbraEntity {
 
+  private Long userProfileID;
   private String comment;
   private UserProfile creator;
   private FlagReasonCode reason;
   private Annotation flaggedAnnotation;
+  private String displayName;
 
   public Flag() {
     super();
@@ -34,6 +36,10 @@ public class Flag extends AmbraEntity {
     this.reason = reason;
     this.flaggedAnnotation = flaggedAnnotation;
   }
+
+  public Long getUserProfileID() { return userProfileID; }
+
+  public void setUserProfileID(Long userProfileID) { this.userProfileID = userProfileID; }
 
   public String getComment() {
     return comment;
@@ -67,6 +73,14 @@ public class Flag extends AmbraEntity {
     this.flaggedAnnotation = flaggedAnnotation;
   }
 
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -88,7 +102,8 @@ public class Flag extends AmbraEntity {
   public String toString() {
     return "Flag{" +
         "comment='" + comment + '\'' +
-        ", reason=" + reason +
-        '}';
+        ", reason=" + reason + '\'' +
+        ", userProfileID=" + userProfileID +
+    '}';
   }
 }
