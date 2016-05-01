@@ -46,8 +46,6 @@ public class FlagTest extends BaseHibernateTest {
 
     Flag storedFlag = (Flag) hibernateTemplate.get(Flag.class, id);
     assertNotNull(storedFlag, "Didn't store flag");
-    assertNotNull(storedFlag.getCreator(), "Didn't associate flag to creator");
-    assertEquals(storedFlag.getCreator().getID(), creator.getID(), "associated flag to incorrect creator");
 
     assertNotNull(storedFlag.getFlaggedAnnotation(), "Didn't associate flag to an annotation");
     assertEquals(storedFlag.getFlaggedAnnotation().getID(), annotation.getID(), "associated flag to an annotation");
@@ -56,19 +54,6 @@ public class FlagTest extends BaseHibernateTest {
     assertEquals(storedFlag.getComment(), flag.getComment(), "stored incorrect comment");
     assertNotNull(storedFlag.getCreated(), "flag didn't get created date set");
     assertTrue(storedFlag.getCreated().getTime() >= testStart, "created date wasn't after test start");
-  }
-
-  @Test(expectedExceptions = {DataIntegrityViolationException.class})
-  public void testSaveWithNullCreator() {
-    UserProfile creator = new UserProfile(
-        "email@saveFlagWithNoCreator.org",
-        "displayNameForSaveFlagWithNoCreator",
-        "pass");
-    hibernateTemplate.save(creator);
-    Annotation annotation = new Annotation(creator, AnnotationType.COMMENT, 123l);
-    hibernateTemplate.save(annotation);
-
-    hibernateTemplate.save(new Flag(null, FlagReasonCode.SPAM, annotation));
   }
 
   @Test(expectedExceptions = {DataIntegrityViolationException.class})
