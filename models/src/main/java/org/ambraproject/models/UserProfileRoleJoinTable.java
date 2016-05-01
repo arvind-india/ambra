@@ -45,7 +45,10 @@ public class UserProfileRoleJoinTable implements Serializable {
 
   @Override
   public String toString() {
-    return (this.userProfileID + " " + this.userRoleID);
+    return "UserProfileRoleJoinTable{" +
+        "userRoleID='" + userRoleID + '\'' +
+        ", userProfileID=" + userProfileID +
+        '}';
   }
 
 }
