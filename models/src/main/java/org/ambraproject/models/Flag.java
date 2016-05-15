@@ -25,6 +25,10 @@ public class Flag extends AmbraEntity {
   private Annotation flaggedAnnotation;
   private String displayName;
 
+  private Long annotationID;
+  private String annotationTitle;
+  private AnnotationType annotationType;
+
   public Flag() {
     super();
     this.reason = FlagReasonCode.OTHER;
@@ -37,6 +41,18 @@ public class Flag extends AmbraEntity {
     this.flaggedAnnotation = flaggedAnnotation;
   }
 
+  public Long getAnnotationID() { return annotationID; }
+
+  public void setAnnotationID(Long annotationID) { this.annotationID = annotationID;}
+
+  public String getAnnotationTitle() { return annotationTitle; }
+
+  public void setAnnotationTitle(String annotationTitle) { this.annotationTitle = annotationTitle; }
+
+  public AnnotationType getAnnotationType() { return annotationType; }
+
+  public void setAnnotationType(AnnotationType annotationType) { this.annotationType = annotationType; }
+  
   public Long getUserProfileID() { return userProfileID; }
 
   public void setUserProfileID(Long userProfileID) { this.userProfileID = userProfileID; }
