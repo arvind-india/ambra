@@ -22,6 +22,7 @@ public class Flag extends AmbraEntity {
   private Long userProfileID;
   private FlagReasonCode reason;
   private Annotation flaggedAnnotation;
+  private String displayName;
 
   public Flag() {
     super();
@@ -65,6 +66,14 @@ public class Flag extends AmbraEntity {
 
   public void setFlaggedAnnotation(Annotation flaggedAnnotation) {
     this.flaggedAnnotation = flaggedAnnotation;
+  }
+
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
   }
 
   @Override
