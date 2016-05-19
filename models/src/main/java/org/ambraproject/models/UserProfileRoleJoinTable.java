@@ -22,23 +22,6 @@ public class UserProfileRoleJoinTable implements Serializable {
     this.userProfileID = userProfileID;
   }
 
-  public boolean equals(Object obj) {
-    if (obj == null) return false;
-    if (!this.getClass().equals(obj.getClass())) return false;
-
-    if (this.userRoleID.equals(((UserProfileRoleJoinTable) obj).getUserRoleID()) &&
-        this.userProfileID == ((UserProfileRoleJoinTable) obj).getUserProfileID()) {
-      return true;
-    }
-    return false;
-  }
-
-  public int hashCode() {
-    int tmp = 0;
-    tmp = (userRoleID.hashCode() + userProfileID.hashCode());
-    return tmp;
-  }
-
   @Override
   public String toString() {
     return "UserProfileRoleJoinTable{" +
@@ -47,4 +30,23 @@ public class UserProfileRoleJoinTable implements Serializable {
         '}';
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    UserProfileRoleJoinTable that = (UserProfileRoleJoinTable) o;
+
+    if (getUserRoleID() != null ? !getUserRoleID().equals(that.getUserRoleID()) : that.getUserRoleID() != null)
+      return false;
+    return !(getUserProfileID() != null ? !getUserProfileID().equals(that.getUserProfileID()) : that.getUserProfileID() != null);
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = getUserRoleID() != null ? getUserRoleID().hashCode() : 0;
+    result = 31 * result + (getUserProfileID() != null ? getUserProfileID().hashCode() : 0);
+    return result;
+  }
 }
