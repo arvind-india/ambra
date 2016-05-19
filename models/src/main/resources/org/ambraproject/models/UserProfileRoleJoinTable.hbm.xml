@@ -20,15 +20,14 @@
 <hibernate-mapping package="org.ambraproject.models">
 
   <class name="UserProfileRoleJoinTable" table="userProfileRoleJoinTable">
-    <composite-id class="UserProfileRoleJoinTable">
+    <composite-id class="UserProfileRoleJoinTable" mapped="true">
       <key-property name="userRoleID"/>
       <key-property name="userProfileID"/>
     </composite-id>
 
-    <property name="userRoleID" type="long" column="userRoleID" not-null="false" insert="false" update="false"/>
-    <property name="userProfileID" type="long" column="userProfileID" not-null="false" insert="false" update="false"/>
+    <property name="userRoleID" type="long" column="userRoleID" not-null="true" insert="false" update="false"/>
+    <property name="userProfileID" type="long" column="userProfileID" not-null="true" insert="false" update="false"/>
 
-    <!--<many-to-one name="userRole" column="userRoleID" class="UserRole" cascade="none" fetch="join"/>-->
   </class>
 
 </hibernate-mapping>

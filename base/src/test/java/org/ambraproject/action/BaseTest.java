@@ -29,6 +29,8 @@ import org.ambraproject.models.CitedArticle;
 import org.ambraproject.models.CitedArticleAuthor;
 import org.ambraproject.models.CitedArticleEditor;
 import org.ambraproject.models.Journal;
+import org.ambraproject.models.UserProfileRoleJoinTable;
+import org.ambraproject.models.UserRole;
 import org.ambraproject.testutils.DummyDataStore;
 import org.ambraproject.views.AnnotationView;
 import org.ambraproject.views.ArticleCategory;
@@ -44,6 +46,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import static org.testng.Assert.*;
 import static org.testng.Assert.assertNotNull;
@@ -70,6 +73,13 @@ public abstract class BaseTest extends AbstractTestNGSpringContextTests {
   protected DummyDataStore dummyDataStore;
 
   public static final Journal defaultJournal = new Journal();
+
+  public static final String DEFAULT_ADMIN_AUTHID = "AdminAuthorizationID";
+  public static final String DEFAULT_EDITORIAL_AUTHID = "EditorialAuthorizationID";
+  public static final String DEFAULT_USER_AUTHID = "DummyTestUserAuthorizationID";
+  public static final Long USER_PROFILE_ID_ADMIN = 1L;
+  public static final Long USER_PROFILE_ID_EDITORIAL = 2L;
+  public static final Long USER_PROFILE_ID_NONADMIN = 1001L;
 
   static {
     defaultJournal.setJournalKey("journal");
@@ -406,6 +416,48 @@ public abstract class BaseTest extends AbstractTestNGSpringContextTests {
    * No longer needed.
    */
   protected void restoreDefaultUsers() {
+
+    try {
+      // Create an admin user to test admin functions
+      UserRole adminRole = new UserRole("admin");
+
+      Set<UserRole.Permission> perms = new HashSet<UserRole.Permission>();
+      perms.add(UserRole.Permission.ACCESS_ADMIN);
+      perms.add(UserRole.Permission.INGEST_ARTICLE);
+      perms.add(UserRole.Permission.MANAGE_FLAGS);
+      perms.add(UserRole.Permission.MANAGE_ANNOTATIONS);
+      perms.add(UserRole.Permission.MANAGE_USERS);
+      perms.add(UserRole.Permission.MANAGE_ROLES);
+      perms.add(UserRole.Permission.MANAGE_JOURNALS);
+      perms.add(UserRole.Permission.MANAGE_SEARCH);
+      perms.add(UserRole.Permission.MANAGE_CACHES);
+      perms.add(UserRole.Permission.CROSS_PUB_ARTICLES);
+      perms.add(UserRole.Permission.DELETE_ARTICLES);
+      perms.add(UserRole.Permission.VIEW_UNPUBBED_ARTICLES);
+
+      adminRole.setPermissions(perms);
+      dummyDataStore.store(adminRole);
+
+      UserProfileRoleJoinTable ur1 = new UserProfileRoleJoinTable();
+      ur1.setUserRoleID(adminRole.getID());
+      ur1.setUserProfileID(BaseTest.USER_PROFILE_ID_ADMIN);
+      dummyDataStore.store(ur1);
+
+      UserRole editorialRole = new UserRole("editorial");
+      perms = new HashSet<UserRole.Permission>();
+      perms.add(UserRole.Permission.ACCESS_ADMIN);
+      perms.add(UserRole.Permission.VIEW_UNPUBBED_ARTICLES);
+      editorialRole.setPermissions(perms);
+      dummyDataStore.store(editorialRole);
+
+      UserProfileRoleJoinTable ur2 = new UserProfileRoleJoinTable();
+      ur2.setUserRoleID(editorialRole.getID());
+      ur2.setUserProfileID(BaseTest.USER_PROFILE_ID_EDITORIAL);
+      dummyDataStore.store(ur2);
+
+    } catch (DataAccessException ex) {
+      //must've already inserted the users
+    }
 
   }
 }

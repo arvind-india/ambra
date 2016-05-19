@@ -7,8 +7,6 @@ public class UserProfileRoleJoinTable implements Serializable {
   private Long userRoleID;
   private Long userProfileID;
 
-  //private UserRole userRole;
-
   public Long getUserRoleID() {
     return userRoleID;
   }
@@ -24,19 +22,28 @@ public class UserProfileRoleJoinTable implements Serializable {
     this.userProfileID = userProfileID;
   }
 
-//  public UserRole getUserRole() {
-//    return userRole;
-//  }
-//
-//  public void setUserRole(UserRole userRole) {
-//    this.userRole = userRole;
-//  }
+  public boolean equals(Object obj) {
+    if (obj == null) return false;
+    if (!this.getClass().equals(obj.getClass())) return false;
+
+    if (this.userRoleID.equals(((UserProfileRoleJoinTable) obj).getUserRoleID()) &&
+        this.userProfileID == ((UserProfileRoleJoinTable) obj).getUserProfileID()) {
+      return true;
+    }
+    return false;
+  }
+
+  public int hashCode() {
+    int tmp = 0;
+    tmp = (userRoleID.hashCode() + userProfileID.hashCode());
+    return tmp;
+  }
 
   @Override
   public String toString() {
     return "UserProfileRoleJoinTable{" +
-        "userRoleID='" + userRoleID + '\'' +
-        ", userProfileID=" + userProfileID +
+        "userRoleID='" + this.getUserRoleID() + '\'' +
+        ", userProfileID=" + this.getUserProfileID() +
         '}';
   }
 

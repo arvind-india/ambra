@@ -81,6 +81,7 @@ public abstract class BaseWebTest extends BaseTest {
    */
   @BeforeMethod
   public void setDefaultRequest() {
+    setupUserContext();
     if (getAction() != null) {
       Map<String, Object> request = getDefaultRequestAttributes();
       doModifyRequest(request);
@@ -133,6 +134,51 @@ public abstract class BaseWebTest extends BaseTest {
    */
   protected final Object getFromSession(String key) {
     return ActionContext.getContext().getSession().get(key);
+  }
+
+  /**
+   * Insert all the session attributes that would indicate the given user is logged in
+   *
+   * @param userProfileID
+   */
+  protected final void login(Long userProfileID) {
+    String authId = null;
+    String email = null;
+    if (USER_PROFILE_ID_ADMIN.equals(userProfileID)) {
+      authId = DEFAULT_ADMIN_AUTHID;
+      email = "admin@test.org";
+    } else if (USER_PROFILE_ID_EDITORIAL.equals(userProfileID)) {
+      authId = DEFAULT_EDITORIAL_AUTHID;
+      email = "editorial@test.org";
+    } else if (USER_PROFILE_ID_NONADMIN.equals(userProfileID)) {
+      authId = DEFAULT_USER_AUTHID;
+      email = "nonAdmin@test.org";
+    }
+    if (authId != null && email != null) {
+      putInSession(Constants.AUTH_KEY, authId);
+      putInSession(Constants.SINGLE_SIGNON_EMAIL_KEY, email);
+    }
+  }
+
+  /**
+   * Set up struts container / context with an admin request.  This is for unit tests that need to access attributes
+   * from the session, set up mock action invocations, etc.
+   */
+  protected final void setupAdminContext() {
+    Map<String, Object> sessionAttributes = new HashMap<String, Object>();
+    sessionAttributes.put(Constants.AUTH_KEY, DEFAULT_ADMIN_AUTHID);
+
+    setupContext(sessionAttributes);
+  }
+
+  /**
+   * Set up struts container / context with an admin request.  This is for unit tests that need to access attributes
+   * from the session, set up mock action invocations, etc.
+   */
+  protected final void setupUserContext() {
+    Map<String, Object> sessionAttributes = new HashMap<String, Object>();
+    sessionAttributes.put(Constants.AUTH_KEY, DEFAULT_USER_AUTHID);
+    setupContext(sessionAttributes);
   }
 
   /**
