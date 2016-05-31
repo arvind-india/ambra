@@ -44,7 +44,7 @@ public class SavedSearchRunnerImpl implements SavedSearchRunner {
       searchJob.getSavedSearchQueryID(), searchJob.getFrequency());
 
     if(searchJob.getStartDate() == null) {
-      if(searchJob.getFrequency().equals("WEEKLY")) {
+      if(searchJob.getFrequency().equalsIgnoreCase("WEEKLY")) {
         //7 days into the past
         Calendar date = Calendar.getInstance();
 
